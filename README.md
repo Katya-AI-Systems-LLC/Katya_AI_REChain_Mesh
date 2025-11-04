@@ -84,9 +84,9 @@ docker-compose up -d
 - Secure: End-to-end encryption, blockchain bridge
 
 ## 🌍 Mirrors
-- [GitHub](https://github.com/katya/quantum-mesh-app)
-- [SourceCraft](https://sourcecraft.ru/katya/mesh)
-- [GitFlic](https://gitflic.ru/project/katya/mesh)
+- [GitHub](https://github.com/Katya-AI-Systems-LLC/Katya_AI_REChain_Mesh)
+- [SourceCraft](https://sourcecraft.dev/dim15168250/katya-ai-rechain-mesh)
+- [GitFlic](https://gitflic.ru/project/dim15168250/katya_ai_rechain_mesh.git)
 
 ## 📑 Docs
 - [DOCS_INDEX.md](docs/DOCS_INDEX.md)
