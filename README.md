@@ -13,7 +13,7 @@
 ---
 
 ### 🔥 DEMO / Screencast
-[Смотреть демо / Watch on YouTube](https://your-screencast-link)  
+[Смотреть демо / Screencast](https://github.com/Katya-AI-Systems-LLC/Katya_AI_REChain_Mesh/blob/main/SCREENCAST.mkv)  
 See `docs/screens/demo_main.gif` for UI quickpeek.
 
 ---
