@@ -75,14 +75,14 @@ dependencies:
   lottie: ^3.3.2
 
   # Error Handling & Monitoring
-  sentry_flutter: ^8.9.0
+  sentry_flutter: ^9.8.0
   logger: ^2.4.0
 
   # Platform Integration
   url_launcher: ^6.3.1
-  share_plus: ^10.1.1
+  share_plus: ^12.0.1
   package_info_plus: ^8.1.1
-  device_info_plus: ^11.2.0
+  device_info_plus: ^12.2.0
 
   # Internationalization
   flutter_localizations:
@@ -94,7 +94,7 @@ dependencies:
   flutter_cache_manager: ^3.4.0
 
   # Security
-  local_auth: ^2.3.0
+  local_auth: ^3.0.0
   flutter_secure_storage: ^9.2.2
 
   # Missing Dependencies from Analysis
