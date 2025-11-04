@@ -82,7 +82,7 @@ dependencies:
   url_launcher: ^6.3.1
   share_plus: ^10.1.1
   package_info_plus: ^8.1.1
-  device_info_plus: ^11.2.0
+  device_info_plus: ^12.2.0
 
   # Internationalization
   flutter_localizations:
