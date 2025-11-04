@@ -94,7 +94,7 @@ dependencies:
   flutter_cache_manager: ^3.4.0
 
   # Security
-  local_auth: ^2.3.0
+  local_auth: ^3.0.0
   flutter_secure_storage: ^9.2.2
 
   # Missing Dependencies from Analysis
