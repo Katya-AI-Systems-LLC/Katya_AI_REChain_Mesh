@@ -1,0 +1,143 @@
+---
+# Ansible playbook for Katya AI REChain Mesh deployment
+
+- name: Deploy Katya AI REChain Mesh
+  hosts: all
+  become: yes
+  gather_facts: yes
+
+  vars:
+    app_name: katya-rechain-mesh
+    app_version: "1.0.0"
+    environment: "{{ lookup('env', 'ENVIRONMENT') | default('staging') }}"
+    domain_name: "{{ lookup('env', 'DOMAIN_NAME') | default('katya-ai-rechain-mesh.com') }}"
+
+  pre_tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+      when: ansible_os_family == "Debian"
+
+    - name: Install required packages
+      package:
+        name:
+          - curl
+          - wget
+          - git
+          - docker.io
+          - docker-compose
+        state: present
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+  roles:
+    - role: geerlingguy.docker
+      when: ansible_os_family == "Debian"
+
+    - role: geerlingguy.nodejs
+      nodejs_version: "18"
+      nodejs_install_npm_user: "{{ ansible_user_id }}"
+
+    - role: geerlingguy.certbot
+      when: ansible_os_family == "Debian"
+
+  tasks:
+    - name: Create application directories
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+        owner: "{{ ansible_user_id }}"
+        group: "{{ ansible_user_id }}"
+      loop:
+        - /opt/katya-rechain-mesh
+        - /opt/katya-rechain-mesh/backend
+        - /opt/katya-rechain-mesh/frontend
+        - /opt/katya-rechain-mesh/nginx
+        - /opt/katya-rechain-mesh/monitoring
+        - /var/log/katya-rechain-mesh
+
+    - name: Copy Docker Compose file
+      template:
+        src: docker-compose.yml.j2
+        dest: /opt/katya-rechain-mesh/docker-compose.yml
+        mode: '0644'
+
+    - name: Copy nginx configuration
+      template:
+        src: nginx.conf.j2
+        dest: /opt/katya-rechain-mesh/nginx/nginx.conf
+        mode: '0644'
+      notify: reload nginx
+
+    - name: Copy SSL certificates
+      copy:
+        src: "{{ playbook_dir }}/../ssl/"
+        dest: /opt/katya-rechain-mesh/ssl/
+        mode: '0600'
+      when: ssl_certificates is defined
+
+    - name: Generate self-signed SSL certificate (development)
+      command: |
+        openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+        -keyout /opt/katya-rechain-mesh/ssl/key.pem \
+        -out /opt/katya-rechain-mesh/ssl/cert.pem \
+        -subj "/C=US/ST=State/L=City/O=Organization/CN={{ domain_name }}"
+      when: ssl_certificates is not defined
+
+    - name: Create environment file
+      template:
+        src: .env.j2
+        dest: /opt/katya-rechain-mesh/.env
+        mode: '0600'
+
+    - name: Pull Docker images
+      docker_compose:
+        project_src: /opt/katya-rechain-mesh
+        state: present
+
+    - name: Start application
+      docker_compose:
+        project_src: /opt/katya-rechain-mesh
+        state: present
+        restarted: yes
+
+    - name: Wait for application to be ready
+      uri:
+        url: "https://{{ domain_name }}/health"
+        method: GET
+        timeout: 30
+        validate_certs: no
+      register: health_check
+      until: health_check.status == 200
+      retries: 10
+      delay: 10
+      when: environment != "development"
+
+    - name: Setup monitoring
+      include_tasks: monitoring.yml
+      when: setup_monitoring | default(true)
+
+    - name: Setup backups
+      include_tasks: backup.yml
+      when: setup_backups | default(true)
+
+    - name: Setup log rotation
+      include_tasks: logging.yml
+
+  handlers:
+    - name: reload nginx
+      service:
+        name: nginx
+        state: reloaded
+
+    - name: restart application
+      docker_compose:
+        project_src: /opt/katya-rechain-mesh
+        state: present
+        restarted: yes

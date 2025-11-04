@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Katya AI REChain Mesh</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>katya_ai_rechain_mesh</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright © 2024 Katya AI REChain Mesh. All rights reserved.</string>
+	<key>NSMainStoryboardFile</key>
+	<string>Main</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+
+	<!-- macOS Platform Specific Features -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+
+	<!-- Background Modes -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>processing</string>
+		<string>remote-notification</string>
+	</array>
+
+	<!-- Background Tasks -->
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.katyaairechainmesh.refresh</string>
+		<string>com.katyaairechainmesh.sync</string>
+		<string>com.katyaairechainmesh.maintenance</string>
+	</array>
+
+	<!-- Push Notifications -->
+	<key>aps-environment</key>
+	<string>development</string>
+
+	<!-- Local Notifications -->
+	<key>UNUserNotificationCenterDelegate</key>
+	<string>$(PRODUCT_MODULE_NAME).AppDelegate</string>
+
+	<!-- Security and Privacy -->
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs camera access to capture photos and videos</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app needs microphone access for voice features</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs photo library access to save and load images</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs location access to provide location-based features</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app needs location access to provide location-based features</string>
+	<key>NSContactsUsageDescription</key>
+	<string>This app needs contacts access to enhance social features</string>
+	<key>NSRemindersUsageDescription</key>
+	<string>This app needs reminders access for scheduling notifications</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>This app needs calendar access for event scheduling</string>
+
+	<!-- Biometric Authentication -->
+	<key>NSFaceIDUsageDescription</key>
+	<string>Enable Touch ID for secure authentication</string>
+
+	<!-- Keychain Access -->
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)com.katyaairechainmesh</string>
+	</array>
+
+	<!-- URL Schemes -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.katyaairechainmesh</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>katya-rechain-mesh</string>
+				<string>katyaairechainmesh</string>
+			</array>
+		</dict>
+	</array>
+
+	<!-- Apple Events -->
+	<key>NSAppleEventsUsageDescription</key>
+	<string>This app needs Apple Events access for system integration</string>
+
+	<!-- File System Access -->
+	<key>NSDesktopFolderUsageDescription</key>
+	<string>This app needs desktop access for file operations</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>This app needs documents access for file operations</string>
+	<key>NSDownloadsFolderUsageDescription</key>
+	<string>This app needs downloads access for file operations</string>
+	<key>NSNetworkVolumesUsageDescription</key>
+	<string>This app needs network volumes access for file operations</string>
+	<key>NSRemovableVolumesUsageDescription</key>
+	<string>This app needs removable volumes access for file operations</string>
+
+	<!-- User Data Access -->
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>INSendMessageIntent</string>
+		<string>INSearchForMessagesIntent</string>
+		<string>com.katyaairechainmesh.browsing</string>
+	</array>
+
+	<!-- Siri Integration -->
+	<key>INIntentsSupported</key>
+	<array>
+		<string>INSendMessageIntent</string>
+		<string>INSearchForMessagesIntent</string>
+	</array>
+
+	<!-- Widget Support -->
+	<key>NSExtension</key>
+	<dict>
+		<key>NSExtensionPointIdentifier</key>
+		<string>com.apple.widgetkit-extension</string>
+		<key>NSExtensionPrincipalClass</key>
+		<string>$(PRODUCT_MODULE_NAME).WidgetExtension</string>
+	</dict>
+
+	<!-- Quick Actions -->
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>com.katyaairechainmesh.quickaction</string>
+	</array>
+
+	<!-- Associated Domains -->
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>webcredentials:katyaairechainmesh.com</string>
+		<string>applinks:katyaairechainmesh.com</string>
+		<string>activitycontinuation:katyaairechainmesh.com</string>
+	</array>
+
+	<!-- HealthKit -->
+	<key>NSHealthShareUsageDescription</key>
+	<string>This app needs health data access for wellness features</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>This app needs health data access for wellness features</string>
+
+	<!-- Motion and Fitness -->
+	<key>NSMotionUsageDescription</key>
+	<string>This app needs motion data for activity tracking</string>
+
+	<!-- Bluetooth -->
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>This app needs Bluetooth access for device connectivity</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>This app needs Bluetooth access for device connectivity</string>
+
+	<!-- Network Extensions -->
+	<key>com.apple.developer.networking.networkextension</key>
+	<array>
+		<string>content-filter-provider-systemextension</string>
+		<string>dns-proxy-systemextension</string>
+		<string>packet-tunnel-provider-systemextension</string>
+	</array>
+
+	<!-- System Extensions -->
+	<key>com.apple.developer.system-extension.install</key>
+	<true/>
+
+	<!-- DriverKit -->
+	<key>com.apple.developer.driverkit</key>
+	<true/>
+	<key>com.apple.developer.driverkit.transport.usb</key>
+	<true/>
+	<key>com.apple.developer.driverkit.transport.hid</key>
+	<true/>
+	<key>com.apple.developer.driverkit.transport.serial</key>
+	<true/>
+
+	<!-- HomeKit -->
+	<key>com.apple.developer.homekit</key>
+	<true/>
+	<key>NSHomeKitUsageDescription</key>
+	<string>This app needs HomeKit access for smart home integration</string>
+
+	<!-- WeatherKit -->
+	<key>com.apple.developer.weatherkit</key>
+	<true/>
+
+	<!-- Maps -->
+	<key>com.apple.developer.maps</key>
+	<true/>
+
+	<!-- Sign In with Apple -->
+	<key>com.apple.developer.signin.apple</key>
+	<true/>
+
+	<!-- Developer Mode -->
+	<key>com.apple.developer.developer-mode</key>
+	<true/>
+
+	<!-- App Sandbox -->
+	<key>com.apple.security.app-sandbox</key>
+	<true/>
+	<key>com.apple.security.files.user-selected.read-only</key>
+	<true/>
+	<key>com.apple.security.files.user-selected.read-write</key>
+	<true/>
+	<key>com.apple.security.files.downloads.read-only</key>
+	<true/>
+	<key>com.apple.security.files.downloads.read-write</key>
+	<true/>
+	<key>com.apple.security.files.pictures.read-only</key>
+	<true/>
+	<key>com.apple.security.files.pictures.read-write</key>
+	<true/>
+	<key>com.apple.security.files.movies.read-only</key>
+	<true/>
+	<key>com.apple.security.files.movies.read-write</key>
+	<true/>
+	<key>com.apple.security.files.music.read-only</key>
+	<true/>
+	<key>com.apple.security.files.music.read-write</key>
+	<true/>
+	<key>com.apple.security.files.desktop.read-only</key>
+	<true/>
+	<key>com.apple.security.files.desktop.read-write</key>
+	<true/>
+	<key>com.apple.security.files.documents.read-only</key>
+	<true/>
+	<key>com.apple.security.files.documents.read-write</key>
+	<true/>
+	<key>com.apple.security.network.client</key>
+	<true/>
+	<key>com.apple.security.network.server</key>
+	<true/>
+	<key>com.apple.security.device.camera</key>
+	<true/>
+	<key>com.apple.security.device.microphone</key>
+	<true/>
+	<key>com.apple.security.device.usb</key>
+	<true/>
+	<key>com.apple.security.device.bluetooth</key>
+	<true/>
+	<key>com.apple.security.personal-information.location</key>
+	<true/>
+	<key>com.apple.security.personal-information.contacts</key>
+	<true/>
+	<key>com.apple.security.personal-information.calendars</key>
+	<true/>
+	<key>com.apple.security.personal-information.photos-library</key>
+	<true/>
+	<key>com.apple.security.personal-information.apple-id</key>
+	<true/>
+
+	<!-- Hardened Runtime -->
+	<key>com.apple.security.cs.allow-jit</key>
+	<true/>
+	<key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+	<true/>
+	<key>com.apple.security.cs.allow-dyid-spawning</key>
+	<true/>
+	<key>com.apple.security.cs.disable-library-validation</key>
+	<false/>
+	<key>com.apple.security.cs.disable-executable-page-protection</key>
+	<false/>
+	<key>com.apple.security.cs.restricted</key>
+	<false/>
+
+	<!-- Required Device Capabilities -->
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>arm64</string>
+		<string>metal</string>
+	</array>
+
+	<!-- Minimum OS Version -->
+	<key>LSMinimumSystemVersion</key>
+	<string>10.15</string>
+
+	<!-- Environment Variables -->
+	<key>LSEnvironment</key>
+	<dict>
+		<key>PATH</key>
+		<string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+		<key>DYLD_LIBRARY_PATH</key>
+		<string>/usr/local/lib</string>
+	</dict>
+
+	<!-- Launch Services -->
+	<key>LSUIElement</key>
+	<false/>
+	<key>LSBackgroundOnly</key>
+	<false/>
+
+	<!-- Window Properties -->
+	<key>NSAllowsAutomaticWindowTabbing</key>
+	<false/>
+
+	<!-- Menu Bar -->
+	<key>LSUIElement</key>
+	<false/>
+	<key>LSBackgroundOnly</key>
+	<false/>
+
+	<!-- Quick Look -->
+	<key>QLSupportsSearchableItems</key>
+	<true/>
+	<key>QLThumbnailMinimumSize</key>
+	<integer>32</integer>
+
+	<!-- Spotlight -->
+	<key>MDItemKeywords</key>
+	<array>
+		<string>blockchain</string>
+		<string>AI</string>
+		<string>REChain</string>
+		<string>mesh</string>
+		<string>network</string>
+	</array>
+</dict>
+</plist>

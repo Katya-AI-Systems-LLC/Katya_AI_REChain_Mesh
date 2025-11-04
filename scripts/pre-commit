@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# Pre-commit hooks for Katya AI REChain Mesh
+# Install with: ln -s ../../scripts/pre-commit .git/hooks/pre-commit
+
+echo "🔍 Running pre-commit checks..."
+
+# Check if we're in a git repository
+if ! git rev-parse --git-dir > /dev/null 2>&1; then
+    echo "❌ Not in a git repository"
+    exit 1
+fi
+
+# Run Flutter format
+echo "📝 Formatting code..."
+if ! dart format --set-exit-if-changed . > /dev/null 2>&1; then
+    echo "❌ Code formatting failed"
+    echo "💡 Run 'dart format .' to fix formatting issues"
+    exit 1
+fi
+
+# Check for uncommitted changes from formatting
+if ! git diff --quiet; then
+    echo "📝 Code formatted. Adding changes..."
+    git add .
+fi
+
+# Run analyzer
+echo "🔍 Running analyzer..."
+if ! flutter analyze > /dev/null 2>&1; then
+    echo "❌ Code analysis failed"
+    echo "💡 Fix the issues above before committing"
+    exit 1
+fi
+
+# Run tests
+echo "🧪 Running tests..."
+if ! flutter test > /dev/null 2>&1; then
+    echo "❌ Tests failed"
+    echo "💡 Fix failing tests before committing"
+    exit 1
+fi
+
+echo "✅ All checks passed! Ready to commit."
+exit 0

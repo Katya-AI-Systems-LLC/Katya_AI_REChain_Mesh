@@ -1,0 +1,156 @@
+name: "Performance Testing"
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    - cron: '0 2 * * 1'  # Weekly performance tests
+
+jobs:
+  performance_test:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+
+      - name: Enable web
+        run: flutter config --enable-web
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run performance tests
+        run: |
+          flutter test --tags=performance --machine > performance_results.json
+
+      - name: Analyze performance results
+        run: |
+          # Parse performance test results
+          if [ -f "performance_results.json" ]; then
+            echo "Performance test results found"
+            # Extract performance metrics
+            jq '.tests[] | select(.name | contains("performance")) | {name: .name, time: .time}' performance_results.json
+          fi
+
+      - name: Performance benchmark
+        run: |
+          # Run Flutter performance benchmarks
+          flutter run --profile --trace-startup --write-sksl-on-exit=flutter.sksl
+          flutter screenshot --type=skia --observatory-url=http://127.0.0.1:8100/
+
+      - name: Memory analysis
+        run: |
+          # Check for memory leaks
+          flutter test --tags=memory --machine > memory_results.json
+
+      - name: Upload performance artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-results
+          path: |
+            performance_results.json
+            memory_results.json
+            flutter.sksl
+
+      - name: Performance regression check
+        run: |
+          # Compare with baseline performance
+          if [ -f "performance_baseline.json" ]; then
+            echo "Comparing with baseline..."
+            # Implement comparison logic
+          fi
+
+  integration_test:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run integration tests
+        run: |
+          flutter test integration_test/ --machine > integration_results.json
+
+      - name: Analyze integration results
+        run: |
+          if [ -f "integration_results.json" ]; then
+            # Parse and analyze integration test results
+            jq '.tests[] | {name: .name, result: .result, time: .time}' integration_results.json
+          fi
+
+      - name: Upload integration artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-results
+          path: integration_results.json
+
+  # Mobile Testing with Firebase Test Lab
+  firebase_test_lab:
+    name: Firebase Test Lab
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags/v') }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Build iOS (if running on macOS)
+        if: ${{ runner.os == 'macOS' }}
+        run: |
+          # Configure iOS build
+          flutter build ios --release --no-codesign
+
+      - name: Run Firebase Test Lab
+        uses: FirebaseExtended/github-actions@test-lab@v1
+        with:
+          credentials: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          test-type: "robo"
+          app-apk: build/app/outputs/flutter-apk/app-release.apk
+          model: Nexus6,Pixel2
+          version: "28,29"
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: firebase-test-results
+          path: firebase-test-results/

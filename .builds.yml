@@ -1,0 +1,10 @@
+image: alpine/latest
+packages:
+  - bash
+  - git
+  - curl
+tasks:
+  - build: |
+      curl -s https://raw.githubusercontent.com/cirruslabs/docker-images-flutter/master/README.md >/dev/null
+      echo "Use container runners for Flutter builds on SourceHut"
+

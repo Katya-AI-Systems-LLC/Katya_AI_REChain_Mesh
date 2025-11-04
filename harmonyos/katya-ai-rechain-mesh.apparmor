@@ -1,0 +1,241 @@
+#include <abstractions/base>
+#include <abstractions/nameservice>
+
+# Description: AppArmor profile for Katya AI REChain Mesh on HarmonyOS
+# This profile defines the security permissions for the application
+
+# Application binary
+/app/bin/katya-ai-rechain-mesh {
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+  #include <abstractions/dbus-session>
+
+  # Allow reading system information
+  /proc/meminfo r,
+  /proc/cpuinfo r,
+  /proc/version r,
+  /proc/uptime r,
+  /sys/devices/system/cpu/** r,
+
+  # Allow network access
+  network inet stream,
+  network inet6 stream,
+  network inet dgram,
+  network inet6 dgram,
+
+  # Allow DNS resolution
+  /etc/resolv.conf r,
+  /etc/hosts r,
+  /etc/nsswitch.conf r,
+
+  # Allow system libraries
+  /usr/lib/** mr,
+  /lib/** mr,
+  /usr/lib/harmonyos/** mr,
+  /usr/lib/huawei-services/** mr,
+
+  # Allow font access
+  /usr/share/fonts/** r,
+  /system/fonts/** r,
+
+  # Allow X11/Wayland access for GUI
+  /tmp/.X11-unix/** rw,
+  @{HOME}/.Xauthority r,
+  /dev/dri/** rw,
+  /sys/devices/pci*/*/drm/** r,
+
+  # Allow D-Bus communication
+  /run/dbus/system_bus_socket rw,
+  /run/user/*/dbus/user_bus_socket rw,
+
+  # Allow audio access
+  /dev/snd/** rw,
+  /run/pulse/** rw,
+
+  # Allow device access
+  /dev/input/** r,
+  /dev/video* rw,
+  /dev/tty* rw,
+
+  # Allow user directories
+  @{HOME}/ r,
+  @{HOME}/** rw,
+
+  # Allow secure storage
+  @{HOME}/.config/katya-ai-rechain-mesh/** rw,
+  @{HOME}/.local/share/katya-ai-rechain-mesh/** rw,
+  @{HOME}/.cache/katya-ai-rechain-mesh/** rw,
+
+  # Allow blockchain data
+  @{HOME}/.config/katya-ai-rechain-mesh/blockchain/** rw,
+  @{HOME}/.local/share/katya-ai-rechain-mesh/data/** rw,
+
+  # Allow Huawei services
+  /run/huawei-services/** rw,
+  /var/lib/huawei-services/** rw,
+  /system/priv-app/HwServices/** r,
+
+  # Allow HMS Core access
+  /system/priv-app/HMSCore/** r,
+  /data/data/com.huawei.hms.core/** r,
+
+  # Allow HarmonyOS system access
+  /system/harmonyos/** r,
+  /system/framework/harmonyos.jar r,
+  /system/priv-app/SystemUI/** r,
+
+  # Allow Chinese services
+  /system/priv-app/ChineseServices/** r,
+  /data/data/com.huawei.chineseservices/** r,
+
+  # Allow secure communication
+  /system/bin/curl rix,
+  /system/bin/wget rix,
+
+  # Deny dangerous operations
+  deny /bin/su rwx,
+  deny /usr/bin/sudo rwx,
+  deny /sbin/** rwx,
+  deny /usr/sbin/** rwx,
+  deny /bin/mount rwx,
+  deny /bin/umount rwx,
+  deny /usr/bin/passwd rwx,
+  deny /etc/shadow r,
+  deny /etc/sudoers r,
+
+  # Allow logging
+  /var/log/katya-ai-rechain-mesh/** rw,
+  /tmp/katya-ai-rechain-mesh-*.log rw,
+
+  # Allow temporary files
+  /tmp/ r,
+  /tmp/** rw,
+  /var/tmp/ r,
+  /var/tmp/** rw,
+
+  # Allow shared memory
+  /dev/shm/** rw,
+  /run/shm/** rw,
+
+  # Allow SSL certificates
+  /etc/ssl/** r,
+  /system/etc/security/cacerts/** r,
+}
+
+# Include network abstractions for secure communication
+#include <abstractions/ssl_certs>
+
+# Include audio abstractions
+#include <abstractions/audio>
+
+# Include camera abstractions for video calls
+#include <abstractions/camera>
+
+# Include location abstractions for GPS features
+#include <abstractions/location>
+
+# Include Bluetooth abstractions for device connectivity
+#include <abstractions/bluetooth>
+
+# Profile for HMS Core services
+profile hms_core {
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+
+  # Allow HMS Core system access
+  /system/priv-app/HMSCore/** r,
+  /data/data/com.huawei.hms.core/** rw,
+
+  # Allow Huawei services
+  /run/huawei-services/** rw,
+  /var/lib/huawei-services/** rw,
+
+  # Allow secure communication
+  network inet stream,
+  network inet6 stream,
+
+  # Allow system integration
+  /proc/self/** r,
+  /sys/devices/system/** r,
+
+  # Allow secure storage
+  /data/system/hms/** rw,
+  /data/user/*/com.huawei.hms.core/** rw,
+}
+
+# Profile for Huawei Account Kit
+profile huawei_account {
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+
+  # Allow account system access
+  /system/priv-app/HwAccountKit/** r,
+  /data/data/com.huawei.hwid/** rw,
+
+  # Allow secure authentication
+  /system/bin/hw_auth rwix,
+  /run/hw_auth/** rw,
+
+  # Allow network for authentication
+  network inet stream,
+  network inet6 stream,
+
+  # Allow system integration
+  /proc/self/** r,
+}
+
+# Profile for Huawei Push Kit
+profile huawei_push {
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+
+  # Allow push notification services
+  /system/priv-app/HwPushKit/** r,
+  /data/data/com.huawei.hms.push/** rw,
+
+  # Allow notification system
+  /system/bin/hw_push rwix,
+  /run/hw_push/** rw,
+
+  # Allow network for push
+  network inet stream,
+  network inet6 stream,
+  network inet dgram,
+  network inet6 dgram,
+}
+
+# Profile for Huawei Location Kit
+profile huawei_location {
+  #include <abstractions/base>
+  #include <abstractions/location>
+
+  # Allow location services
+  /system/priv-app/HwLocationKit/** r,
+  /data/data/com.huawei.hms.location/** rw,
+
+  # Allow GPS and network location
+  /dev/location/** rw,
+  /system/bin/hw_location rwix,
+
+  # Allow network for location
+  network inet stream,
+  network inet6 stream,
+}
+
+# Profile for Huawei Analytics Kit
+profile huawei_analytics {
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+
+  # Allow analytics services
+  /system/priv-app/HwAnalyticsKit/** r,
+  /data/data/com.huawei.hms.analytics/** rw,
+
+  # Allow data collection
+  /data/system/analytics/** rw,
+  /run/analytics/** rw,
+
+  # Allow secure transmission
+  network inet stream,
+  network inet6 stream,
+}

@@ -1,0 +1,92 @@
+---
+# Logging configuration tasks
+
+- name: Install logging tools
+  package:
+    name:
+      - rsyslog
+      - logrotate
+      - journald
+      - fluentd
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Configure rsyslog
+  template:
+    src: rsyslog.conf.j2
+    dest: /etc/rsyslog.d/50-katya-rechain-mesh.conf
+    mode: '0644'
+  notify: restart rsyslog
+
+- name: Configure logrotate
+  template:
+    src: logrotate.j2
+    dest: /etc/logrotate.d/katya-rechain-mesh
+    mode: '0644'
+
+- name: Create log directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+  loop:
+    - /var/log/katya-rechain-mesh
+    - /var/log/katya-rechain-mesh/access
+    - /var/log/katya-rechain-mesh/error
+    - /var/log/katya-rechain-mesh/debug
+    - /var/log/katya-rechain-mesh/audit
+
+- name: Configure fluentd
+  template:
+    src: fluentd.conf.j2
+    dest: /etc/fluentd/config.d/katya-rechain-mesh.conf
+    mode: '0644'
+  notify: restart fluentd
+
+- name: Setup ELK stack integration
+  template:
+    src: logstash.conf.j2
+    dest: /etc/logstash/conf.d/katya-rechain-mesh.conf
+    mode: '0644'
+  notify: restart logstash
+
+- name: Configure application logging
+  template:
+    src: logging.conf.j2
+    dest: /opt/katya-rechain-mesh/config/logging.conf
+    mode: '0644'
+
+- name: Enable logging services
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  loop:
+    - rsyslog
+    - fluentd
+    - logstash
+
+- name: Configure log shipping to external services
+  template:
+    src: log-shipping.conf.j2
+    dest: /etc/fluentd/config.d/shipping.conf
+    mode: '0644'
+  when: external_logging_enabled | default(false)
+
+  handlers:
+    - name: restart rsyslog
+      service:
+        name: rsyslog
+        state: restarted
+
+    - name: restart fluentd
+      service:
+        name: fluentd
+        state: restarted
+
+    - name: restart logstash
+      service:
+        name: logstash
+        state: restarted

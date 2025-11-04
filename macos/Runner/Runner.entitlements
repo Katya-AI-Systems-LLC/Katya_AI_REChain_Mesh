@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- macOS Platform Entitlements -->
+	<key>com.apple.security.app-sandbox</key>
+	<true/>
+
+	<!-- File System Access -->
+	<key>com.apple.security.files.user-selected.read-only</key>
+	<true/>
+	<key>com.apple.security.files.user-selected.read-write</key>
+	<true/>
+	<key>com.apple.security.files.downloads.read-only</key>
+	<true/>
+	<key>com.apple.security.files.downloads.read-write</key>
+	<true/>
+	<key>com.apple.security.files.pictures.read-only</key>
+	<true/>
+	<key>com.apple.security.files.pictures.read-write</key>
+	<true/>
+	<key>com.apple.security.files.movies.read-only</key>
+	<true/>
+	<key>com.apple.security.files.movies.read-write</key>
+	<true/>
+	<key>com.apple.security.files.music.read-only</key>
+	<true/>
+	<key>com.apple.security.files.music.read-write</key>
+	<true/>
+	<key>com.apple.security.files.desktop.read-only</key>
+	<true/>
+	<key>com.apple.security.files.desktop.read-write</key>
+	<true/>
+	<key>com.apple.security.files.documents.read-only</key>
+	<true/>
+	<key>com.apple.security.files.documents.read-write</key>
+	<true/>
+
+	<!-- Network Access -->
+	<key>com.apple.security.network.client</key>
+	<true/>
+	<key>com.apple.security.network.server</key>
+	<true/>
+
+	<!-- Hardware Access -->
+	<key>com.apple.security.device.camera</key>
+	<true/>
+	<key>com.apple.security.device.microphone</key>
+	<true/>
+	<key>com.apple.security.device.usb</key>
+	<true/>
+	<key>com.apple.security.device.bluetooth</key>
+	<true/>
+
+	<!-- Personal Information -->
+	<key>com.apple.security.personal-information.location</key>
+	<true/>
+	<key>com.apple.security.personal-information.contacts</key>
+	<true/>
+	<key>com.apple.security.personal-information.calendars</key>
+	<true/>
+	<key>com.apple.security.personal-information.photos-library</key>
+	<true/>
+	<key>com.apple.security.personal-information.apple-id</key>
+	<true/>
+
+	<!-- Push Notifications -->
+	<key>aps-environment</key>
+	<string>development</string>
+	<key>com.apple.developer.usernotifications.filtering</key>
+	<true/>
+
+	<!-- Background Processing -->
+	<key>com.apple.developer.default-data-protection</key>
+	<string>NSFileProtectionComplete</string>
+
+	<!-- Keychain Access Groups -->
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)com.katyaairechainmesh</string>
+		<string>$(AppIdentifierPrefix)com.katyaairechainmesh.shared</string>
+	</array>
+
+	<!-- Associated Domains -->
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>webcredentials:katyaairechainmesh.com</string>
+		<string>applinks:katyaairechainmesh.com</string>
+		<string>activitycontinuation:katyaairechainmesh.com</string>
+	</array>
+
+	<!-- Sign In with Apple -->
+	<key>com.apple.developer.signin.apple</key>
+	<true/>
+
+	<!-- Touch ID -->
+	<key>com.apple.developer.devicecheck.appattest-environment</key>
+	<string>development</string>
+	<key>com.apple.developer.devicecheck.appattest</key>
+	<true/>
+
+	<!-- Background Modes -->
+	<key>com.apple.developer.background-fetch</key>
+	<true/>
+	<key>com.apple.developer.background-processing</key>
+	<true/>
+	<key>com.apple.developer.background-remote-notification</key>
+	<true/>
+
+	<!-- Apple Events -->
+	<key>com.apple.security.automation.apple-events</key>
+	<true/>
+
+	<!-- Scriptable App -->
+	<key>com.apple.security.scripting-targets</key>
+	<dict>
+		<key>com.apple.systempreferences</key>
+		<array>
+			<string>com.apple.preference.security</string>
+			<string>com.apple.preference.network</string>
+			<string>com.apple.preference.sharing</string>
+		</array>
+	</dict>
+
+	<!-- Network Extensions -->
+	<key>com.apple.developer.networking.networkextension</key>
+	<array>
+		<string>content-filter-provider-systemextension</string>
+		<string>dns-proxy-systemextension</string>
+		<string>packet-tunnel-provider-systemextension</string>
+	</array>
+
+	<!-- System Extensions -->
+	<key>com.apple.developer.system-extension.install</key>
+	<true/>
+
+	<!-- DriverKit -->
+	<key>com.apple.developer.driverkit</key>
+	<true/>
+	<key>com.apple.developer.driverkit.transport.usb</key>
+	<true/>
+	<key>com.apple.developer.driverkit.transport.hid</key>
+	<true/>
+	<key>com.apple.developer.driverkit.transport.serial</key>
+	<true/>
+
+	<!-- HomeKit -->
+	<key>com.apple.developer.homekit</key>
+	<true/>
+
+	<!-- HealthKit -->
+	<key>com.apple.developer.healthkit</key>
+	<true/>
+	<key>com.apple.developer.healthkit.access</key>
+	<array>
+		<string>health-records</string>
+		<string>clinical-health-records</string>
+	</array>
+
+	<!-- Motion and Fitness -->
+	<key>com.apple.developer.motion.copressor</key>
+	<true/>
+	<key>com.apple.developer.motion.gyroscope</key>
+	<true/>
+	<key>com.apple.developer.motion.magnetometer</key>
+	<true/>
+	<key>com.apple.developer.motion.pedometer</key>
+	<true/>
+
+	<!-- WeatherKit -->
+	<key>com.apple.developer.weatherkit</key>
+	<true/>
+
+	<!-- Maps -->
+	<key>com.apple.developer.maps</key>
+	<true/>
+
+	<!-- Game Center -->
+	<key>com.apple.developer.game-center</key>
+	<true/>
+
+	<!-- Siri -->
+	<key>com.apple.developer.siri</key>
+	<true/>
+
+	<!-- Inter-App Audio -->
+	<key>inter-app-audio</key>
+	<true/>
+
+	<!-- Wireless Accessory Configuration -->
+	<key>com.apple.developer.wireless-accessory-configuration</key>
+	<true/>
+
+	<!-- External Accessory -->
+	<key>com.apple.external-accessory.wireless-configuration</key>
+	<true/>
+
+	<!-- Hotspot Configuration -->
+	<key>com.apple.developer.hotspot-configuration</key>
+	<true/>
+
+	<!-- Network Configuration -->
+	<key>com.apple.developer.networking.networkconfiguration</key>
+	<true/>
+
+	<!-- VPN Configuration -->
+	<key>com.apple.developer.networking.vpn.configuration</key>
+	<true/>
+
+	<!-- DNS Proxy -->
+	<key>com.apple.developer.networking.dns-proxy</key>
+	<true/>
+
+	<!-- Content Filter -->
+	<key>com.apple.developer.networking.content-filter</key>
+	<true/>
+
+	<!-- Packet Tunnel -->
+	<key>com.apple.developer.networking.packet-tunnel</key>
+	<true/>
+
+	<!-- Personal VPN -->
+	<key>com.apple.developer.networking.personal-vpn</key>
+	<true/>
+
+	<!-- App Groups -->
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.com.katyaairechainmesh</string>
+	</array>
+
+	<!-- Temporary Exception for Local Network -->
+	<key>com.apple.developer.local-network-privacy</key>
+	<true/>
+
+	<!-- Increased Memory Limit -->
+	<key>com.apple.developer.memory-management</key>
+	<true/>
+
+	<!-- Hardened Runtime -->
+	<key>com.apple.security.cs.allow-jit</key>
+	<true/>
+	<key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+	<true/>
+	<key>com.apple.security.cs.allow-dyid-spawning</key>
+	<true/>
+	<key>com.apple.security.cs.disable-library-validation</key>
+	<false/>
+	<key>com.apple.security.cs.disable-executable-page-protection</key>
+	<false/>
+	<key>com.apple.security.cs.restricted</key>
+	<false/>
+
+	<!-- Developer Mode -->
+	<key>com.apple.developer.developer-mode</key>
+	<true/>
+
+	<!-- Sensitive Content Analysis -->
+	<key>com.apple.developer.sensitive-content-analysis</key>
+	<true/>
+
+	<!-- Core ML Model Deployment -->
+	<key>com.apple.developer.coreml.cloud-deployment</key>
+	<true/>
+
+	<!-- Push to Talk -->
+	<key>com.apple.developer.push-to-talk</key>
+	<true/>
+
+	<!-- Wallet -->
+	<key>com.apple.developer.passkit.pass-presentation-suppression</key>
+	<true/>
+	<key>com.apple.developer.passkit.wallet</key>
+	<true/>
+
+	<!-- ClassKit -->
+	<key>com.apple.developer.classkit-environment</key>
+	<string>development</string>
+
+	<!-- Quick Look Preview -->
+	<key>com.apple.developer.quicklook.preview</key>
+	<true/>
+
+	<!-- Spotlight Importer -->
+	<key>com.apple.developer.spotlight.importer</key>
+	<true/>
+
+	<!-- Automator Actions -->
+	<key>com.apple.developer.automator-actions</key>
+	<true/>
+
+	<!-- AppleScript -->
+	<key>com.apple.security.scripting-targets</key>
+	<dict>
+		<key>com.apple.finder</key>
+		<array>
+			<string>documents</string>
+			<string>downloads</string>
+			<string>desktop</string>
+		</array>
+		<key>com.apple.systempreferences</key>
+		<array>
+			<string>general</string>
+			<string>security</string>
+			<string>network</string>
+		</array>
+	</dict>
+
+	<!-- Managed Configuration -->
+	<key>com.apple.developer.managed-configuration</key>
+	<true/>
+
+	<!-- Shared Web Credentials -->
+	<key>com.apple.developer.webcredentials</key>
+	<true/>
+
+	<!-- Universal Links -->
+	<key>com.apple.developer.applinks</key>
+	<true/>
+
+	<!-- Activity Continuation -->
+	<key>com.apple.developer.activity-continuation</key>
+	<true/>
+
+	<!-- Data Protection -->
+	<key>com.apple.developer.default-data-protection</key>
+	<string>NSFileProtectionComplete</string>
+
+	<!-- File Provider Extension -->
+	<key>com.apple.developer.fileprovider-extension</key>
+	<true/>
+
+	<!-- Custom Network Protocol -->
+	<key>com.apple.developer.networking.custom-protocol</key>
+	<true/>
+
+	<!-- MDM Payload -->
+	<key>com.apple.managed.configuration</key>
+	<true/>
+</dict>
+</plist>

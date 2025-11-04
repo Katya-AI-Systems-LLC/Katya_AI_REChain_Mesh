@@ -1,0 +1,166 @@
+syntax = "proto3";
+
+package mesh;
+
+option go_package = "github.com/rechain-network/katya-mesh-go/pkg/grpc";
+
+// Mesh service
+service MeshService {
+  // Send message
+  rpc SendMessage(SendMessageRequest) returns (SendMessageResponse);
+  
+  // Get peers
+  rpc GetPeers(GetPeersRequest) returns (GetPeersResponse);
+  
+  // Get messages
+  rpc GetMessages(GetMessagesRequest) returns (GetMessagesResponse);
+  
+  // Stream messages (real-time)
+  rpc StreamMessages(StreamMessagesRequest) returns (stream Message);
+  
+  // Get stats
+  rpc GetStats(GetStatsRequest) returns (GetStatsResponse);
+}
+
+// Voting service
+service VotingService {
+  // Create poll
+  rpc CreatePoll(CreatePollRequest) returns (CreatePollResponse);
+  
+  // Vote
+  rpc Vote(VoteRequest) returns (VoteResponse);
+  
+  // Get polls
+  rpc GetPolls(GetPollsRequest) returns (GetPollsResponse);
+  
+  // Stream poll updates (real-time)
+  rpc StreamPollUpdates(StreamPollUpdatesRequest) returns (stream PollUpdate);
+}
+
+// Message types
+message Message {
+  string id = 1;
+  string from_id = 2;
+  string to_id = 3;
+  string content = 4;
+  int64 timestamp = 5;
+  int32 ttl = 6;
+  repeated string path = 7;
+  string priority = 8;
+  string type = 9;
+}
+
+message SendMessageRequest {
+  string to = 1;
+  string message = 2;
+  string priority = 3;
+}
+
+message SendMessageResponse {
+  bool success = 1;
+  string message_id = 2;
+}
+
+message GetPeersRequest {}
+
+message GetPeersResponse {
+  repeated Peer peers = 1;
+  int32 count = 2;
+}
+
+message Peer {
+  string id = 1;
+  string name = 2;
+  string address = 3;
+  int32 rssi = 4;
+  int64 last_seen = 5;
+}
+
+message GetMessagesRequest {
+  int32 limit = 1;
+  string from_id = 2;
+}
+
+message GetMessagesResponse {
+  repeated Message messages = 1;
+  int32 count = 2;
+}
+
+message StreamMessagesRequest {
+  string filter = 1;
+}
+
+message GetStatsRequest {}
+
+message GetStatsResponse {
+  int32 total_peers = 1;
+  int32 connected_peers = 2;
+  int32 messages_in_queue = 3;
+  int32 total_sent = 4;
+  int32 total_delivered = 5;
+  double success_rate = 6;
+}
+
+// Voting types
+message VotingPoll {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  repeated string options = 4;
+  map<string, int32> votes = 5;
+  string creator_id = 6;
+  int64 created_at = 7;
+  bool is_active = 8;
+}
+
+message Vote {
+  string id = 1;
+  string poll_id = 2;
+  string user_id = 3;
+  string option = 4;
+  int64 timestamp = 5;
+}
+
+message CreatePollRequest {
+  string title = 1;
+  string description = 2;
+  repeated string options = 3;
+  string creator_id = 4;
+}
+
+message CreatePollResponse {
+  bool success = 1;
+  VotingPoll poll = 2;
+}
+
+message VoteRequest {
+  string poll_id = 1;
+  string user_id = 2;
+  string option = 3;
+}
+
+message VoteResponse {
+  bool success = 1;
+  Vote vote = 2;
+}
+
+message GetPollsRequest {
+  bool active_only = 1;
+}
+
+message GetPollsResponse {
+  repeated VotingPoll polls = 1;
+  int32 count = 2;
+}
+
+message StreamPollUpdatesRequest {
+  string poll_id = 1;
+}
+
+message PollUpdate {
+  string poll_id = 1;
+  string option = 2;
+  int32 votes = 3;
+  map<string, double> percentages = 4;
+}
+

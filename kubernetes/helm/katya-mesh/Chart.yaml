@@ -1,0 +1,18 @@
+apiVersion: v2
+name: katya-mesh
+description: A Helm chart for Katya AI REChain Mesh networking
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - mesh
+  - networking
+  - distributed
+  - blockchain
+  - p2p
+home: https://github.com/katya-ai/rechain-mesh
+sources:
+  - https://github.com/katya-ai/rechain-mesh
+maintainers:
+  - name: Katya AI Team
+    email: team@katya.ai

@@ -1,0 +1,161 @@
+# Katya AI REChain Mesh - United Kingdom Git System Configuration
+# British Git platforms and CI/CD for UK, Ireland, and Commonwealth countries
+
+version: 1.0
+name: "Katya AI REChain Mesh - UK Systems"
+
+# British Git platforms
+platforms:
+  - name: "GitHub UK"
+    region: "uk"
+    domain: "github.co.uk"
+    ci_cd: "github-actions"
+    compliance: "UK_GDPR"
+    language: "en-GB"
+
+  - name: "GitLab UK"
+    region: "uk"
+    domain: "gitlab.co.uk"
+    ci_cd: "gitlab-ci"
+    compliance: "UK_GDPR"
+    language: "en-GB"
+
+  - name: "Codeberg UK"
+    region: "uk"
+    domain: "codeberg.uk"
+    ci_cd: "woodpecker"
+    compliance: "UK_GDPR"
+    language: "en-GB"
+
+  - name: "British Git"
+    region: "uk"
+    domain: "git.uk"
+    ci_cd: "drone"
+    compliance: "UK_GDPR"
+    language: "en-GB"
+
+# UK Cloud providers
+cloud_providers:
+  - name: "AWS UK (eu-west-2)"
+    region: "london"
+    compliance: "UK_GDPR"
+    data_residency: "uk"
+
+  - name: "Azure UK"
+    region: "uksouth"
+    compliance: "UK_GDPR"
+    data_residency: "uk"
+
+  - name: "Google Cloud UK"
+    region: "europe-west2"
+    compliance: "UK_GDPR"
+    data_residency: "uk"
+
+  - name: "UKCloud"
+    region: "uk"
+    compliance: "OFFICIAL"
+    data_residency: "uk"
+
+  - name: "BT Cloud"
+    region: "uk"
+    compliance: "UK_GDPR"
+    data_residency: "uk"
+
+# Compliance and standards
+compliance:
+  uk_gdpr: true
+  iso27001: true
+  cyber_essentials: true
+  official: true
+
+# British localization
+localization:
+  primary: "en-GB"
+  secondary: ["en-IE", "en-AU", "en-NZ", "en-CA"]
+  currency: "GBP"
+  timezone: "Europe/London"
+
+# CI/CD pipelines for UK platforms
+github_actions_uk: |
+  name: UK CI/CD
+  on: [push, pull_request]
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - name: Setup Flutter
+          uses: subosito/flutter-action@v2
+          with:
+            flutter-version: '3.16.0'
+        - run: flutter pub get
+        - run: flutter analyze
+        - run: flutter test
+        - run: flutter build apk --release
+        - run: flutter build ios --release --no-codesign
+        - run: flutter build web --release
+
+gitlab_ci_uk: |
+  stages:
+    - build
+    - test
+    - deploy
+
+  variables:
+    FLUTTER_VERSION: "3.16.0"
+
+  build:android:
+    stage: build
+    script:
+      - flutter pub get
+      - flutter analyze --fatal-infos --fatal-warnings
+      - flutter test --coverage
+      - flutter build apk --release
+    artifacts:
+      paths:
+        - build/app/outputs/
+    coverage: '/Coverage: \d+\.\d+%/'
+
+  build:ios:
+    stage: build
+    script:
+      - flutter build ios --release --no-codesign
+    artifacts:
+      paths:
+        - build/ios/
+
+  build:web:
+    stage: build
+    script:
+      - flutter build web --release
+    artifacts:
+      paths:
+        - build/web/
+
+# Deployment for UK stores
+deployment:
+  google_play_uk:
+    track: "alpha"
+    language: "en-GB"
+    countries: ["GB", "IE", "AU", "NZ", "CA"]
+
+  app_store_uk:
+    region: "gb"
+    language: "en-GB"
+    countries: ["GB", "IE"]
+
+  huawei_appgallery_uk:
+    region: "uk"
+    language: "en-GB"
+
+# Commonwealth countries support
+commonwealth_countries:
+  - "GB"  # United Kingdom
+  - "IE"  # Ireland
+  - "AU"  # Australia
+  - "NZ"  # New Zealand
+  - "CA"  # Canada
+  - "ZA"  # South Africa
+  - "IN"  # India
+  - "SG"  # Singapore
+  - "MY"  # Malaysia

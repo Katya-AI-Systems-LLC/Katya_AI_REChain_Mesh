@@ -1,0 +1,11 @@
+   *** Begin Patch
+   *** Update File: aurora_support/specfile.spec
+   @@
+-%install
+-mkdir -p %{buildroot}/opt/meshapp
+-cp -r * %{buildroot}/opt/meshapp/
++%install
++mkdir -p %{buildroot}/opt/meshapp
++# copy prebuilt linux bundle into package
++cp -r build/linux/x64/release/bundle/* %{buildroot}/opt/meshapp/
+   *** End Patch

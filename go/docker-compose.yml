@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  mesh-broker:
+    build: .
+    container_name: katya-mesh-broker
+    ports:
+      - "8080:8080"
+    environment:
+      - MESH_ADAPTER=emulated
+    volumes:
+      - mesh-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  mesh-data:
+

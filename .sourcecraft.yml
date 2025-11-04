@@ -1,0 +1,88 @@
+# SourceCraft CI Configuration
+# Custom CI/CD pipeline for SourceCraft
+
+version: 1.0
+
+project:
+  name: "Katya AI REChain Mesh"
+  description: "Advanced Blockchain AI Application"
+  version: "1.0.0"
+
+environment:
+  flutter: "3.16.0"
+  java: "17"
+  node: "18"
+
+stages:
+  - name: "Setup"
+    script: |
+      echo "Setting up environment"
+      flutter doctor
+      flutter pub get
+      npm install
+
+  - name: "Analysis"
+    script: |
+      echo "Running code analysis"
+      flutter analyze --fatal-infos --fatal-warnings
+      flutter test --coverage
+    artifacts:
+      - "coverage/**"
+
+  - name: "Build"
+    parallel: true
+    stages:
+      - name: "Web"
+        script: |
+          flutter build web --release --web-renderer canvaskit --pwa-strategy=offline-first
+        artifacts:
+          - "build/web/**"
+
+      - name: "Android"
+        script: |
+          flutter build apk --release --split-per-abi
+          flutter build appbundle --release
+        artifacts:
+          - "build/app/outputs/**"
+
+      - name: "iOS"
+        script: |
+          flutter build ios --release --no-codesign
+        artifacts:
+          - "build/ios/**"
+
+      - name: "Desktop"
+        script: |
+          flutter build linux --release
+          flutter build windows --release
+          flutter build macos --release
+        artifacts:
+          - "build/linux/**"
+          - "build/windows/**"
+          - "build/macos/**"
+
+  - name: "Deploy"
+    script: |
+      echo "Deploying to SourceCraft Registry"
+      echo "Deploying to app stores"
+    when: "branch == main"
+
+notifications:
+  email:
+    - "dev@katyaairechainmesh.com"
+    - "release@katyaairechainmesh.com"
+
+  webhook:
+    - url: "https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"
+      events: ["success", "failure"]
+
+name: Katya Mesh Quantum App
+owner: katya
+homepage: https://github.com/katya/quantum-mesh-app
+description: >-
+  Оффлайн mesh-мессенджер, AI голосование, blockchain, CLI под все платформы. Участник AI-хакатона Яндекса 2025.
+language: Dart, C++, Rust, Solidity, Python
+tags: [mesh, quantum, ai, offline, hackathon]
+badge: https://github.com/katya/quantum-mesh-app/actions/workflows/flutter_ci_full.yml/badge.svg
+team:
+  - katya

@@ -1,0 +1,58 @@
+# SourceHut Build Configuration
+# CI/CD pipeline for SourceHut
+
+image: cirrusci/flutter:latest
+
+packages:
+  - flutter
+  - openjdk-17-jdk
+  - nodejs
+
+secrets:
+  - &secrets
+    - 12345678-1234-1234-1234-123456789012
+
+tasks:
+  - analyze: |
+      cd Katya_AI_REChain_Mesh
+      flutter doctor
+      flutter pub get
+      flutter analyze --fatal-infos --fatal-warnings
+
+  - test: |
+      cd Katya_AI_REChain_Mesh
+      flutter test --coverage
+      flutter test integration_test --coverage
+
+  - build_web: |
+      cd Katya_AI_REChain_Mesh
+      flutter build web --release --web-renderer canvaskit --pwa-strategy=offline-first
+
+  - build_android: |
+      cd Katya_AI_REChain_Mesh
+      flutter build apk --release --split-per-abi
+      flutter build appbundle --release
+
+  - build_ios: |
+      cd Katya_AI_REChain_Mesh
+      flutter build ios --release --no-codesign
+
+  - build_desktop: |
+      cd Katya_AI_REChain_Mesh
+      flutter build linux --release
+      flutter build windows --release
+      flutter build macos --release
+
+  - deploy: |
+      cd Katya_AI_REChain_Mesh
+      echo "Deploying to production"
+      # Deployment scripts here
+
+triggers:
+  - action: email
+    condition: failure
+    to: dev@katyaairechainmesh.com
+
+  - action: email
+    condition: success
+    to: release@katyaairechainmesh.com

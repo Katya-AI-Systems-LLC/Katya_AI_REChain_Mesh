@@ -1,0 +1,242 @@
+# Katya AI REChain Mesh - Spain Git System Configuration
+# Configuración Git española para España y países hispanohablantes
+
+version: 1.0
+name: "Katya AI REChain Mesh - Spain Systems"
+
+# Plataformas Git españolas
+platforms:
+  - name: "GitHub Spain"
+    region: "es"
+    domain: "github.es"
+    ci_cd: "github-actions"
+    compliance: "RGPD"
+    language: "es-ES"
+
+  - name: "GitLab Spain"
+    region: "es"
+    domain: "gitlab.es"
+    ci_cd: "gitlab-ci"
+    compliance: "RGPD"
+    language: "es-ES"
+
+  - name: "Codeberg Spain"
+    region: "es"
+    domain: "codeberg.es"
+    ci_cd: "woodpecker"
+    compliance: "RGPD"
+    language: "es-ES"
+
+  - name: "Gitea Spain"
+    region: "es"
+    domain: "gitea.es"
+    ci_cd: "gitea-actions"
+    compliance: "RGPD"
+    language: "es-ES"
+
+# Proveedores cloud españoles
+cloud_providers:
+  - name: "AWS Spain (eu-south-2)"
+    region: "spain"
+    compliance: "RGPD"
+    data_residency: "spain"
+
+  - name: "Azure Spain"
+    region: "spaincentral"
+    compliance: "RGPD"
+    data_residency: "spain"
+
+  - name: "Google Cloud Spain"
+    region: "europe-southwest1"
+    compliance: "RGPD"
+    data_residency: "spain"
+
+  - name: "Telefónica Cloud"
+    region: "spain"
+    compliance: "RGPD"
+    data_residency: "spain"
+
+  - name: "Indra Cloud"
+    region: "spain"
+    compliance: "RGPD"
+    data_residency: "spain"
+
+  - name: "Iberdrola Cloud"
+    region: "spain"
+    compliance: "RGPD"
+    data_residency: "spain"
+
+# Cumplimiento y estándares
+compliance:
+  rgpd: true
+  iso27001: true
+  ens: true
+  lssi: true
+
+# Localización española
+localization:
+  primary: "es-ES"
+  secondary: ["es-MX", "es-AR", "es-CO", "es-CL", "es-PE", "es-VE", "es-EC", "es-UY", "es-PY", "es-BO", "es-CR", "es-PA", "es-DO", "es-PR", "es-CU", "es-GT", "es-HN", "es-NI", "es-SV", "ca-ES", "eu-ES", "gl-ES"]
+  currency: "EUR"
+  timezone: "Europe/Madrid"
+
+# Pipelines CI/CD para plataformas españolas
+github_actions_spain: |
+  name: CI/CD España
+  on: [push, pull_request]
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - name: Configuración Flutter
+          uses: subosito/flutter-action@v2
+          with:
+            flutter-version: '3.16.0'
+        - run: flutter pub get
+        - run: flutter analyze
+        - run: flutter test
+        - run: flutter build apk --release
+        - run: flutter build ios --release --no-codesign
+        - run: flutter build web --release
+
+# Tiendas españolas
+deployment:
+  google_play_spain:
+    track: "alpha"
+    language: "es-ES"
+    countries: ["ES"]
+
+  app_store_spain:
+    region: "es"
+    language: "es-ES"
+    countries: ["ES"]
+
+  huawei_appgallery_spain:
+    region: "es"
+    language: "es-ES"
+
+  galaxy_store_spain:
+    region: "es"
+    language: "es-ES"
+
+# Sistemas de pago españoles
+payment_systems:
+  - name: "Bizum"
+    type: "mobile_payment"
+    region: "es"
+
+  - name: "BBVA"
+    type: "banking_payment"
+    region: "es"
+
+  - name: "Santander"
+    type: "banking_payment"
+    region: "es"
+
+  - name: "CaixaBank"
+    type: "banking_payment"
+    region: "es"
+
+  - name: "Banco Sabadell"
+    type: "banking_payment"
+    region: "es"
+
+  - name: "Bankia"
+    type: "banking_payment"
+    region: "es"
+
+  - name: "ING España"
+    type: "digital_bank"
+    region: "es"
+
+  - name: "Revolut España"
+    type: "digital_bank"
+    region: "es"
+
+  - name: "N26 España"
+    type: "digital_bank"
+    region: "es"
+
+  - name: "PayPal España"
+    type: "digital_wallet"
+    region: "es"
+
+# Integración social española
+social_integration:
+  - name: "WhatsApp España"
+    type: "messaging"
+    region: "es"
+
+  - name: "Facebook España"
+    type: "social"
+    region: "es"
+
+  - name: "Instagram España"
+    type: "social"
+    region: "es"
+
+  - name: "Twitter España"
+    type: "social"
+    region: "es"
+
+  - name: "YouTube España"
+    type: "video"
+    region: "es"
+
+  - name: "TikTok España"
+    type: "video"
+    region: "es"
+
+  - name: "LinkedIn España"
+    type: "professional"
+    region: "es"
+
+# Lenguas cooficiales de España
+languages:
+  spanish: "Español"
+  catalan: "Català"
+  basque: "Euskera"
+  galician: "Galego"
+  valencian: "Valencià"
+  aranese: "Aranés"
+
+# Países hispanohablantes
+spanish_speaking_countries:
+  # Europa
+  - "ES"  # España
+  - "AD"  # Andorra
+
+  # América Latina
+  - "MX"  # México
+  - "AR"  # Argentina
+  - "CO"  # Colombia
+  - "CL"  # Chile
+  - "PE"  # Perú
+  - "VE"  # Venezuela
+  - "EC"  # Ecuador
+  - "GT"  # Guatemala
+  - "CU"  # Cuba
+  - "BO"  # Bolivia
+  - "HT"  # Haití
+  - "PY"  # Paraguay
+  - "SV"  # El Salvador
+  - "NI"  # Nicaragua
+  - "CR"  # Costa Rica
+  - "PA"  # Panamá
+  - "UY"  # Uruguay
+  - "GY"  # Guyana
+  - "SR"  # Surinam
+  - "BZ"  # Belice
+  - "DO"  # República Dominicana
+  - "HN"  # Honduras
+  - "PR"  # Puerto Rico
+
+  # África
+  - "EH"  # Sahara Occidental
+  - "GQ"  # Guinea Ecuatorial
+
+  # Asia y Oceanía
+  - "PH"  # Filipinas
+  - "GU"  # Guam
+  - "MP"  # Islas Marianas del Norte

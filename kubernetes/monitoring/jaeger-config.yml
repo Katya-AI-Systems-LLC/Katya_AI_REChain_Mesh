@@ -1,0 +1,34 @@
+apiVersion: jaegertracing.io/v1
+kind: Jaeger
+metadata:
+  name: katya-mesh-jaeger
+spec:
+  strategy: allInOne
+  allInOne:
+    image: jaegertracing/all-in-one:latest
+    options:
+      log-level: info
+  storage:
+    type: memory
+    options:
+      memory:
+        max-traces: 100000
+  ingress:
+    enabled: false
+  ui:
+    options:
+      dependencies:
+        menuEnabled: false
+      tracking:
+        gaID: UA-000000-2
+      menu:
+        - label: "About Jaeger"
+          items:
+            - label: "Documentation"
+              url: "https://www.jaegertracing.io/docs/latest"
+  agent:
+    options:
+      log-level: info
+  collector:
+    options:
+      log-level: info

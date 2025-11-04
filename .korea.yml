@@ -1,0 +1,256 @@
+# Katya AI REChain Mesh - South Korea Git System Configuration
+# 한국 Git 플랫폼 및 CI/CD 구성
+
+version: 1.0
+name: "Katya AI REChain Mesh - Korea Systems"
+
+# 한국 Git 플랫폼
+platforms:
+  - name: "GitHub Korea"
+    region: "kr"
+    domain: "github.kr"
+    ci_cd: "github-actions"
+    compliance: "PIPA"
+    language: "ko"
+
+  - name: "GitLab Korea"
+    region: "kr"
+    domain: "gitlab.kr"
+    ci_cd: "gitlab-ci"
+    compliance: "PIPA"
+    language: "ko"
+
+  - name: "Codeberg Korea"
+    region: "kr"
+    domain: "codeberg.kr"
+    ci_cd: "woodpecker"
+    compliance: "PIPA"
+    language: "ko"
+
+  - name: "Gitea Korea"
+    region: "kr"
+    domain: "gitea.kr"
+    ci_cd: "gitea-actions"
+    compliance: "PIPA"
+    language: "ko"
+
+  - name: "NHN Cloud Git"
+    region: "kr"
+    domain: "git.nhncloud.com"
+    ci_cd: "jenkins"
+    compliance: "PIPA"
+    language: "ko"
+
+# 한국 클라우드 제공업체
+cloud_providers:
+  - name: "AWS Korea (ap-northeast-2)"
+    region: "seoul"
+    compliance: "PIPA"
+    data_residency: "korea"
+
+  - name: "Azure Korea"
+    region: "koreacentral"
+    compliance: "PIPA"
+    data_residency: "korea"
+
+  - name: "Google Cloud Korea"
+    region: "asia-northeast3"
+    compliance: "PIPA"
+    data_residency: "korea"
+
+  - name: "NHN Cloud"
+    region: "korea"
+    compliance: "PIPA"
+    data_residency: "korea"
+
+  - name: "KT Cloud"
+    region: "korea"
+    compliance: "PIPA"
+    data_residency: "korea"
+
+  - name: "Samsung Cloud"
+    region: "korea"
+    compliance: "PIPA"
+    data_residency: "korea"
+
+  - name: "LG CNS Cloud"
+    region: "korea"
+    compliance: "PIPA"
+    data_residency: "korea"
+
+# 규정 준수 및 표준
+compliance:
+  pipa: true
+  iso27001: true
+  kisa: true
+  ccpa: true
+
+# 한국 로컬라이제이션
+localization:
+  primary: "ko-KR"
+  currency: "KRW"
+  timezone: "Asia/Seoul"
+  encoding: "UTF-8"
+
+# CI/CD 파이프라인 (한국 플랫폼용)
+github_actions_korea: |
+  name: 한국 CI/CD
+  on: [push, pull_request]
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - name: Flutter 설정
+          uses: subosito/flutter-action@v2
+          with:
+            flutter-version: '3.16.0'
+        - run: flutter pub get
+        - run: flutter analyze
+        - run: flutter test
+        - run: flutter build apk --release
+        - run: flutter build ios --release --no-codesign
+        - run: flutter build web --release
+
+gitlab_ci_korea: |
+  stages:
+    - 빌드
+    - 테스트
+    - 배포
+
+  variables:
+    FLUTTER_VERSION: "3.16.0"
+
+  build:android:
+    stage: 빌드
+    script:
+      - flutter pub get
+      - flutter analyze --fatal-infos --fatal-warnings
+      - flutter test --coverage
+      - flutter build apk --release
+    artifacts:
+      paths:
+        - build/app/outputs/
+    coverage: '/Coverage: \d+\.\d+%/'
+
+  build:ios:
+    stage: 빌드
+    script:
+      - flutter build ios --release --no-codesign
+    artifacts:
+      paths:
+        - build/ios/
+
+  build:web:
+    stage: 빌드
+    script:
+      - flutter build web --release
+    artifacts:
+      paths:
+        - build/web/
+
+# 한국 스토어 배포
+deployment:
+  google_play_korea:
+    track: "alpha"
+    language: "ko"
+    countries: ["KR"]
+
+  app_store_korea:
+    region: "kr"
+    language: "ko"
+    countries: ["KR"]
+
+  galaxy_store_korea:
+    region: "kr"
+    language: "ko"
+    countries: ["KR"]
+
+  one_store_korea:
+    region: "kr"
+    language: "ko"
+    countries: ["KR"]
+
+# 한국 결제 시스템
+payment_systems:
+  - name: "카카오페이"
+    type: "mobile_payment"
+    region: "kr"
+
+  - name: "네이버페이"
+    type: "mobile_payment"
+    region: "kr"
+
+  - name: "삼성페이"
+    type: "mobile_payment"
+    region: "kr"
+
+  - name: "토스"
+    type: "mobile_wallet"
+    region: "kr"
+
+  - name: "페이코"
+    type: "mobile_payment"
+    region: "kr"
+
+  - name: "SSG페이"
+    type: "mobile_payment"
+    region: "kr"
+
+  - name: "11번가페이"
+    type: "mobile_payment"
+    region: "kr"
+
+  - name: "쿠팡페이"
+    type: "mobile_payment"
+    region: "kr"
+
+# 한국 SNS 연동
+social_integration:
+  - name: "카카오톡"
+    type: "messaging"
+    region: "kr"
+
+  - name: "네이버"
+    type: "portal"
+    region: "kr"
+
+  - name: "라인"
+    type: "messaging"
+    region: "kr"
+
+  - name: "인스타그램 한국"
+    type: "social"
+    region: "kr"
+
+  - name: "페이스북 한국"
+    type: "social"
+    region: "kr"
+
+  - name: "트위터 한국"
+    type: "social"
+    region: "kr"
+
+  - name: "유튜브 한국"
+    type: "video"
+    region: "kr"
+
+# 한국어 지원
+korean_support:
+  hangul: "한글"
+  english: "English"
+  chinese: "中文"
+  japanese: "日本語"
+
+# 한국 주요 도시
+major_cities:
+  - "서울"  # Seoul
+  - "부산"  # Busan
+  - "인천"  # Incheon
+  - "대구"  # Daegu
+  - "대전"  # Daejeon
+  - "광주"  # Gwangju
+  - "울산"  # Ulsan
+  - "수원"  # Suwon
+  - "고양"  # Goyang
+  - "용인"  # Yongin

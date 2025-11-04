@@ -1,0 +1,42 @@
+[Desktop Entry]
+Version=1.0
+Name=Katya AI REChain Mesh
+Name[ru]=Катя ИИ РЕЦепь Сеть
+Comment=Advanced Blockchain AI Application for Aurora OS
+Comment[ru]=Продвинутое блокчейн ИИ приложение для Аврора ОС
+GenericName=Blockchain AI Application
+GenericName[ru]=Блокчейн ИИ приложение
+Keywords=blockchain;AI;REChain;mesh;network;cryptocurrency;decentralized;блокчейн;ИИ;сеть;криптовалюта;децентрализованная;
+Exec=katya-ai-rechain-mesh %U
+Icon=katya-ai-rechain-mesh
+Terminal=false
+Type=Application
+Categories=Network;Blockchain;AI;Finance;Utility;Сеть;Блокчейн;ИИ;Финансы;Утилиты;
+MimeType=application/json;application/wallet;application/key;
+StartupWMClass=katya-ai-rechain-mesh
+StartupNotify=true
+Actions=new-window;new-private-window;settings;about;
+
+[Desktop Action new-window]
+Name=New Window
+Name[ru]=Новое окно
+Exec=katya-ai-rechain-mesh --new-window
+Icon=katya-ai-rechain-mesh
+
+[Desktop Action new-private-window]
+Name=New Private Window
+Name[ru]=Новое приватное окно
+Exec=katya-ai-rechain-mesh --private
+Icon=katya-ai-rechain-mesh
+
+[Desktop Action settings]
+Name=Settings
+Name[ru]=Настройки
+Exec=katya-ai-rechain-mesh --settings
+Icon=katya-ai-rechain-mesh
+
+[Desktop Action about]
+Name=About
+Name[ru]=О программе
+Exec=katya-ai-rechain-mesh --about
+Icon=katya-ai-rechain-mesh

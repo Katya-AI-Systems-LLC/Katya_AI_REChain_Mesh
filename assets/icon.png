@@ -1,0 +1,56 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6C63FF;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#9C27B0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00D1FF;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="iconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#00D1FF;stop-opacity:0.7" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="256" height="256" fill="url(#bgGradient)" rx="32"/>
+
+  <!-- Main icon container -->
+  <circle cx="128" cy="128" r="80" fill="url(#iconGradient)" stroke="#ffffff" stroke-width="4" opacity="0.8"/>
+
+  <!-- AI/Brain representation -->
+  <path d="M88 108 C88 88, 108 78, 128 88 C148 78, 168 88, 168 108 C168 128, 148 138, 128 128 C108 138, 88 128, 88 108 Z"
+        fill="#6C63FF" stroke="#ffffff" stroke-width="2"/>
+
+  <!-- Blockchain nodes -->
+  <circle cx="98" cy="118" r="4" fill="#00D1FF"/>
+  <circle cx="128" cy="113" r="4" fill="#9C27B0"/>
+  <circle cx="158" cy="118" r="4" fill="#6C63FF"/>
+
+  <!-- Connection lines -->
+  <line x1="98" y1="118" x2="128" y2="113" stroke="#00D1FF" stroke-width="2"/>
+  <line x1="128" y1="113" x2="158" y2="118" stroke="#9C27B0" stroke-width="2"/>
+
+  <!-- Network waves -->
+  <circle cx="128" cy="128" r="40" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.4">
+    <animate attributeName="r" values="40;60;40" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.4;0.2;0.4" dur="3s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Mesh network visualization -->
+  <circle cx="108" cy="148" r="3" fill="#6C63FF" opacity="0.7"/>
+  <circle cx="128" cy="158" r="3" fill="#9C27B0" opacity="0.7"/>
+  <circle cx="148" cy="148" r="3" fill="#00D1FF" opacity="0.7"/>
+
+  <!-- Text elements -->
+  <text x="128" y="190" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#ffffff">
+    KATYA
+  </text>
+  <text x="128" y="210" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#00D1FF">
+    AI • REChain • Mesh
+  </text>
+
+  <!-- Decorative elements -->
+  <circle cx="200" cy="56" r="8" fill="#ffffff" opacity="0.3"/>
+  <circle cx="56" cy="200" r="6" fill="#00D1FF" opacity="0.3"/>
+  <circle cx="200" cy="200" r="5" fill="#9C27B0" opacity="0.3"/>
+</svg>

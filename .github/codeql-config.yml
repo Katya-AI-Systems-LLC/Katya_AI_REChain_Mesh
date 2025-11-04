@@ -1,0 +1,102 @@
+name: "CodeQL Configuration"
+
+disable-default-queries: false
+
+queries:
+  - uses: security-and-quality
+  - uses: security-experimental
+
+paths-ignore:
+  - "**/*.test.dart"
+  - "**/*.spec.dart"
+  - "**/test/**"
+  - "**/integration_test/**"
+  - "**/test_driver/**"
+  - "**/android/app/src/androidTest/**"
+  - "**/ios/RunnerTests/**"
+  - "**/build/**"
+  - "**/.git/**"
+
+paths:
+  - "lib"
+  - "android"
+  - "ios"
+  - "web"
+  - "linux"
+  - "windows"
+  - "macos"
+  - "backend"
+
+dart:
+  # Custom queries for Dart/Flutter
+  queries:
+    - name: "Flutter security issues"
+      query: |
+        import "dart:core"
+        import "package:flutter"
+
+        // Detect hardcoded API keys
+        string hardcodedSecrets = [
+          "sk_",
+          "pk_",
+          "secret_",
+          "key_",
+          "token_",
+          "password",
+          "api_key",
+          "access_token"
+        ]
+
+        from string fileContent, string secret in hardcodedSecrets
+        where fileContent.matches(".*" + secret + ".*")
+        select fileContent, secret
+
+    - name: "Insecure random number generation"
+      query: |
+        import "dart:math"
+
+        from MethodCall call
+        where call.getTarget().getName() = "Random"
+        select call, "Using insecure Random instead of Random.secure"
+
+    - name: "Missing null safety checks"
+      query: |
+        import "dart:core"
+
+        from VariableAccess access, Variable variable
+        where variable.getType().isNullable() and
+              not exists(NullCheck check | check.getOperand() = access)
+        select access, "Missing null safety check"
+
+  # Exclude generated files
+  paths-ignore:
+    - "**/*.g.dart"
+    - "**/*.pb.dart"
+    - "**/*.pblib.dart"
+    - "**/generated/**"
+
+javascript:
+  # Custom queries for JavaScript/TypeScript
+  queries:
+    - name: "Hardcoded credentials"
+      query: |
+        import "javascript"
+
+        from string value, string key
+        where value = "sk_" or
+              value = "pk_" or
+              value = "secret" or
+              value = "password"
+        select value, "Potential hardcoded credential"
+
+python:
+  # Custom queries for Python (if using Python scripts)
+  queries:
+    - name: "Insecure imports"
+      query: |
+        import "python"
+
+        from ImportExpr import
+        where import.getImportedModuleName() = "pickle" or
+              import.getImportedModuleName() = "subprocess"
+        select import, "Potentially insecure import"

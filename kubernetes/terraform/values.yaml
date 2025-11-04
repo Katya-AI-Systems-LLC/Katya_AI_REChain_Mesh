@@ -1,0 +1,65 @@
+# Helm values for Terraform deployment
+replicaCount: 3
+
+image:
+  repository: cr.yandex/crpf5q8qk8b8m8m8m8m8/katya-mesh
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+  grpcPort: 9090
+  metricsPort: 9091
+
+config:
+  protocol: gossip
+  maxPeers: 100
+  heartbeatInterval: 30
+  enableEncryption: true
+  enableCompression: false
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+monitoring:
+  prometheus:
+    enabled: true
+    scrapeInterval: 30s
+  grafana:
+    enabled: true
+    dashboards: true
+
+loadBalancer:
+  enabled: true
+  strategy: round_robin
+  healthCheck:
+    enabled: true
+    interval: 30s
+    timeout: 5s
+
+storage:
+  enabled: true
+  size: 10Gi
+  className: yc-network-hdd
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: mesh.katya.ai
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: katya-mesh-tls
+      hosts:
+        - mesh.katya.ai

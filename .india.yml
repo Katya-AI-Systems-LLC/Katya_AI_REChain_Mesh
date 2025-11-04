@@ -1,0 +1,241 @@
+# Katya AI REChain Mesh - India Git System Configuration
+# भारतीय Git platforms और CI/CD configuration
+
+version: 1.0
+name: "Katya AI REChain Mesh - India Systems"
+
+# Indian Git platforms
+platforms:
+  - name: "GitHub India"
+    region: "in"
+    domain: "github.co.in"
+    ci_cd: "github-actions"
+    compliance: "DPDP"
+    language: "hi"
+
+  - name: "GitLab India"
+    region: "in"
+    domain: "gitlab.co.in"
+    ci_cd: "gitlab-ci"
+    compliance: "DPDP"
+    language: "hi"
+
+  - name: "Codeberg India"
+    region: "in"
+    domain: "codeberg.in"
+    ci_cd: "woodpecker"
+    compliance: "DPDP"
+    language: "hi"
+
+  - name: "Gitea India"
+    region: "in"
+    domain: "gitea.in"
+    ci_cd: "gitea-actions"
+    compliance: "DPDP"
+    language: "hi"
+
+  - name: "Indian Git"
+    region: "in"
+    domain: "git.in"
+    ci_cd: "drone"
+    compliance: "DPDP"
+    language: "hi"
+
+# Indian cloud providers
+cloud_providers:
+  - name: "AWS India (ap-south-1)"
+    region: "mumbai"
+    compliance: "DPDP"
+    data_residency: "india"
+
+  - name: "Azure India"
+    region: "centralindia"
+    compliance: "DPDP"
+    data_residency: "india"
+
+  - name: "Google Cloud India"
+    region: "asia-south1"
+    compliance: "DPDP"
+    data_residency: "india"
+
+  - name: "Jio Cloud"
+    region: "india"
+    compliance: "DPDP"
+    data_residency: "india"
+
+  - name: "Airtel Cloud"
+    region: "india"
+    compliance: "DPDP"
+    data_residency: "india"
+
+  - name: "TCS Cloud"
+    region: "india"
+    compliance: "DPDP"
+    data_residency: "india"
+
+# Compliance and standards
+compliance:
+  dpdp: true
+  iso27001: true
+  rbi: true
+  cert_in: true
+
+# Indian localization
+localization:
+  primary: "hi-IN"
+  secondary: ["en-IN", "ta-IN", "te-IN", "mr-IN", "gu-IN", "kn-IN", "or-IN", "pa-IN", "as-IN", "ml-IN", "si-IN", "ne-IN"]
+  currency: "INR"
+  timezone: "Asia/Kolkata"
+
+# CI/CD pipelines for Indian platforms
+github_actions_india: |
+  name: भारत CI/CD
+  on: [push, pull_request]
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - name: Flutter सेटअप
+          uses: subosito/flutter-action@v2
+          with:
+            flutter-version: '3.16.0'
+        - run: flutter pub get
+        - run: flutter analyze
+        - run: flutter test
+        - run: flutter build apk --release
+        - run: flutter build ios --release --no-codesign
+        - run: flutter build web --release
+
+gitlab_ci_india: |
+  stages:
+    - build
+    - test
+    - deploy
+
+  variables:
+    FLUTTER_VERSION: "3.16.0"
+
+  build:android:
+    stage: build
+    script:
+      - flutter pub get
+      - flutter analyze --fatal-infos --fatal-warnings
+      - flutter test --coverage
+      - flutter build apk --release
+    artifacts:
+      paths:
+        - build/app/outputs/
+    coverage: '/Coverage: \d+\.\d+%/'
+
+  build:ios:
+    stage: build
+    script:
+      - flutter build ios --release --no-codesign
+    artifacts:
+      paths:
+        - build/ios/
+
+  build:web:
+    stage: build
+    script:
+      - flutter build web --release
+    artifacts:
+      paths:
+        - build/web/
+
+# Deployment for Indian stores
+deployment:
+  google_play_india:
+    track: "alpha"
+    language: "hi"
+    countries: ["IN"]
+
+  app_store_india:
+    region: "in"
+    language: "hi"
+    countries: ["IN"]
+
+  huawei_appgallery_india:
+    region: "in"
+    language: "hi"
+
+  galaxy_store_india:
+    region: "in"
+    language: "hi"
+
+# Indian payment systems
+payment_systems:
+  - name: "UPI"
+    type: "unified_payment"
+    region: "in"
+
+  - name: "Paytm"
+    type: "mobile_wallet"
+    region: "in"
+
+  - name: "PhonePe"
+    type: "mobile_wallet"
+    region: "in"
+
+  - name: "Google Pay India"
+    type: "mobile_payment"
+    region: "in"
+
+  - name: "Amazon Pay India"
+    type: "mobile_payment"
+    region: "in"
+
+  - name: "WhatsApp Pay"
+    type: "mobile_payment"
+    region: "in"
+
+  - name: "BHIM"
+    type: "government_payment"
+    region: "in"
+
+# Indian social integration
+social_integration:
+  - name: "WhatsApp India"
+    type: "messaging"
+    region: "in"
+
+  - name: "Facebook India"
+    type: "social"
+    region: "in"
+
+  - name: "Instagram India"
+    type: "social"
+    region: "in"
+
+  - name: "Twitter India"
+    type: "social"
+    region: "in"
+
+  - name: "YouTube India"
+    type: "video"
+    region: "in"
+
+  - name: "ShareChat"
+    type: "social"
+    region: "in"
+
+  - name: "Helo"
+    type: "social"
+    region: "in"
+
+# Indian languages support
+languages:
+  hindi: "हिंदी"
+  english: "English"
+  tamil: "தமிழ்"
+  telugu: "తెలుగు"
+  marathi: "मराठी"
+  gujarati: "ગુજરાતી"
+  kannada: "ಕನ್ನಡ"
+  oriya: "ଓଡ଼ିଆ"
+  punjabi: "ਪੰਜਾਬੀ"
+  assamese: "অসমীয়া"
+  malayalam: "മലയാളം"
+  sinhala: "සිංහල"
+  nepali: "नेपाली"

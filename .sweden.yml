@@ -1,0 +1,176 @@
+# Katya AI REChain Mesh - Sweden Git System Configuration
+# Svensk Git-plattformar och CI/CD-konfiguration
+
+version: 1.0
+name: "Katya AI REChain Mesh - Sweden Systems"
+
+# Svenska Git-plattformar
+platforms:
+  - name: "GitHub Sweden"
+    region: "se"
+    domain: "github.se"
+    ci_cd: "github-actions"
+    compliance: "GDPR"
+    language: "sv"
+
+  - name: "GitLab Sweden"
+    region: "se"
+    domain: "gitlab.se"
+    ci_cd: "gitlab-ci"
+    compliance: "GDPR"
+    language: "sv"
+
+  - name: "Codeberg Sweden"
+    region: "se"
+    domain: "codeberg.se"
+    ci_cd: "woodpecker"
+    compliance: "GDPR"
+    language: "sv"
+
+# Svenska molnleverantörer
+cloud_providers:
+  - name: "AWS Sweden (eu-north-1)"
+    region: "stockholm"
+    compliance: "GDPR"
+    data_residency: "sweden"
+
+  - name: "Azure Sweden"
+    region: "swedencentral"
+    compliance: "GDPR"
+    data_residency: "sweden"
+
+  - name: "Google Cloud Sweden"
+    region: "europe-north1"
+    compliance: "GDPR"
+    data_residency: "sweden"
+
+  - name: "Telia Cloud"
+    region: "sweden"
+    compliance: "GDPR"
+    data_residency: "sweden"
+
+  - name: "Bahnhof Cloud"
+    region: "sweden"
+    compliance: "GDPR"
+    data_residency: "sweden"
+
+# Efterlevnad och standarder
+compliance:
+  gdpr: true
+  iso27001: true
+  iso27002: true
+  swedish_bankid: true
+
+# Svensk lokalisering
+localization:
+  primary: "sv-SE"
+  secondary: ["sv-FI", "en-SE", "fi-SE", "da-SE", "no-SE"]
+  currency: "SEK"
+  timezone: "Europe/Stockholm"
+
+# CI/CD-pipelines för svenska plattformar
+github_actions_sweden: |
+  name: Sverige CI/CD
+  on: [push, pull_request]
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - name: Konfigurera Flutter
+          uses: subosito/flutter-action@v2
+          with:
+            flutter-version: '3.16.0'
+        - run: flutter pub get
+        - run: flutter analyze
+        - run: flutter test
+        - run: flutter build apk --release
+        - run: flutter build ios --release --no-codesign
+        - run: flutter build web --release
+
+# Svenska butiker
+deployment:
+  google_play_sweden:
+    track: "alpha"
+    language: "sv"
+    countries: ["SE"]
+
+  app_store_sweden:
+    region: "se"
+    language: "sv"
+    countries: ["SE"]
+
+# Svenska betalningssystem
+payment_systems:
+  - name: "Swish"
+    type: "mobile_payment"
+    region: "se"
+
+  - name: "BankID"
+    type: "e_identification"
+    region: "se"
+
+  - name: "Trustly"
+    type: "online_banking"
+    region: "se"
+
+  - name: "Klarna"
+    type: "buy_now_pay_later"
+    region: "se"
+
+  - name: "SEB"
+    type: "banking_payment"
+    region: "se"
+
+  - name: "Nordea Sverige"
+    type: "banking_payment"
+    region: "se"
+
+  - name: "Handelsbanken"
+    type: "banking_payment"
+    region: "se"
+
+  - name: "Swedbank"
+    type: "banking_payment"
+    region: "se"
+
+  - name: "PayPal Sverige"
+    type: "digital_wallet"
+    region: "se"
+
+# Svensk social integration
+social_integration:
+  - name: "WhatsApp Sverige"
+    type: "messaging"
+    region: "se"
+
+  - name: "Facebook Sverige"
+    type: "social"
+    region: "se"
+
+  - name: "Instagram Sverige"
+    type: "social"
+    region: "se"
+
+  - name: "Twitter Sverige"
+    type: "social"
+    region: "se"
+
+  - name: "LinkedIn Sverige"
+    type: "professional"
+    region: "se"
+
+  - name: "YouTube Sverige"
+    type: "video"
+    region: "se"
+
+# Nordiska länder
+nordic_countries:
+  - "SE"  # Sverige
+  - "NO"  # Norge
+  - "DK"  # Danmark
+  - "FI"  # Finland
+  - "IS"  # Island
+  - "FO"  # Färöarna
+  - "GL"  # Grönland
+  - "AX"  # Åland

@@ -1,0 +1,141 @@
+name: Katya Mesh Quantum App
+owner: katya
+homepage: https://github.com/katya/quantum-mesh-app
+description: Катя Mesh Quantum — Mesh мессенджер, оффлайн голосование, AI & Blockchain, CLI, весь код открыт. AI-хакатон 2025.
+language: Dart, C++, Rust, Solidity, Python
+tag: mesh, quantum, ai, offline, hackathon
+badge: https://github.com/katya/quantum-mesh-app/actions/workflows/flutter_ci_full.yml/badge.svg
+team:
+  - katya
+
+# GitFlic CI Configuration
+# Advanced CI/CD pipeline for GitFlic
+
+version: 1.0
+
+project:
+  name: "Katya AI REChain Mesh"
+  language: "Flutter"
+  platforms: ["web", "android", "ios", "linux", "windows", "macos"]
+
+environment:
+  sdk: "flutter:3.16.0"
+  java: "17"
+  node: "18"
+
+jobs:
+  analyze:
+    stage: "analysis"
+    image: "cirrusci/flutter:latest"
+    commands:
+      - flutter doctor
+      - flutter pub get
+      - flutter analyze --fatal-infos --fatal-warnings
+      - flutter test --coverage
+      - flutter test integration_test --coverage
+    artifacts:
+      - "coverage/**"
+      - "test-results/**"
+
+  build_web:
+    stage: "build"
+    image: "cirrusci/flutter:latest"
+    commands:
+      - flutter build web --release --web-renderer canvaskit --pwa-strategy=offline-first
+      - npm install && npm run build:web
+    artifacts:
+      - "build/web/**"
+    dependencies:
+      - "analyze"
+
+  build_android:
+    stage: "build"
+    image: "cirrusci/flutter:latest"
+    commands:
+      - flutter build apk --release --split-per-abi
+      - flutter build appbundle --release
+    artifacts:
+      - "build/app/outputs/**"
+    dependencies:
+      - "analyze"
+
+  build_ios:
+    stage: "build"
+    image: "cirrusci/flutter:latest"
+    commands:
+      - flutter build ios --release --no-codesign
+    artifacts:
+      - "build/ios/**"
+    dependencies:
+      - "analyze"
+
+  build_desktop:
+    stage: "build"
+    image: "cirrusci/flutter:latest"
+    commands:
+      - flutter build linux --release
+      - flutter build windows --release
+      - flutter build macos --release
+    artifacts:
+      - "build/linux/**"
+      - "build/windows/**"
+      - "build/macos/**"
+    dependencies:
+      - "analyze"
+
+  deploy_web:
+    stage: "deploy"
+    image: "alpine:latest"
+    commands:
+      - echo "Deploy to GitFlic Pages"
+      - echo "Deploy to CDN"
+    artifacts:
+      - "build/web/**"
+    dependencies:
+      - "build_web"
+    only:
+      - "main"
+
+  deploy_mobile:
+    stage: "deploy"
+    image: "cirrusci/flutter:latest"
+    commands:
+      - echo "Deploy to Google Play Store"
+      - echo "Deploy to Apple App Store"
+      - echo "Deploy to Huawei AppGallery"
+    dependencies:
+      - "build_android"
+      - "build_ios"
+    only:
+      - "tags"
+
+  deploy_desktop:
+    stage: "deploy"
+    image: "cirrusci/flutter:latest"
+    commands:
+      - echo "Deploy to GitFlic Releases"
+      - echo "Deploy to Microsoft Store"
+      - echo "Deploy to Mac App Store"
+    artifacts:
+      - "build/linux/**"
+      - "build/windows/**"
+      - "build/macos/**"
+    dependencies:
+      - "build_desktop"
+    only:
+      - "tags"
+
+notifications:
+  email:
+    recipients:
+      - "dev@katyaairechainmesh.com"
+      - "release@katyaairechainmesh.com"
+    events:
+      - "success"
+      - "failure"
+
+  webhook:
+    url: "https://hooks.discord.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"
+    events:
+      - "success"
+      - "failure"

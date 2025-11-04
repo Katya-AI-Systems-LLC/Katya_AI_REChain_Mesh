@@ -1,0 +1,94 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: katya-mesh-gateway
+  namespace: katya-mesh
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: katya-mesh-tls
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: katya-mesh-vs
+  namespace: katya-mesh
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - katya-mesh-gateway
+  http:
+  - match:
+    - uri:
+        prefix: "/api"
+    route:
+    - destination:
+        host: katya-mesh
+        port:
+          number: 8080
+  - match:
+    - uri:
+        prefix: "/metrics"
+    route:
+    - destination:
+        host: katya-mesh
+        port:
+          number: 9091
+  - match:
+    - uri:
+        prefix: "/health"
+    route:
+    - destination:
+        host: katya-mesh
+        port:
+          number: 8080
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: katya-mesh-dr
+  namespace: katya-mesh
+spec:
+  host: katya-mesh
+  trafficPolicy:
+    loadBalancer:
+      simple: ROUND_ROBIN
+    connectionPool:
+      tcp:
+        maxConnections: 100
+      http:
+        http1MaxPendingRequests: 1024
+        maxRequestsPerConnection: 10
+    outlierDetection:
+      consecutive5xxErrors: 3
+      interval: 10s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50
+---
+apiVersion: networking.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: katya-mesh-pa
+  namespace: katya-mesh
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: katya-mesh
+  mtls:
+    mode: STRICT

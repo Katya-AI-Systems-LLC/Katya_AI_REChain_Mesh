@@ -1,0 +1,65 @@
+{
+  "dashboard": {
+    "title": "Katya Mesh Metrics",
+    "panels": [
+      {
+        "title": "Peers",
+        "targets": [
+          {
+            "expr": "mesh_peers_total",
+            "legendFormat": "Total Peers"
+          },
+          {
+            "expr": "mesh_peers_connected",
+            "legendFormat": "Connected Peers"
+          }
+        ]
+      },
+      {
+        "title": "Messages",
+        "targets": [
+          {
+            "expr": "mesh_messages_sent_total",
+            "legendFormat": "Sent"
+          },
+          {
+            "expr": "mesh_messages_delivered_total",
+            "legendFormat": "Delivered"
+          },
+          {
+            "expr": "mesh_messages_failed_total",
+            "legendFormat": "Failed"
+          }
+        ]
+      },
+      {
+        "title": "Queue Size",
+        "targets": [
+          {
+            "expr": "mesh_messages_queue_size",
+            "legendFormat": "Queue Size"
+          }
+        ]
+      },
+      {
+        "title": "Success Rate",
+        "targets": [
+          {
+            "expr": "mesh_success_rate",
+            "legendFormat": "Success Rate %"
+          }
+        ]
+      },
+      {
+        "title": "HTTP Requests",
+        "targets": [
+          {
+            "expr": "rate(mesh_http_requests_total[5m])",
+            "legendFormat": "{{method}} {{endpoint}}"
+          }
+        ]
+      }
+    ]
+  }
+}
+

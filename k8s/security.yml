@@ -1,0 +1,630 @@
+# Security and networking configuration for Kubernetes
+
+---
+# Network Policies
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: katya-rechain-mesh-frontend-netpol
+  namespace: katya-rechain-mesh
+spec:
+  podSelector:
+    matchLabels:
+      app: katya-rechain-mesh
+      component: frontend
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    - podSelector:
+        matchLabels:
+          app: katya-rechain-mesh
+          component: backend
+    ports:
+    - protocol: TCP
+      port: 80
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: katya-rechain-mesh
+          component: backend
+    ports:
+    - protocol: TCP
+      port: 8080
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 53
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 443
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: katya-rechain-mesh-backend-netpol
+  namespace: katya-rechain-mesh
+spec:
+  podSelector:
+    matchLabels:
+      app: katya-rechain-mesh
+      component: backend
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: katya-rechain-mesh
+          component: frontend
+    - namespaceSelector:
+        matchLabels:
+          name: monitoring
+    ports:
+    - protocol: TCP
+      port: 8080
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: katya-rechain-mesh
+          component: database
+    ports:
+    - protocol: TCP
+      port: 5432
+  - to:
+    - podSelector:
+        matchLabels:
+          app: katya-rechain-mesh
+          component: cache
+    ports:
+    - protocol: TCP
+      port: 6379
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 53
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 443
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: katya-rechain-mesh-database-netpol
+  namespace: katya-rechain-mesh
+spec:
+  podSelector:
+    matchLabels:
+      app: katya-rechain-mesh
+      component: database
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: katya-rechain-mesh
+          component: backend
+    ports:
+    - protocol: TCP
+      port: 5432
+  egress:
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 53
+    - protocol: UDP
+      port: 53
+
+---
+# Pod Security Standards
+apiVersion: v1
+kind: Pod
+metadata:
+  name: katya-rechain-mesh-frontend-secure
+  namespace: katya-rechain-mesh
+  labels:
+    app: katya-rechain-mesh
+    component: frontend
+spec:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 2000
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: frontend
+    image: your-registry/katya-rechain-mesh:1.0.0
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000
+      capabilities:
+        drop:
+        - ALL
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 250m
+        memory: 256Mi
+
+---
+# Service Accounts
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: katya-rechain-mesh-sa
+  namespace: katya-rechain-mesh
+automountServiceAccountToken: false
+
+---
+# Role-Based Access Control
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: katya-rechain-mesh-role
+  namespace: katya-rechain-mesh
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services", "configmaps", "secrets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets"]
+  verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: katya-rechain-mesh-binding
+  namespace: katya-rechain-mesh
+subjects:
+- kind: ServiceAccount
+  name: katya-rechain-mesh-sa
+  namespace: katya-rechain-mesh
+roleRef:
+  kind: Role
+  name: katya-rechain-mesh-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Pod Disruption Budget
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: katya-rechain-mesh-pdb
+  namespace: katya-rechain-mesh
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: katya-rechain-mesh
+
+---
+# Resource Quotas
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: katya-rechain-mesh-quota
+  namespace: katya-rechain-mesh
+spec:
+  hard:
+    requests.cpu: "2"
+    requests.memory: 2Gi
+    limits.cpu: "4"
+    limits.memory: 4Gi
+    persistentvolumeclaims: "5"
+    services.loadbalancers: "2"
+    count/pods: "20"
+    count/services: "10"
+    count/secrets: "20"
+    count/configmaps: "20"
+
+---
+# Limit Ranges
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: katya-rechain-mesh-limits
+  namespace: katya-rechain-mesh
+spec:
+  limits:
+  - default:
+      memory: 512Mi
+      cpu: 500m
+    defaultRequest:
+      memory: 256Mi
+      cpu: 250m
+    max:
+      memory: 1Gi
+      cpu: 1000m
+    min:
+      memory: 128Mi
+      cpu: 100m
+    type: Container
+
+---
+# Security Context Constraints (OpenShift)
+apiVersion: security.openshift.io/v1
+kind: SecurityContextConstraints
+metadata:
+  name: katya-rechain-mesh-scc
+allowPrivilegedContainer: false
+allowHostDirVolumePlugin: false
+allowHostNetwork: false
+allowHostPorts: false
+allowHostPID: false
+allowHostIPC: false
+readOnlyRootFilesystem: true
+runAsUser:
+  type: MustRunAsNonRoot
+seLinuxContext:
+  type: MustRunAs
+fsGroup:
+  type: MustRunAs
+supplementalGroups:
+  type: RunAsAny
+volumes:
+- configMap
+- downwardAPI
+- emptyDir
+- persistentVolumeClaim
+- projected
+- secret
+
+---
+# Certificate Manager (cert-manager)
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: admin@your-domain.com
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
+
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: katya-rechain-mesh-tls
+  namespace: katya-rechain-mesh
+spec:
+  secretName: katya-rechain-mesh-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+  - katya-ai-rechain-mesh.your-domain.com
+
+---
+# External Secrets (for cloud provider secrets)
+apiVersion: external-secrets.io/v1beta1
+kind: SecretStore
+metadata:
+  name: aws-secrets
+  namespace: katya-rechain-mesh
+spec:
+  provider:
+    aws:
+      service: SecretsManager
+      region: us-east-1
+      auth:
+        secretRef:
+          accessKeyIdSecretRef:
+            name: aws-credentials
+            key: access-key-id
+          secretAccessKeySecretRef:
+            name: aws-credentials
+            key: secret-access-key
+
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: katya-rechain-mesh-external-secrets
+  namespace: katya-rechain-mesh
+spec:
+  secretStoreRef:
+    name: aws-secrets
+    kind: SecretStore
+  target:
+    name: katya-rechain-mesh-secrets
+    creationPolicy: Owner
+  data:
+  - secretKey: blockchain-api-key
+    remoteRef:
+      key: katya-rechain-mesh/blockchain-api-key
+  - secretKey: database-password
+    remoteRef:
+      key: katya-rechain-mesh/database-password
+
+---
+# Image Security Policies
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: katya-rechain-mesh-psp
+spec:
+  privileged: false
+  allowPrivilegeEscalation: false
+  requiredDropCapabilities:
+  - ALL
+  volumes:
+  - configMap
+  - downwardAPI
+  - emptyDir
+  - persistentVolumeClaim
+  - projected
+  - secret
+  runAsUser:
+    rule: MustRunAsNonRoot
+  seLinux:
+    rule: RunAsAny
+  fsGroup:
+    rule: RunAsAny
+  readOnlyRootFilesystem: true
+
+---
+# Admission Controllers
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionWebhook
+metadata:
+  name: katya-rechain-mesh-validator
+spec:
+  clientConfig:
+    service:
+      name: katya-rechain-mesh-webhook
+      namespace: katya-rechain-mesh
+      path: "/validate"
+  rules:
+  - operations: ["CREATE", "UPDATE"]
+    apiGroups: ["apps"]
+    apiVersions: ["v1"]
+    resources: ["deployments"]
+  failurePolicy: Fail
+  sideEffects: None
+  admissionReviewVersions: ["v1", "v1beta1"]
+
+---
+# Mutating Admission Webhook
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingAdmissionWebhook
+metadata:
+  name: katya-rechain-mesh-mutator
+spec:
+  clientConfig:
+    service:
+      name: katya-rechain-mesh-webhook
+      namespace: katya-rechain-mesh
+      path: "/mutate"
+  rules:
+  - operations: ["CREATE", "UPDATE"]
+    apiGroups: ["apps"]
+    apiVersions: ["v1"]
+    resources: ["deployments"]
+  failurePolicy: Fail
+  sideEffects: None
+  admissionReviewVersions: ["v1", "v1beta1"]
+
+---
+# Webhook Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: katya-rechain-mesh-webhook
+  namespace: katya-rechain-mesh
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: katya-rechain-mesh-webhook
+  template:
+    metadata:
+      labels:
+        app: katya-rechain-mesh-webhook
+    spec:
+      containers:
+      - name: webhook
+        image: your-registry/katya-rechain-mesh-webhook:1.0.0
+        ports:
+        - containerPort: 9443
+        volumeMounts:
+        - name: webhook-tls
+          mountPath: /etc/certs
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+      volumes:
+      - name: webhook-tls
+        secret:
+          secretName: katya-rechain-mesh-webhook-tls
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: katya-rechain-mesh-webhook
+  namespace: katya-rechain-mesh
+spec:
+  selector:
+    app: katya-rechain-mesh-webhook
+  ports:
+  - port: 443
+    targetPort: 9443
+    protocol: TCP
+
+---
+# Falco security monitoring
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: falco-config
+  namespace: katya-rechain-mesh
+data:
+  falco_rules.yaml: |
+    - rule: Unauthorized Process
+      desc: Detect unauthorized process execution
+      condition: proc.name in (unauthorized_processes)
+      output: "Unauthorized process detected: %proc.name"
+      priority: WARNING
+      tags: [process]
+
+    - rule: Privileged Container
+      desc: Detect privileged container creation
+      condition: container.privileged=true
+      output: "Privileged container detected: %container.id"
+      priority: CRITICAL
+      tags: [container]
+
+    - rule: Network Policy Violation
+      desc: Detect network policy violations
+      condition: inbound_outbound and not allowed_network
+      output: "Network policy violation: %fd.name"
+      priority: WARNING
+      tags: [network]
+
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: falco
+  namespace: katya-rechain-mesh
+spec:
+  selector:
+    matchLabels:
+      app: falco
+  template:
+    metadata:
+      labels:
+        app: falco
+    spec:
+      hostNetwork: true
+      hostPID: true
+      containers:
+      - name: falco
+        image: falcosecurity/falco:0.35.1
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: boot
+          mountPath: /boot
+        - name: proc
+          mountPath: /proc
+        - name: dev
+          mountPath: /dev
+        - name: falco-config
+          mountPath: /etc/falco
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      volumes:
+      - name: boot
+        hostPath:
+          path: /boot
+      - name: proc
+        hostPath:
+          path: /proc
+      - name: dev
+        hostPath:
+          path: /dev
+      - name: falco-config
+        configMap:
+          name: falco-config
+
+---
+# Kyverno policies for governance
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-non-root
+spec:
+  rules:
+  - name: require-non-root
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "Pods must run as non-root user"
+      pattern:
+        spec:
+          securityContext:
+            runAsNonRoot: "?true"
+          containers:
+          - securityContext:
+              runAsNonRoot: true
+
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-resource-limits
+spec:
+  rules:
+  - name: require-resource-limits
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "Pods must have resource limits"
+      pattern:
+        spec:
+          containers:
+          - resources:
+              limits:
+              - memory
+              - cpu
+
+---
+# OPA Gatekeeper constraints
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sRequiredLabels
+metadata:
+  name: katya-rechain-mesh-labels
+spec:
+  match:
+    kinds:
+    - apiGroups: [""]
+      kinds: ["Pod"]
+    namespaces:
+    - katya-rechain-mesh
+  parameters:
+    message: "All pods must have required labels"
+    requiredLabels:
+    - app
+    - component

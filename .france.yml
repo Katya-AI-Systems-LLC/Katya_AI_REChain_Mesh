@@ -1,0 +1,149 @@
+# Katya AI REChain Mesh - French Git System Configuration
+# Configuration Git française pour la France, Belgique, Suisse, Canada français
+
+version: 1.0
+name: "Katya AI REChain Mesh - French Systems"
+
+# Plateformes Git françaises
+platforms:
+  - name: "GitHub France"
+    region: "fr"
+    domain: "github.fr"
+    ci_cd: "github-actions"
+    compliance: "RGPD"
+    language: "fr"
+
+  - name: "GitLab France"
+    region: "fr"
+    domain: "gitlab.fr"
+    ci_cd: "gitlab-ci"
+    compliance: "RGPD"
+    language: "fr"
+
+  - name: "Framagit"
+    region: "fr"
+    domain: "framagit.org"
+    ci_cd: "gitlab-ci"
+    compliance: "RGPD"
+    language: "fr"
+
+  - name: "Codeberg France"
+    region: "fr"
+    domain: "codeberg.fr"
+    ci_cd: "woodpecker"
+    compliance: "RGPD"
+    language: "fr"
+
+# Fournisseurs cloud français
+cloud_providers:
+  - name: "AWS France (eu-west-3)"
+    region: "paris"
+    compliance: "SecNumCloud"
+    data_residency: "france"
+
+  - name: "Azure France"
+    region: "francesouth"
+    compliance: "SecNumCloud"
+    data_residency: "france"
+
+  - name: "Google Cloud France"
+    region: "europe-west9"
+    compliance: "SecNumCloud"
+    data_residency: "france"
+
+  - name: "OVH Cloud"
+    region: "france"
+    compliance: "SecNumCloud"
+    data_residency: "france"
+
+  - name: "Scaleway"
+    region: "france"
+    compliance: "SecNumCloud"
+    data_residency: "france"
+
+# Conformité et standards
+compliance:
+  rgpd: true
+  secnumcloud: true
+  iso27001: true
+  hds: true
+
+# Localisation française
+localization:
+  primary: "fr-FR"
+  secondary: ["fr-BE", "fr-CH", "fr-CA"]
+  currency: "EUR"
+  timezone: "Europe/Paris"
+
+# Pipelines CI/CD pour plateformes françaises
+github_actions_france: |
+  name: CI/CD Française
+  on: [push, pull_request]
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - name: Configuration Flutter
+          uses: subosito/flutter-action@v2
+          with:
+            flutter-version: '3.16.0'
+        - run: flutter pub get
+        - run: flutter analyze
+        - run: flutter test --coverage
+        - run: flutter build apk --release
+        - run: flutter build ios --release --no-codesign
+        - run: flutter build web --release
+
+gitlab_ci_france: |
+  stages:
+    - construire
+    - tester
+    - déployer
+
+  variables:
+    FLUTTER_VERSION: "3.16.0"
+
+  build:android:
+    stage: construire
+    script:
+      - flutter pub get
+      - flutter analyze --fatal-infos --fatal-warnings
+      - flutter test --coverage
+      - flutter build apk --release
+    artifacts:
+      paths:
+        - build/app/outputs/
+    coverage: '/Coverage: \d+\.\d+%/'
+
+  build:ios:
+    stage: construire
+    script:
+      - flutter build ios --release --no-codesign
+    artifacts:
+      paths:
+        - build/ios/
+
+  build:web:
+    stage: construire
+    script:
+      - flutter build web --release
+    artifacts:
+      paths:
+        - build/web/
+
+# Déploiement pour stores français
+deployment:
+  google_play_france:
+    track: "alpha"
+    language: "fr"
+    countries: ["FR", "BE", "CH", "CA"]
+
+  app_store_france:
+    region: "fr"
+    language: "fr"
+    countries: ["FR", "BE", "CH", "CA"]
+
+  huawei_appgallery_france:
+    region: "fr"
+    language: "fr"

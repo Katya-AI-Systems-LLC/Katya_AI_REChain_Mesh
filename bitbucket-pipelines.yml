@@ -1,0 +1,122 @@
+# Bitbucket Pipelines Configuration
+# Advanced CI/CD for Flutter multi-platform deployment
+
+image: cirrusci/flutter:latest
+
+pipelines:
+  default:
+    - step:
+        name: 'Analyze & Test'
+        caches:
+          - flutter
+          - pub
+        script:
+          - flutter doctor
+          - flutter pub get
+          - flutter analyze --fatal-infos --fatal-warnings
+          - flutter test --coverage
+          - flutter test integration_test
+        artifacts:
+          - coverage/**
+          - test-results/**
+
+  branches:
+    main:
+      - step:
+          name: 'Build All Platforms'
+          caches:
+            - flutter
+            - pub
+            - node
+          script:
+            - flutter doctor
+            - flutter pub get
+            - npm install
+            - flutter build web --release --web-renderer canvaskit
+            - flutter build apk --release --split-per-abi
+            - flutter build appbundle --release
+            - flutter build ios --release --no-codesign
+            - flutter build linux --release
+            - flutter build windows --release
+            - flutter build macos --release
+          artifacts:
+            - build/**
+          after-script:
+            - pipe: atlassian/bitbucket-upload-file:0.3.0
+              variables:
+                BITBUCKET_USERNAME: $BITBUCKET_USERNAME
+                BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
+                FILENAME: 'build-artifacts.zip'
+
+    develop:
+      - step:
+          name: 'Build & Test Development'
+          caches:
+            - flutter
+            - pub
+          script:
+            - flutter doctor
+            - flutter pub get
+            - flutter analyze
+            - flutter test
+            - flutter build web --release
+            - flutter build apk --release
+          artifacts:
+            - build/web/**
+            - build/app/outputs/apk/**
+
+  tags:
+    '*':
+      - step:
+          name: 'Release Deployment'
+          deployment: production
+          script:
+            - echo "Deploying release $BITBUCKET_TAG"
+            - flutter doctor
+            - flutter pub get
+            - flutter build web --release --web-renderer canvaskit --pwa-strategy=offline-first
+            - flutter build apk --release --split-per-abi
+            - flutter build appbundle --release
+            - flutter build ios --release --no-codesign
+            - flutter build linux --release
+            - flutter build windows --release
+            - flutter build macos --release
+          artifacts:
+            - build/**
+          after-script:
+            - pipe: atlassian/bitbucket-upload-file:0.3.0
+              variables:
+                BITBUCKET_USERNAME: $BITBUCKET_USERNAME
+                BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
+                FILENAME: 'release-artifacts.zip'
+
+  pull-requests:
+    '**':
+      - step:
+          name: 'PR Validation'
+          caches:
+            - flutter
+            - pub
+          script:
+            - flutter doctor
+            - flutter pub get
+            - flutter analyze --fatal-warnings
+            - flutter test
+            - flutter build web --release
+          artifacts:
+            - build/web/**
+
+definitions:
+  caches:
+    flutter: ~/.pub-cache
+    pub: .pub-cache/bin
+    node: node_modules
+
+  services:
+    docker:
+      memory: 2048
+
+options:
+  max-time: 60
+  docker: true
+  size: 2x

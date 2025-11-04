@@ -1,0 +1,158 @@
+# Default values for katya-rechain-mesh
+# This is a YAML-formatted file
+
+# Number of replicas
+replicaCount: 3
+
+# Docker image configuration
+image:
+  registry: docker.io
+  repository: your-registry/katya-rechain-mesh
+  pullPolicy: IfNotPresent
+  tag: "1.0.0"
+
+backendImage:
+  registry: docker.io
+  repository: your-registry/katya-rechain-mesh-backend
+  pullPolicy: IfNotPresent
+  tag: "1.0.0"
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+  annotations: {}
+
+backendService:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: katya-ai-rechain-mesh.your-domain.com
+      paths:
+        - path: /
+          pathType: Prefix
+        - path: /api
+          pathType: Prefix
+  tls:
+    - secretName: katya-rechain-mesh-tls
+      hosts:
+        - katya-ai-rechain-mesh.your-domain.com
+
+# Database configuration
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: "changeMe123"
+    database: "meshapp"
+  primary:
+    persistence:
+      enabled: true
+      size: 10Gi
+
+# Cache configuration
+redis:
+  enabled: true
+  auth:
+    password: "changeMe123"
+  master:
+    persistence:
+      enabled: true
+      size: 5Gi
+
+# Resource limits and requests
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity
+affinity: {}
+
+# Pod security context
+podSecurityContext: {}
+
+# Container security context
+securityContext: {}
+
+# Environment variables
+extraEnvVars: []
+
+# Secret environment variables
+extraSecretEnvVars: []
+
+# Health checks
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 80
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 80
+  initialDelaySeconds: 5
+  periodSeconds: 5
+
+# Horizontal Pod Autoscaler
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+# Service Monitor for Prometheus
+serviceMonitor:
+  enabled: false
+  namespace: monitoring
+  interval: 30s
+  scrapeTimeout: 10s
+  selector:
+    matchLabels:
+      app: katya-rechain-mesh
+
+# Configuration for different environments
+configMaps:
+  development:
+    LOG_LEVEL: "debug"
+    DEBUG: "true"
+  staging:
+    LOG_LEVEL: "info"
+    DEBUG: "false"
+  production:
+    LOG_LEVEL: "error"
+    DEBUG: "false"
+
+# Secrets for different environments
+secrets:
+  development:
+    BLOCKCHAIN_API_KEY: "dev_api_key"
+    JWT_SECRET: "dev_jwt_secret"
+  staging:
+    BLOCKCHAIN_API_KEY: "staging_api_key"
+    JWT_SECRET: "staging_jwt_secret"
+  production:
+    BLOCKCHAIN_API_KEY: "prod_api_key"
+    JWT_SECRET: "prod_jwt_secret"

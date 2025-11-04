@@ -1,0 +1,27 @@
+name: mesh_transport
+description: Mesh transport plugin with discover/advertise/connect/send and message stream (Nearby/Multipeer scaffolding)
+version: 0.0.1
+homepage: https://example.com
+
+environment:
+  sdk: ">=2.18.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mockito: ^5.4.3
+  plugin_platform_interface: ^2.1.6
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.katya.mesh.transport
+        pluginClass: MeshTransportPlugin
+      ios:
+        pluginClass: MeshTransportPlugin
+

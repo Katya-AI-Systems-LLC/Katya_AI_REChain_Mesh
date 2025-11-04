@@ -1,0 +1,311 @@
+# Katya AI REChain Mesh - Nigeria Git System Configuration
+# Nigerian Git platforms and CI/CD configuration
+
+version: 1.0
+name: "Katya AI REChain Mesh - Nigeria Systems"
+
+# Nigerian Git platforms
+platforms:
+  - name: "GitHub Nigeria"
+    region: "ng"
+    domain: "github.ng"
+    ci_cd: "github-actions"
+    compliance: "NDPR"
+    language: "en-NG"
+
+  - name: "GitLab Nigeria"
+    region: "ng"
+    domain: "gitlab.ng"
+    ci_cd: "gitlab-ci"
+    compliance: "NDPR"
+    language: "en-NG"
+
+  - name: "Codeberg Nigeria"
+    region: "ng"
+    domain: "codeberg.ng"
+    ci_cd: "woodpecker"
+    compliance: "NDPR"
+    language: "en-NG"
+
+  - name: "Gitea Nigeria"
+    region: "ng"
+    domain: "gitea.ng"
+    ci_cd: "gitea-actions"
+    compliance: "NDPR"
+    language: "en-NG"
+
+# Nigerian cloud providers
+cloud_providers:
+  - name: "AWS Nigeria (af-south-1)"
+    region: "lagos"
+    compliance: "NDPR"
+    data_residency: "nigeria"
+
+  - name: "Azure Nigeria"
+    region: "nigeriawest"
+    compliance: "NDPR"
+    data_residency: "nigeria"
+
+  - name: "Google Cloud Nigeria"
+    region: "africa-west1"
+    compliance: "NDPR"
+    data_residency: "nigeria"
+
+  - name: "MainOne"
+    region: "nigeria"
+    compliance: "NDPR"
+    data_residency: "nigeria"
+
+  - name: "21st Century Technologies"
+    region: "nigeria"
+    compliance: "NDPR"
+    data_residency: "nigeria"
+
+  - name: "Galaxy Backbone"
+    region: "nigeria"
+    compliance: "NDPR"
+    data_residency: "nigeria"
+
+  - name: "Phase3 Telecom"
+    region: "nigeria"
+    compliance: "NDPR"
+    data_residency: "nigeria"
+
+# Compliance and standards
+compliance:
+  ndpr: true
+  iso27001: true
+  cbn: true
+  nitda: true
+
+# Nigerian localization
+localization:
+  primary: "en-NG"
+  secondary: ["ha-NG", "yo-NG", "ig-NG", "ff-NG", "ti-NG", "ar-NG", "fr-NG"]
+  currency: "NGN"
+  timezone: "Africa/Lagos"
+
+# CI/CD pipelines for Nigerian platforms
+github_actions_nigeria: |
+  name: Nigeria CI/CD
+  on: [push, pull_request]
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - name: Setup Flutter
+          uses: subosito/flutter-action@v2
+          with:
+            flutter-version: '3.16.0'
+        - run: flutter pub get
+        - run: flutter analyze
+        - run: flutter test
+        - run: flutter build apk --release
+        - run: flutter build ios --release --no-codesign
+        - run: flutter build web --release
+
+# Nigerian stores
+deployment:
+  google_play_nigeria:
+    track: "alpha"
+    language: "en-NG"
+    countries: ["NG"]
+
+  app_store_nigeria:
+    region: "ng"
+    language: "en-NG"
+    countries: ["NG"]
+
+  huawei_appgallery_nigeria:
+    region: "ng"
+    language: "en-NG"
+
+  galaxy_store_nigeria:
+    region: "ng"
+    language: "en-NG"
+
+# Nigerian payment systems
+payment_systems:
+  - name: "Flutterwave"
+    type: "payment_gateway"
+    region: "ng"
+
+  - name: "Paystack"
+    type: "payment_gateway"
+    region: "ng"
+
+  - name: "Interswitch"
+    type: "payment_processor"
+    region: "ng"
+
+  - name: "Remita"
+    type: "payment_gateway"
+    region: "ng"
+
+  - name: "First Bank Nigeria"
+    type: "mobile_banking"
+    region: "ng"
+
+  - name: "GTBank"
+    type: "mobile_banking"
+    region: "ng"
+
+  - name: "Access Bank"
+    type: "mobile_banking"
+    region: "ng"
+
+  - name: "Zenith Bank"
+    type: "mobile_banking"
+    region: "ng"
+
+  - name: "UBA"
+    type: "mobile_banking"
+    region: "ng"
+
+  - name: "Union Bank"
+    type: "mobile_banking"
+    region: "ng"
+
+# Nigerian social integration
+social_integration:
+  - name: "WhatsApp Nigeria"
+    type: "messaging"
+    region: "ng"
+
+  - name: "Facebook Nigeria"
+    type: "social"
+    region: "ng"
+
+  - name: "Instagram Nigeria"
+    type: "social"
+    region: "ng"
+
+  - name: "Twitter Nigeria"
+    type: "social"
+    region: "ng"
+
+  - name: "YouTube Nigeria"
+    type: "video"
+    region: "ng"
+
+  - name: "TikTok Nigeria"
+    type: "video"
+    region: "ng"
+
+  - name: "LinkedIn Nigeria"
+    type: "professional"
+    region: "ng"
+
+  - name: "Nairaland"
+    type: "forum"
+    region: "ng"
+
+# Nigerian languages
+languages:
+  english: "English"
+  hausa: "Harshen Hausa"
+  yoruba: "Èdè Yorùbá"
+  igbo: "Asụsụ Igbo"
+  fulfulde: "Fulfulde"
+  tigrinya: "ትግርኛ"
+  arabic: "العربية"
+  french: "Français"
+
+# Nigerian states
+states:
+  - "Abia"
+  - "Adamawa"
+  - "Akwa Ibom"
+  - "Anambra"
+  - "Bauchi"
+  - "Bayelsa"
+  - "Benue"
+  - "Borno"
+  - "Cross River"
+  - "Delta"
+  - "Ebonyi"
+  - "Edo"
+  - "Ekiti"
+  - "Enugu"
+  - "Federal Capital Territory"
+  - "Gombe"
+  - "Imo"
+  - "Jigawa"
+  - "Kaduna"
+  - "Kano"
+  - "Katsina"
+  - "Kebbi"
+  - "Kogi"
+  - "Kwara"
+  - "Lagos"
+  - "Nasarawa"
+  - "Niger"
+  - "Ogun"
+  - "Ondo"
+  - "Osun"
+  - "Oyo"
+  - "Plateau"
+  - "Rivers"
+  - "Sokoto"
+  - "Taraba"
+  - "Yobe"
+  - "Zamfara"
+
+# African countries
+african_countries:
+  - "NG"  # Nigeria
+  - "GH"  # Ghana
+  - "KE"  # Kenya
+  - "ZA"  # South Africa
+  - "EG"  # Egypt
+  - "ET"  # Ethiopia
+  - "TZ"  # Tanzania
+  - "UG"  # Uganda
+  - "MA"  # Morocco
+  - "DZ"  # Algeria
+  - "TN"  # Tunisia
+  - "BW"  # Botswana
+  - "ZW"  # Zimbabwe
+  - "MZ"  # Mozambique
+  - "AO"  # Angola
+  - "ZM"  # Zambia
+  - "MW"  # Malawi
+  - "NA"  # Namibia
+  - "BJ"  # Benin
+  - "BF"  # Burkina Faso
+  - "CV"  # Cape Verde
+  - "TD"  # Chad
+  - "KM"  # Comoros
+  - "DJ"  # Djibouti
+  - "ER"  # Eritrea
+  - "GA"  # Gabon
+  - "GM"  # Gambia
+  - "GN"  # Guinea
+  - "GW"  # Guinea-Bissau
+  - "LS"  # Lesotho
+  - "LR"  # Liberia
+  - "LY"  # Libya
+  - "ML"  # Mali
+  - "MR"  # Mauritania
+  - "MU"  # Mauritius
+  - "NE"  # Niger
+  - "RW"  # Rwanda
+  - "ST"  # São Tomé and Príncipe
+  - "SN"  # Senegal
+  - "SC"  # Seychelles
+  - "SL"  # Sierra Leone
+  - "SO"  # Somalia
+  - "SS"  # South Sudan
+  - "SD"  # Sudan
+  - "SZ"  # Eswatini
+  - "TG"  # Togo
+  - "TT"  # Trinidad and Tobago
+  - "CM"  # Cameroon
+  - "CF"  # Central African Republic
+  - "CG"  # Republic of the Congo
+  - "CD"  # Democratic Republic of the Congo
+  - "GQ"  # Equatorial Guinea
+  - "BI"  # Burundi
+  - "CI"  # Côte d'Ivoire
+  - "TL"  # Timor-Leste

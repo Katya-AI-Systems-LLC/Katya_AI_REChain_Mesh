@@ -1,0 +1,76 @@
+name: Deploy to Yandex Cloud
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
+  YC_CLOUD_ID: ${{ secrets.YC_CLOUD_ID }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run tests
+        run: flutter test
+
+      - name: Build web application
+        run: flutter build web --release
+
+      - name: Setup Yandex Cloud CLI
+        uses: yc-actions/setup-yc@v1
+        with:
+          yc-version: latest
+          service-account-key: ${{ secrets.YC_SERVICE_ACCOUNT_KEY }}
+
+      - name: Configure Yandex Cloud
+        run: |
+          yc config set cloud-id $YC_CLOUD_ID
+          yc config set folder-id $YC_FOLDER_ID
+
+      - name: Deploy to Object Storage
+        run: |
+          yc storage bucket create katya-rechain-mesh || true
+          yc storage s3 cp --recursive build/web/ s3://katya-rechain-mesh/
+
+      - name: Deploy to Container Registry
+        run: |
+          docker build -t cr.yandex/${YC_FOLDER_ID}/katya-rechain-mesh:${{ github.sha }} .
+          yc container registry configure-docker
+          docker push cr.yandex/${YC_FOLDER_ID}/katya-rechain-mesh:${{ github.sha }}
+
+      - name: Deploy to Kubernetes
+        run: |
+          yc managed-kubernetes cluster get-credentials \
+            --name katya-rechain-mesh \
+            --zone ru-central1-a
+          kubectl set image deployment/katya-rechain-mesh \
+            frontend=cr.yandex/${YC_FOLDER_ID}/katya-rechain-mesh:${{ github.sha }}
+          kubectl rollout status deployment/katya-rechain-mesh --timeout=600s
+
+      - name: Verify deployment
+        run: |
+          kubectl get pods -l app=katya-rechain-mesh
+          kubectl get services -l app=katya-rechain-mesh
+
+      - name: Notify deployment success
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+          --data '{"text":"🚀 Deployment to Yandex Cloud completed successfully!"}' \
+          ${{ secrets.DISCORD_WEBHOOK_URL }}

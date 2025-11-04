@@ -1,0 +1,135 @@
+# AppArmor profile for Katya AI REChain Mesh
+# This profile provides security confinement for the Linux application
+
+#include <tunables/global>
+
+profile katya-ai-rechain-mesh /usr/bin/katya-ai-rechain-mesh {
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+  #include <abstractions/ssl_certs>
+  #include <abstractions/user-tmp>
+
+  # File system access
+  owner @{HOME}/** rwk,
+  owner @{HOME}/.config/katya-ai-rechain-mesh/** rwk,
+  owner @{HOME}/.cache/katya-ai-rechain-mesh/** rwk,
+  owner @{HOME}/.local/share/katya-ai-rechain-mesh/** rwk,
+
+  # Network access
+  network inet tcp,
+  network inet udp,
+  network inet6 tcp,
+  network inet6 udp,
+
+  # DNS resolution
+  /etc/resolv.conf r,
+  /etc/hosts r,
+  /etc/nsswitch.conf r,
+
+  # SSL certificates
+  /etc/ssl/certs/** r,
+  /etc/pki/tls/certs/** r,
+
+  # System libraries
+  /usr/lib/** mr,
+  /usr/lib64/** mr,
+  /lib/** mr,
+  /lib64/** mr,
+
+  # Flutter and GTK libraries
+  /usr/lib/x86_64-linux-gnu/** mr,
+  /usr/lib/x86_64-linux-gnu/gconv/** mr,
+  /usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/** mr,
+  /usr/lib/x86_64-linux-gnu/gio/** mr,
+  /usr/lib/x86_64-linux-gnu/gtk-3.0/** mr,
+  /usr/lib/x86_64-linux-gnu/pango/** mr,
+
+  # Fonts
+  /usr/share/fonts/** r,
+  /usr/share/icons/** r,
+  /usr/share/themes/** r,
+  /usr/share/pixmaps/** r,
+
+  # X11 access
+  /tmp/.X11-unix/** rw,
+  @{HOME}/.X11-unix/** rw,
+
+  # Wayland access
+  /run/user/*/wayland-*/** rw,
+
+  # D-Bus access
+  /run/dbus/system_bus_socket rw,
+  /run/user/*/dbus/user_bus_socket rw,
+  /run/user/*/bus rw,
+
+  # PulseAudio
+  /run/user/*/pulse/native rw,
+  @{HOME}/.config/pulse/* rw,
+
+  # Shared memory
+  /dev/shm/** rw,
+
+  # Device access
+  /dev/null rw,
+  /dev/zero rw,
+  /dev/urandom r,
+  /dev/dri/** r,
+  /dev/input/** r,
+
+  # User directories
+  owner @{HOME}/Downloads/** rwk,
+  owner @{HOME}/Documents/** rwk,
+  owner @{HOME}/Pictures/** rwk,
+  owner @{HOME}/Videos/** rwk,
+  owner @{HOME}/Music/** rwk,
+
+  # Temporary files
+  /tmp/** rwk,
+  /var/tmp/** rwk,
+
+  # Locale and time
+  /etc/localtime r,
+  /etc/timezone r,
+  /usr/share/zoneinfo/** r,
+
+  # Hardware information
+  /sys/devices/** r,
+  /proc/cpuinfo r,
+  /proc/meminfo r,
+  /proc/version r,
+
+  # Logging
+  /var/log/** w,
+
+  # Deny dangerous operations
+  deny /bin/** w,
+  deny /sbin/** w,
+  deny /usr/bin/** w,
+  deny /usr/sbin/** w,
+  deny /etc/** w,
+  deny /boot/** w,
+  deny /sys/** w,
+  deny /proc/** w,
+
+  # Allow execution of necessary binaries
+  /usr/bin/katya-ai-rechain-mesh ix,
+  /usr/bin/flutter ix,
+  /usr/bin/dart ix,
+
+  # Child processes
+  profile /usr/bin/katya-ai-rechain-mesh//child {
+    #include <abstractions/base>
+    #include <abstractions/nameservice>
+
+    # Child processes inherit network access but limited file access
+    network inet tcp,
+    network inet udp,
+
+    # Limited file access for child processes
+    owner @{HOME}/.cache/katya-ai-rechain-mesh/** rwk,
+    /tmp/** rwk,
+
+    # Deny dangerous operations in child processes
+    deny /** w,
+  }
+}

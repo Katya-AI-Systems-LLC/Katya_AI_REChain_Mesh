@@ -1,0 +1,125 @@
+# Default values for katya-mesh
+replicaCount: 3
+
+image:
+  repository: katya-mesh-go
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: katya-mesh.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+env:
+  - name: MESH_ADAPTER
+    value: "emulated"
+  - name: PORT
+    value: "8080"
+  - name: POSTGRES_HOST
+    valueFrom:
+      secretKeyRef:
+        name: katya-mesh-secrets
+        key: postgres-host
+  - name: POSTGRES_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: katya-mesh-secrets
+        key: postgres-password
+  - name: REDIS_HOST
+    valueFrom:
+      secretKeyRef:
+        name: katya-mesh-secrets
+        key: redis-host
+  - name: REDIS_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: katya-mesh-secrets
+        key: redis-password
+
+postgresql:
+  enabled: true
+  image:
+    repository: postgres
+    tag: "15"
+  persistence:
+    enabled: true
+    size: 20Gi
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+redis:
+  enabled: true
+  image:
+    repository: redis
+    tag: "7-alpine"
+  persistence:
+    enabled: true
+    size: 10Gi
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "250m"
+
+monitoring:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    interval: 30s
+    path: /metrics
+

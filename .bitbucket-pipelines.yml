@@ -1,0 +1,17 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup Flutter
+      uses: flutter-actions/setup-flutter@v2
+    - name: Install dependencies
+      run: flutter pub get
+    - name: Run tests
+      run: flutter test
+    - name: Build APK
+      run: flutter build apk

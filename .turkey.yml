@@ -1,0 +1,292 @@
+# Katya AI REChain Mesh - Turkey Git System Configuration
+# Türkiye Git platformları ve CI/CD yapılandırması
+
+version: 1.0
+name: "Katya AI REChain Mesh - Turkey Systems"
+
+# Türkiye Git platformları
+platforms:
+  - name: "GitHub Turkey"
+    region: "tr"
+    domain: "github.com.tr"
+    ci_cd: "github-actions"
+    compliance: "KVKK"
+    language: "tr"
+
+  - name: "GitLab Turkey"
+    region: "tr"
+    domain: "gitlab.com.tr"
+    ci_cd: "gitlab-ci"
+    compliance: "KVKK"
+    language: "tr"
+
+  - name: "Codeberg Turkey"
+    region: "tr"
+    domain: "codeberg.tr"
+    ci_cd: "woodpecker"
+    compliance: "KVKK"
+    language: "tr"
+
+  - name: "Gitea Turkey"
+    region: "tr"
+    domain: "gitea.tr"
+    ci_cd: "gitea-actions"
+    compliance: "KVKK"
+    language: "tr"
+
+  - name: "Türk Git"
+    region: "tr"
+    domain: "git.tr"
+    ci_cd: "drone"
+    compliance: "KVKK"
+    language: "tr"
+
+# Türkiye bulut sağlayıcıları
+cloud_providers:
+  - name: "AWS Turkey (eu-west-1)"
+    region: "ireland"  # Closest AWS region to Turkey
+    compliance: "KVKK"
+    data_residency: "europe"
+
+  - name: "Azure Turkey"
+    region: "westeurope"  # Closest Azure region
+    compliance: "KVKK"
+    data_residency: "europe"
+
+  - name: "Google Cloud Turkey"
+    region: "europe-west1"  # Closest GCP region
+    compliance: "KVKK"
+    data_residency: "europe"
+
+  - name: "Türk Telekom Cloud"
+    region: "turkey"
+    compliance: "KVKK"
+    data_residency: "turkey"
+
+  - name: "Türkcell Cloud"
+    region: "turkey"
+    compliance: "KVKK"
+    data_residency: "turkey"
+
+  - name: "Vodafone Cloud Turkey"
+    region: "turkey"
+    compliance: "KVKK"
+    data_residency: "turkey"
+
+  - name: "Turhost"
+    region: "turkey"
+    compliance: "KVKK"
+    data_residency: "turkey"
+
+  - name: "Natro"
+    region: "turkey"
+    compliance: "KVKK"
+    data_residency: "turkey"
+
+# Uyumluluk ve standartlar
+compliance:
+  kvkk: true
+  iso27001: true
+  ts13298: true
+  cobit: true
+
+# Türkiye yerelleştirme
+localization:
+  primary: "tr-TR"
+  secondary: ["tr-CY", "en-TR", "ku-TR", "ar-TR"]
+  currency: "TRY"
+  timezone: "Europe/Istanbul"
+
+# CI/CD boru hatları (Türkiye platformları için)
+github_actions_turkey: |
+  name: Türkiye CI/CD
+  on: [push, pull_request]
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - name: Flutter Kurulumu
+          uses: subosito/flutter-action@v2
+          with:
+            flutter-version: '3.16.0'
+        - run: flutter pub get
+        - run: flutter analyze
+        - run: flutter test
+        - run: flutter build apk --release
+        - run: flutter build ios --release --no-codesign
+        - run: flutter build web --release
+
+gitlab_ci_turkey: |
+  stages:
+    - derleme
+    - test
+    - dağıtım
+
+  variables:
+    FLUTTER_VERSION: "3.16.0"
+
+  build:android:
+    stage: derleme
+    script:
+      - flutter pub get
+      - flutter analyze --fatal-infos --fatal-warnings
+      - flutter test --coverage
+      - flutter build apk --release
+    artifacts:
+      paths:
+        - build/app/outputs/
+    coverage: '/Coverage: \d+\.\d+%/'
+
+  build:ios:
+    stage: derleme
+    script:
+      - flutter build ios --release --no-codesign
+    artifacts:
+      paths:
+        - build/ios/
+
+  build:web:
+    stage: derleme
+    script:
+      - flutter build web --release
+    artifacts:
+      paths:
+        - build/web/
+
+# Türkiye mağaza dağıtımı
+deployment:
+  google_play_turkey:
+    track: "alpha"
+    language: "tr"
+    countries: ["TR"]
+
+  app_store_turkey:
+    region: "tr"
+    language: "tr"
+    countries: ["TR"]
+
+  huawei_appgallery_turkey:
+    region: "tr"
+    language: "tr"
+
+  galaxy_store_turkey:
+    region: "tr"
+    language: "tr"
+
+# Türkiye ödeme sistemleri
+payment_systems:
+  - name: "Garanti BBVA"
+    type: "banking_payment"
+    region: "tr"
+
+  - name: "İş Bankası"
+    type: "banking_payment"
+    region: "tr"
+
+  - name: "Akbank"
+    type: "banking_payment"
+    region: "tr"
+
+  - name: "Yapı Kredi"
+    type: "banking_payment"
+    region: "tr"
+
+  - name: "Ziraat Bankası"
+    type: "banking_payment"
+    region: "tr"
+
+  - name: "Halkbank"
+    type: "banking_payment"
+    region: "tr"
+
+  - name: "VakıfBank"
+    type: "banking_payment"
+    region: "tr"
+
+  - name: "DenizBank"
+    type: "banking_payment"
+    region: "tr"
+
+  - name: "QNB Finansbank"
+    type: "banking_payment"
+    region: "tr"
+
+  - name: "ING Bank"
+    type: "banking_payment"
+    region: "tr"
+
+# Türkiye sosyal entegrasyon
+social_integration:
+  - name: "WhatsApp Turkey"
+    type: "messaging"
+    region: "tr"
+
+  - name: "Instagram Turkey"
+    type: "social"
+    region: "tr"
+
+  - name: "Facebook Turkey"
+    type: "social"
+    region: "tr"
+
+  - name: "Twitter Turkey"
+    type: "social"
+    region: "tr"
+
+  - name: "YouTube Turkey"
+    type: "video"
+    region: "tr"
+
+  - name: "TikTok Turkey"
+    type: "video"
+    region: "tr"
+
+  - name: "LinkedIn Turkey"
+    type: "professional"
+    region: "tr"
+
+# Türkiye dilleri
+languages:
+  turkish: "Türkçe"
+  english: "English"
+  kurdish: "Kurdî"
+  arabic: "العربية"
+  german: "Deutsch"
+  french: "Français"
+
+# Türkiye şehirleri
+major_cities:
+  - "İstanbul"
+  - "Ankara"
+  - "İzmir"
+  - "Bursa"
+  - "Antalya"
+  - "Adana"
+  - "Konya"
+  - "Gaziantep"
+  - "Şanlıurfa"
+  - "Mersin"
+  - "Kayseri"
+  - "Diyarbakır"
+  - "Eskişehir"
+  - "Samsun"
+  - "Denizli"
+  - "Adapazarı"
+  - "Malatya"
+  - "Kahramanmaraş"
+  - "Van"
+  - "Batman"
+
+# Türkiye ve çevresindeki ülkeler
+supported_countries:
+  - "TR"  # Türkiye
+  - "CY"  # Kuzey Kıbrıs
+  - "AZ"  # Azerbaycan
+  - "GE"  # Gürcistan
+  - "AM"  # Ermenistan
+  - "IR"  # İran
+  - "IQ"  # Irak
+  - "SY"  # Suriye
+  - "GR"  # Yunanistan
+  - "BG"  # Bulgaristan

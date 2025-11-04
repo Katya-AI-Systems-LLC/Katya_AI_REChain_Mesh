@@ -1,0 +1,163 @@
+version: 1.0
+project: "katya-ai-rechain-mesh"
+description: "AI-powered blockchain gaming IoT social mesh network"
+
+stages:
+  - validate
+  - test
+  - build
+  - security
+  - deploy
+
+environment:
+  flutter: "3.24.0"
+  dart: "3.5.0"
+  node: "18"
+
+jobs:
+
+  # Code validation
+  validate:
+    stage: validate
+    image: "cirrusci/flutter:stable"
+    script:
+      - flutter config --enable-web
+      - flutter config --enable-linux-desktop
+      - flutter config --enable-android
+      - flutter config --enable-ios
+      - flutter pub get
+      - dart format --set-exit-if-changed .
+      - flutter analyze
+      - flutter pub audit
+    only:
+      - main
+      - develop
+      - merge_requests
+
+  # Testing
+  test_unit:
+    stage: test
+    image: "cirrusci/flutter:stable"
+    script:
+      - flutter config --enable-web
+      - flutter pub get
+      - flutter test --coverage
+      - flutter test --tags=integration
+      - flutter test --tags=performance
+    coverage:
+      format: cobertura
+      path: coverage/lcov.info
+    artifacts:
+      - coverage/
+      - test-results/
+    only:
+      - main
+      - develop
+      - merge_requests
+
+  test_widget:
+    stage: test
+    image: "cirrusci/flutter:stable"
+    script:
+      - flutter config --enable-web
+      - flutter pub get
+      - flutter test --tags=widget
+    artifacts:
+      - widget-test-results/
+    only:
+      - main
+      - develop
+
+  # Multi-platform build
+  build:
+    stage: build
+    image: "cirrusci/flutter:stable"
+    script:
+      - flutter build apk --release
+      - flutter build appbundle --release
+      - flutter build ios --release --no-codesign
+      - flutter build web --release
+      - flutter build linux --release
+      - flutter build windows --release
+      - flutter build macos --release
+    artifacts:
+      - build/
+      - android/app/build/outputs/
+      - ios/build/
+    only:
+      - main
+      - tags
+
+  # Security scanning
+  security:
+    stage: security
+    image: "securecodewarrior/github-action-sarif-to-gitlab-ci:latest"
+    script:
+      - flutter pub audit --json
+      - flutter analyze --security
+    artifacts:
+      - security-reports/
+    only:
+      - main
+      - develop
+      - merge_requests
+
+  # Deployment to staging
+  deploy_staging:
+    stage: deploy
+    image: "google/cloud-sdk:alpine"
+    script:
+      - gcloud auth activate-service-account --key-file $GCLOUD_SERVICE_KEY
+      - gcloud config set project $GCLOUD_PROJECT_ID
+      - gcloud config set compute/zone $GCLOUD_ZONE
+      - gcloud container clusters get-credentials $K8S_CLUSTER_NAME
+      - kubectl set image deployment/katya-rechain-mesh frontend=$CI_COMMIT_SHA -n staging
+      - kubectl rollout status deployment/katya-rechain-mesh -n staging --timeout=600s
+    environment:
+      name: staging
+      url: https://staging.your-domain.ru
+    only:
+      - develop
+
+  # Deployment to production
+  deploy_production:
+    stage: deploy
+    image: "google/cloud-sdk:alpine"
+    script:
+      - gcloud auth activate-service-account --key-file $GCLOUD_SERVICE_KEY
+      - gcloud config set project $GCLOUD_PROJECT_ID
+      - gcloud config set compute/zone $GCLOUD_ZONE
+      - gcloud container clusters get-credentials $K8S_CLUSTER_NAME
+      - kubectl set image deployment/katya-rechain-mesh frontend=$CI_COMMIT_SHA -n production
+      - kubectl rollout status deployment/katya-rechain-mesh -n production --timeout=600s
+    environment:
+      name: production
+      url: https://your-domain.ru
+    only:
+      - main
+      - tags
+
+# Variables
+variables:
+  FLUTTER_VERSION: "3.24.0"
+  DART_VERSION: "3.5.0"
+  NODE_ENV: "production"
+  BLOCKCHAIN_API_KEY: "your_key"
+  AI_API_KEY: "your_key"
+  KUBE_CONTEXT: "your-cluster"
+  KUBE_NAMESPACE: "production"
+
+# Cache configuration
+cache:
+  flutter:
+    key: flutter-packages
+    paths:
+      - .pub-cache/
+    files:
+      - pubspec.lock
+
+  build:
+    key: build-artifacts
+    paths:
+      - build/
+      - android/app/build/outputs/

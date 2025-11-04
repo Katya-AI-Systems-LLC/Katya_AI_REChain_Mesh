@@ -1,0 +1,31 @@
+Narrator voiceover script for MeshApp demo (approx 3 minutes)
+
+0:00 - 0:05
+"Hello — this is MeshApp, an offline mesh messenger and voting app built in Flutter."
+
+0:05 - 0:20
+"On the home screen you can see three tabs: Chats, Devices, and Polls. We'll walk through device discovery, messaging, and a live poll."
+
+0:20 - 0:50
+"In the Devices tab the app scans for nearby Bluetooth Low Energy peers advertising the MeshApp service. Note this is a prototype — advertising and peripheral mode has platform-dependent limitations."
+
+0:50 - 1:10
+"Tap Connect to establish a connection. In production you'd perform a secure handshake; in this demo you can derive a session key from a passphrase or set it via code."
+
+1:10 - 1:40
+"Now we send a message from Device A to Device B. The message is encrypted with AES-GCM when a session key is set, ensuring confidentiality. The recipient receives and decrypts the payload in real time."
+
+1:40 - 2:00
+"Next, we create a poll on the Polls tab. The host creates the poll and publishes it to connected peers; participants vote and the host aggregates and redistributes results."
+
+2:00 - 2:30
+"The AI smart replies are generated on-device using a small rule-based model; this can be replaced by a TFLite model for richer replies while remaining offline."
+
+2:30 - 2:50
+"For Android make sure the necessary Bluetooth permissions are declared and requested at runtime — see the project README for details."
+
+2:50 - 3:10
+"To build the app use `flutter build apk` for Android or follow the Aurora packaging instructions to create an RPM for devices without Android runtime."
+
+3:10 - 3:20
+"Thanks for watching — repository link and contest submission details are in the README."

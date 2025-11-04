@@ -1,0 +1,143 @@
+stages:
+  - validate
+  - test
+  - build
+  - security
+  - deploy
+  - notify
+
+variables:
+  FLUTTER_VERSION: "3.24.0"
+  DART_VERSION: "3.5.0"
+  NODE_ENV: "production"
+
+.template_flutter: &template_flutter
+  image: cirrusci/flutter:stable
+  before_script:
+    - flutter config --enable-web
+    - flutter config --enable-linux-desktop
+    - flutter config --enable-android
+    - flutter config --enable-ios
+    - flutter pub get
+  cache:
+    key:
+      files:
+        - pubspec.lock
+    paths:
+      - .pub-cache/
+
+validate:code:
+  <<: *template_flutter
+  stage: validate
+  script:
+    - dart format --set-exit-if-changed .
+    - flutter analyze
+    - flutter pub audit
+  only:
+    - merge_requests
+    - main
+    - develop
+
+test:unit:
+  <<: *template_flutter
+  stage: test
+  script:
+    - flutter test --coverage
+    - flutter test --tags=integration
+    - flutter test --tags=performance
+  coverage: '/lines\.*: (\d+\.\d+%)/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/lcov.info
+    paths:
+      - coverage/
+    expire_in: 1 week
+  only:
+    - merge_requests
+    - main
+    - develop
+
+build:all_platforms:
+  <<: *template_flutter
+  stage: build
+  script:
+    - flutter build apk --release
+    - flutter build appbundle --release
+    - flutter build ios --release --no-codesign
+    - flutter build web --release
+    - flutter build linux --release
+    - flutter build windows --release
+    - flutter build macos --release
+  artifacts:
+    paths:
+      - build/
+      - android/app/build/outputs/
+      - ios/build/
+    expire_in: 1 week
+  only:
+    - main
+    - tags
+    - merge_requests
+
+security:scan:
+  stage: security
+  image: securecodewarrior/github-action-sarif-to-gitlab-ci:latest
+  script:
+    - flutter pub audit
+    - flutter analyze --security
+  artifacts:
+    reports:
+      codequality: gl-code-quality-report.json
+      sast: gl-sast-report.json
+    paths:
+      - security-reports/
+  only:
+    - main
+    - develop
+    - merge_requests
+
+deploy:staging:
+  stage: deploy
+  image: google/cloud-sdk:alpine
+  script:
+    - gcloud auth activate-service-account --key-file $GCLOUD_SERVICE_KEY
+    - gcloud config set project $GCLOUD_PROJECT_ID
+    - kubectl set image deployment/katya-rechain-mesh frontend=$CI_COMMIT_SHA -n staging
+    - kubectl rollout status deployment/katya-rechain-mesh -n staging --timeout=600s
+  environment:
+    name: staging
+    url: https://staging.your-domain.ru
+  only:
+    - develop
+
+deploy:production:
+  stage: deploy
+  image: google/cloud-sdk:alpine
+  script:
+    - gcloud auth activate-service-account --key-file $GCLOUD_SERVICE_KEY
+    - gcloud config set project $GCLOUD_PROJECT_ID
+    - kubectl set image deployment/katya-rechain-mesh frontend=$CI_COMMIT_SHA -n production
+    - kubectl rollout status deployment/katya-rechain-mesh -n production --timeout=600s
+  environment:
+    name: production
+    url: https://your-domain.ru
+  only:
+    - main
+    - tags
+
+notify:success:
+  stage: notify
+  image: curlimages/curl:latest
+  script:
+    - |
+      if [ "$CI_PIPELINE_STATUS" == "success" ]; then
+        curl -X POST -H 'Content-type: application/json' \
+        --data '{"text":"Pipeline completed successfully! '"$CI_PROJECT_NAME"' - '"$CI_COMMIT_REF_NAME"'"}' \
+        $DISCORD_WEBHOOK_URL
+      fi
+  when: always
+  only:
+    - main
+    - develop

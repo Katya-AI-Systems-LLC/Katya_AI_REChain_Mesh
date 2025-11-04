@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+<defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#6C63FF"/><stop offset="1" stop-color="#00D1FF"/></linearGradient></defs>
+<rect width="100%" height="100%" rx="48" fill="#0b1020"/>
+<g transform="translate(64,64)">
+<circle cx="192" cy="128" r="96" fill="url(#g)" opacity="0.95"/>
+<text x="192" y="138" font-family="Verdana" font-size="42" fill="#fff" text-anchor="middle">Katya</text>
+</g>
+</svg>

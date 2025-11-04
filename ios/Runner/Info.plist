@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Katya AI REChain Mesh</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>katya_ai_rechain_mesh</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+
+	<!-- iOS Platform Specific Features -->
+	<key>UIStatusBarHidden</key>
+	<false/>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
+
+	<!-- Background Modes -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>processing</string>
+		<string>remote-notification</string>
+	</array>
+
+	<!-- Background Tasks -->
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.katyaairechainmesh.refresh</string>
+		<string>com.katyaairechainmesh.sync</string>
+	</array>
+
+	<!-- Push Notifications -->
+	<key>aps-environment</key>
+	<string>development</string>
+
+	<!-- Local Notifications -->
+	<key>UNUserNotificationCenterDelegate</key>
+	<string>$(PRODUCT_MODULE_NAME).AppDelegate</string>
+
+	<!-- Security and Privacy -->
+	<key>NSFaceIDUsageDescription</key>
+	<string>This app uses Face ID for secure authentication</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs camera access to capture photos and videos</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app needs microphone access for voice features</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs photo library access to save and load images</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs location access to provide location-based features</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app needs location access to provide location-based features</string>
+	<key>NSContactsUsageDescription</key>
+	<string>This app needs contacts access to enhance social features</string>
+	<key>NSRemindersUsageDescription</key>
+	<string>This app needs reminders access for scheduling notifications</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>This app needs calendar access for event scheduling</string>
+
+	<!-- Biometric Authentication -->
+	<key>NSFaceIDUsageDescription</key>
+	<string>Enable Face ID for secure authentication</string>
+
+	<!-- Keychain Access -->
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)com.katyaairechainmesh</string>
+	</array>
+
+	<!-- App Transport Security -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+		<key>NSAllowsArbitraryLoadsInWebContent</key>
+		<false/>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+
+	<!-- WebKit Features -->
+	<key>WKAppBoundDomains</key>
+	<array>
+		<string>katyaairechainmesh.com</string>
+	</array>
+
+	<!-- URL Schemes -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.katyaairechainmesh</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>katya-rechain-mesh</string>
+				<string>katyaairechainmesh</string>
+			</array>
+		</dict>
+	</array>
+
+	<!-- File Sharing -->
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<false/>
+	<key>UIFileSharingEnabled</key>
+	<false/>
+
+	<!-- iCloud -->
+	<key>NSUbiquitousContainers</key>
+	<dict>
+		<key>iCloud.com.katyaairechainmesh</key>
+		<dict>
+			<key>NSUbiquitousContainerIsDocumentScopePublic</key>
+			<true/>
+			<key>NSUbiquitousContainerName</key>
+			<string>Katya AI REChain Mesh</string>
+			<key>NSUbiquitousContainerSupportedFolderLevels</key>
+			<string>Any</string>
+		</dict>
+	</dict>
+
+	<!-- Core Spotlight -->
+	<key>CoreSpotlightContinuation</key>
+	<true/>
+
+	<!-- Siri Integration -->
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>INSendMessageIntent</string>
+		<string>INSearchForMessagesIntent</string>
+	</array>
+
+	<!-- Widget Support -->
+	<key>NSExtension</key>
+	<dict>
+		<key>NSExtensionPointIdentifier</key>
+		<string>com.apple.widgetkit-extension</string>
+		<key>NSExtensionPrincipalClass</key>
+		<string>$(PRODUCT_MODULE_NAME).WidgetExtension</string>
+	</dict>
+
+	<!-- Associated Domains -->
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>webcredentials:katyaairechainmesh.com</string>
+		<string>applinks:katyaairechainmesh.com</string>
+	</dict>
+
+	<!-- HealthKit -->
+	<key>NSHealthShareUsageDescription</key>
+	<string>This app needs health data access for wellness features</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>This app needs health data access for wellness features</string>
+
+	<!-- Motion and Fitness -->
+	<key>NSMotionUsageDescription</key>
+	<string>This app needs motion data for activity tracking</string>
+
+	<!-- Bluetooth -->
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>This app needs Bluetooth access for device connectivity</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>This app needs Bluetooth access for device connectivity</string>
+
+	<!-- Network Extensions -->
+	<key>com.apple.developer.networking.networkextension</key>
+	<array>
+		<string>content-filter-provider-systemextension</string>
+		<string>dns-proxy-systemextension</string>
+	</array>
+
+	<!-- DriverKit -->
+	<key>com.apple.developer.driverkit</key>
+	<true/>
+	<key>com.apple.developer.driverkit.transport.usb</key>
+	<true/>
+
+	<!-- HomeKit -->
+	<key>NSHomeKitUsageDescription</key>
+	<string>This app needs HomeKit access for smart home integration</string>
+
+	<!-- ClassKit -->
+	<key>com.apple.developer.ClassKit-environment</key>
+	<string>development</string>
+
+	<!-- Game Center -->
+	<key>com.apple.developer.game-center</key>
+	<true/>
+
+	<!-- WeatherKit -->
+	<key>com.apple.developer.weatherkit</key>
+	<true/>
+
+	<!-- Maps -->
+	<key>com.apple.developer.maps</key>
+	<true/>
+
+	<!-- Sign In with Apple -->
+	<key>com.apple.developer.signin.apple</key>
+	<true/>
+
+	<!-- Developer Mode -->
+	<key>com.apple.developer.developer-mode</key>
+	<true/>
+
+	<!-- Required Device Capabilities -->
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>arm64</string>
+		<string>metal</string>
+	</array>
+
+	<!-- Minimum OS Version -->
+	<key>MinimumOSVersion</key>
+	<string>12.0</string>
+
+	<!-- iPad Specific -->
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+
+	<!-- iPhone Specific -->
+	<key>UISupportedInterfaceOrientations~iphone</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+
+	<!-- Environment Variables -->
+	<key>LSEnvironment</key>
+	<dict>
+		<key>PATH</key>
+		<string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+	</dict>
+</dict>
+</plist>

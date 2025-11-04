@@ -1,0 +1,47 @@
+[Unit]
+Description=Katya AI REChain Mesh
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=nemo
+ExecStart=/usr/bin/katya-ai-rechain-mesh
+Restart=always
+RestartSec=5
+Environment=QT_QPA_PLATFORM=wayland
+Environment=QT_QPA_PLATFORM_PLUGIN_PATH=/usr/lib/qt5/plugins/platforms
+Environment=QML2_IMPORT_PATH=/usr/share/harbour-katya-ai-rechain-mesh/qml
+Environment=XDG_RUNTIME_DIR=/run/user/100000
+Environment=WAYLAND_DISPLAY=wayland-0
+Environment=DISPLAY=:0
+Environment=XDG_SESSION_TYPE=wayland
+Environment=XDG_CURRENT_DESKTOP=SailfishOS
+Environment=XDG_SESSION_DESKTOP=SailfishOS
+
+# Security settings
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+PrivateNetwork=no
+PrivateUsers=no
+ProtectHome=yes
+ProtectSystem=strict
+ReadWritePaths=/home/nemo/.config/katya-ai-rechain-mesh /home/nemo/.cache/katya-ai-rechain-mesh /home/nemo/.local/share/katya-ai-rechain-mesh /home/nemo/.local/share/sailfish-os
+ReadOnlyPaths=/usr/share/harbour-katya-ai-rechain-mesh /usr/share/fonts /usr/share/icons /usr/share/themes /etc/ssl/certs
+InaccessiblePaths=/boot /root /sys /proc /bin /sbin /usr/bin /usr/sbin
+CapabilityBoundingSet=CAP_NET_RAW CAP_NET_BIND_SERVICE
+AmbientCapabilities=CAP_NET_RAW CAP_NET_BIND_SERVICE
+
+# Resource limits
+LimitNOFILE=1024
+LimitNPROC=512
+MemoryLimit=1G
+TimeoutStartSec=30
+TimeoutStopSec=10
+
+# Sailfish OS specific
+SupplementaryGroups=audio video input bluetooth camera gps network
+
+[Install]
+WantedBy=user-session.target

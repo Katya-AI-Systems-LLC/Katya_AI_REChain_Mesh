@@ -1,0 +1,134 @@
+name: Feature Request
+description: Suggest an idea for this project
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new feature! Please provide as much detail as possible to help us understand your request.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Feature Description
+      description: A clear and concise description of the feature you'd like to see implemented.
+      placeholder: |
+        I would like to see [feature name] implemented because [reason].
+        This would help [describe the benefit] and improve [describe what it improves].
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use Case
+      description: Describe how you would use this feature
+      placeholder: |
+        1. User opens the app
+        2. User navigates to [module/page]
+        3. User interacts with [current feature]
+        4. [Describe the improved workflow with new feature]
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Have you considered any alternative solutions or workarounds?
+      placeholder: |
+        I tried [alternative approach], but it [limitations/problems].
+        Other apps solve this by [how other apps handle it].
+
+  - type: dropdown
+    id: module
+    attributes:
+      label: Related Module
+      description: Which module would this feature belong to?
+      options:
+        - Blockchain
+        - Gaming
+        - IoT
+        - Social
+        - General/UI
+        - Infrastructure
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you?
+      options:
+        - Low (nice to have)
+        - Medium (should have)
+        - High (must have)
+        - Critical (blocking issue)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform Impact
+      description: Which platforms would benefit from this feature?
+      options:
+        - All platforms
+        - Mobile only (Android/iOS)
+        - Desktop only (Windows/macOS/Linux)
+        - Web only
+        - Specific platforms
+    validations:
+      required: true
+
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Implementation Ideas
+      description: Do you have any ideas about how this could be implemented?
+      placeholder: |
+        Technical approach:
+        - [API changes needed]
+        - [UI components to create]
+        - [Integration points]
+        - [Dependencies]
+
+        Design considerations:
+        - [User experience]
+        - [Accessibility]
+        - [Performance impact]
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples
+      description: Provide examples from other apps or mockups
+      placeholder: |
+        Similar features in other apps:
+        - App X does this well by [description]
+        - App Y implements this as [description]
+
+        Screenshots/mockups:
+        [Add links to images or describe visual design]
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context or information about the feature request.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Before submitting
+      description: Please check the following before submitting your feature request
+      options:
+        - label: I have searched existing issues and discussions
+        - label: I have provided a clear use case
+        - label: I have considered the impact on all platforms
+        - label: I understand this is a request, not a guarantee
+        - label: I'm willing to help with implementation if needed

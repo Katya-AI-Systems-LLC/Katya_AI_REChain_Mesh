@@ -1,0 +1,45 @@
+[Desktop Entry]
+Version=1.0
+Name=Katya AI REChain Mesh
+Name[zh_CN]=卡佳AI区块链网格
+Name[zh_TW]=卡佳AI區塊鏈網格
+Comment=Advanced Blockchain AI Application for HarmonyOS
+Comment[zh_CN]=用于HarmonyOS的高级区块链AI应用
+Comment[zh_TW]=用於HarmonyOS的高級區塊鏈AI應用
+GenericName=Blockchain AI Platform
+GenericName[zh_CN]=区块链AI平台
+GenericName[zh_TW]=區塊鏈AI平台
+Keywords=blockchain;AI;crypto;harmonyos;huawei;bitcoin;ethereum;
+Keywords[zh_CN]=区块链;AI;加密货币;鸿蒙;华为;比特币;以太坊;
+Keywords[zh_TW]=區塊鏈;AI;加密貨幣;鴻蒙;華為;比特幣;以太坊;
+Exec=katya-ai-rechain-mesh %U
+Icon=katya-ai-rechain-mesh
+Terminal=false
+Type=Application
+Categories=Network;Blockchain;Finance;Utility;Office;
+MimeType=application/json;application/xml;text/plain;x-scheme-handler/katya-rechain-mesh;x-scheme-handler/bitcoin;x-scheme-handler/ethereum;x-scheme-handler/harmonyos;
+Actions=new-window;sync;settings;about;
+
+[Desktop Action new-window]
+Name=New Window
+Name[zh_CN]=新窗口
+Name[zh_TW]=新視窗
+Exec=katya-ai-rechain-mesh --new-window
+
+[Desktop Action sync]
+Name=Synchronize
+Name[zh_CN]=同步
+Name[zh_TW]=同步
+Exec=katya-ai-rechain-mesh --sync
+
+[Desktop Action settings]
+Name=Settings
+Name[zh_CN]=设置
+Name[zh_TW]=設定
+Exec=katya-ai-rechain-mesh --settings
+
+[Desktop Action about]
+Name=About
+Name[zh_CN]=关于
+Name[zh_TW]=關於
+Exec=katya-ai-rechain-mesh --about

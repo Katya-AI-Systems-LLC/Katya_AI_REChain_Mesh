@@ -1,0 +1,53 @@
+name: "SonarCloud Analysis"
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  sonarcloud:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for SonarCloud analysis
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run tests with coverage
+        run: flutter test --coverage
+
+      - name: Generate coverage report
+        run: |
+          flutter pub global activate dart-code-metrics
+          flutter pub global run dart-code-metrics analyze lib --reporter=console
+
+      - name: Analyze with SonarCloud
+        uses: SonarSource/sonarcloud-github-action@v2.1.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=katya-ai-rechain-mesh
+            -Dsonar.organization=your-organization
+            -Dsonar.projectName="Katya AI REChain Mesh"
+            -Dsonar.projectVersion=1.0.0
+            -Dsonar.sources=lib
+            -Dsonar.tests=test
+            -Dsonar.test.inclusions=**/*_test.dart
+            -Dsonar.coverage.exclusions=**/*.g.dart,**/*.pb.dart,**/*.pblib.dart
+            -Dsonar.dart.analyzer.reportPaths=analysis_results.json
+            -Dsonar.dart.coverage.reportPaths=coverage/lcov.info

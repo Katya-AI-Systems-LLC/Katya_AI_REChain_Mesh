@@ -1,0 +1,9 @@
+# Default owners
+*       @sorydev
+
+# Docs
+/docs/  @sorydev
+
+# CI
+/.github/workflows/ @sorydev
+/.gitlab-ci.yml     @sorydev

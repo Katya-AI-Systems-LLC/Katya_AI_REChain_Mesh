@@ -1,0 +1,18 @@
+default_platform(:android)
+
+platform :android do
+  desc "Build and assemble APK for release via CI/fastlane"
+  lane :build_release do
+    sh "flutter pub get"
+    sh "flutter build apk --release"
+    # artifacts can be uploaded to storage or Play Store here
+  end
+end
+platform :ios do
+  desc "Build iOS release"
+  lane :build_release do
+    sh "flutter pub get"
+    sh "flutter build ios --release"
+    # Notarization handled separately; see docs/RELEASE/ios_notarization.md
+  end
+end

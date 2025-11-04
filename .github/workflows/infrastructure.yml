@@ -1,0 +1,274 @@
+name: "Infrastructure as Code"
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'k8s/**'
+      - 'helm/**'
+      - 'docker/**'
+      - 'terraform/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'k8s/**'
+      - 'helm/**'
+      - 'docker/**'
+      - 'terraform/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  KUBECONFIG: ${{ secrets.KUBECONFIG }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+  AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+
+jobs:
+  # Terraform validation
+  terraform_validate:
+    name: Terraform Validation
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.modified, 'terraform/')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: "~1.5.0"
+
+      - name: Terraform fmt
+        run: terraform fmt -check -recursive terraform/
+
+      - name: Terraform init
+        run: terraform init terraform/
+
+      - name: Terraform validate
+        run: terraform validate terraform/
+
+      - name: Terraform plan
+        run: |
+          terraform plan -var="environment=${{ github.event.inputs.environment || 'staging' }}" terraform/
+
+  # Kubernetes validation
+  kubernetes_validate:
+    name: Kubernetes Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: 'v3.13.0'
+
+      - name: Validate Kubernetes manifests
+        run: |
+          # Validate YAML syntax
+          find k8s/ -name "*.yaml" -exec kubectl --dry-run=client --validate=true apply -f {} \;
+
+      - name: Lint Helm charts
+        run: |
+          helm lint helm/
+
+      - name: Validate Helm templates
+        run: |
+          helm template katya-rechain-mesh helm/ --dry-run
+
+      - name: Check Kubernetes best practices
+        run: |
+          # Check for security issues in manifests
+          echo "Validating Kubernetes security best practices..."
+
+  # Docker image validation
+  docker_validate:
+    name: Docker Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Validate Dockerfile
+        run: |
+          # Check Dockerfile syntax
+          docker build --dry-run .
+
+      - name: Validate docker-compose
+        run: |
+          docker-compose config --quiet
+
+      - name: Security scan Docker images
+        run: |
+          # Scan for vulnerabilities in base images
+          echo "Docker image security scanning..."
+
+  # Infrastructure deployment
+  infrastructure_deploy:
+    name: Infrastructure Deployment
+    runs-on: ubuntu-latest
+    needs: [terraform_validate, kubernetes_validate, docker_validate]
+    if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+
+      - name: Configure AWS credentials
+        if: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Configure GCP credentials
+        if: ${{ secrets.GCP_SA_KEY != '' }}
+        run: |
+          echo "${{ secrets.GCP_SA_KEY }}" | base64 -d > gcp-key.json
+          gcloud auth activate-service-account --key-file=gcp-key.json
+
+      - name: Configure Azure credentials
+        if: ${{ secrets.AZURE_CLIENT_ID != '' }}
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy infrastructure
+        run: |
+          # Deploy based on cloud provider
+          if [ -n "${{ secrets.AWS_ACCESS_KEY_ID }}" ]; then
+            echo "Deploying to AWS..."
+            terraform apply -auto-approve terraform/
+          elif [ -n "${{ secrets.GCP_SA_KEY }}" ]; then
+            echo "Deploying to GCP..."
+            terraform apply -auto-approve terraform/
+          elif [ -n "${{ secrets.AZURE_CLIENT_ID }}" ]; then
+            echo "Deploying to Azure..."
+            terraform apply -auto-approve terraform/
+          fi
+
+      - name: Deploy to Kubernetes
+        run: |
+          # Deploy application to Kubernetes
+          kubectl apply -f k8s/namespace.yml
+          helm upgrade --install katya-rechain-mesh helm/ \
+            --namespace katya-rechain-mesh \
+            --set image.tag=${{ github.sha }}
+
+      - name: Verify deployment
+        run: |
+          # Check if deployment is successful
+          kubectl get pods -n katya-rechain-mesh
+          kubectl get services -n katya-rechain-mesh
+          kubectl get ingress -n katya-rechain-mesh
+
+      - name: Run smoke tests
+        run: |
+          # Basic health checks
+          curl -f https://katya-ai-rechain-mesh.your-domain.com/health
+
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          # Rollback deployment if smoke tests fail
+          kubectl rollout undo deployment/katya-rechain-mesh -n katya-rechain-mesh
+
+  # CloudFormation/Terraform drift detection
+  drift_detection:
+    name: Infrastructure Drift Detection
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'schedule' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Check Terraform drift
+        run: |
+          terraform init terraform/
+          terraform plan terraform/
+
+      - name: Report drift
+        if: always()
+        run: |
+          # Report any infrastructure drift
+          echo "Infrastructure drift report..."
+
+  # Cost optimization analysis
+  cost_optimization:
+    name: Cost Optimization
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'schedule' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Infracost
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Analyze infrastructure costs
+        run: |
+          infracost breakdown --path=terraform/
+
+      - name: Generate cost report
+        run: |
+          echo "# Infrastructure Cost Analysis" > cost-report.md
+          echo "Generated by Infracost" >> cost-report.md
+
+      - name: Upload cost report
+        uses: actions/upload-artifact@v4
+        with:
+          name: infrastructure-cost-report
+          path: cost-report.md

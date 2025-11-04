@@ -1,0 +1,6 @@
+json_key_file("../.secrets/appstore_connect_api_key.json") # optional if using API key
+package_name("com.katya.rechain.mesh")
+apple_id("your-apple-id@example.com")
+itc_team_id("YOUR_ITC_TEAM_ID")
+team_id("YOUR_DEV_TEAM_ID")
+

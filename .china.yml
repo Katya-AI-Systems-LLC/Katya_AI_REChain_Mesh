@@ -1,0 +1,407 @@
+version: 1.0
+name: "Katya AI REChain Mesh - China Systems"
+
+# Chinese Git platforms and systems
+platforms:
+  - name: "Gitee"
+    region: "cn"
+    domain: "gitee.com"
+    ci_cd: "gitee-ci"
+    compliance: "Cybersecurity_Law"
+    language: "zh-CN"
+    currency: "CNY"
+    timezone: "Asia/Shanghai"
+
+  - name: "GitCode"
+    region: "cn"
+    domain: "gitcode.com"
+    ci_cd: "gitcode-ci"
+    compliance: "Cybersecurity_Law"
+    language: "zh-CN"
+    currency: "CNY"
+    timezone: "Asia/Shanghai"
+
+  - name: "Coding"
+    region: "cn"
+    domain: "coding.net"
+    ci_cd: "coding-ci"
+    compliance: "Cybersecurity_Law"
+    language: "zh-CN"
+    currency: "CNY"
+    timezone: "Asia/Shanghai"
+
+# Chinese cloud providers
+cloud_providers:
+  - name: "Alibaba Cloud"
+    region: "cn-north-1"
+    compliance: "Cybersecurity_Law"
+    data_residency: "china"
+    services: ["ECS", "OSS", "RDS", "Functions", "CDN"]
+
+  - name: "Tencent Cloud"
+    region: "ap-beijing-1"
+    compliance: "Cybersecurity_Law"
+    data_residency: "china"
+    services: ["CVM", "COS", "CDB", "SCF", "CDN"]
+
+  - name: "Huawei Cloud"
+    region: "cn-north-1"
+    compliance: "Cybersecurity_Law"
+    data_residency: "china"
+    services: ["ECS", "OBS", "RDS", "FunctionGraph", "CDN"]
+
+  - name: "Baidu Cloud"
+    region: "cn-north-1"
+    compliance: "Cybersecurity_Law"
+    data_residency: "china"
+    services: ["BCC", "BOS", "RDS", "CFC", "CDN"]
+
+# Chinese compliance standards
+compliance:
+  - name: "Cybersecurity Law"
+    full_name: "中华人民共和国网络安全法"
+    description: "Chinese cybersecurity law"
+    requirements: ["data_localization", "security_review", "critical_infrastructure", "incident_reporting"]
+    audit_frequency: "annual"
+
+  - name: "Data Security Law"
+    full_name: "中华人民共和国数据安全法"
+    description: "Chinese data security law"
+    requirements: ["data_classification", "important_data_protection", "cross_border_transfer"]
+    audit_frequency: "ongoing"
+
+  - name: "Personal Information Protection Law"
+    full_name: "中华人民共和国个人信息保护法"
+    description: "Chinese personal information protection law"
+    requirements: ["consent", "data_minimization", "user_rights", "breach_notification"]
+    audit_frequency: "annual"
+
+  - name: "Multi-Level Protection Scheme"
+    full_name: "信息系统安全等级保护制度"
+    description: "Chinese information system security protection"
+    requirements: ["mlps_level_3", "security_baseline", "audit_requirements"]
+    audit_frequency: "quarterly"
+
+# Chinese localization
+localization:
+  languages:
+    - code: "zh-CN"
+      name: "中文 (中国)"
+      script: "Simplified Chinese"
+      direction: "ltr"
+
+    - code: "zh-TW"
+      name: "中文 (台灣)"
+      script: "Traditional Chinese"
+      direction: "ltr"
+
+    - code: "en-CN"
+      name: "English (China)"
+      script: "Latin"
+      direction: "ltr"
+
+    - code: "ug"
+      name: "ئۇيغۇرچە"
+      script: "Arabic"
+      direction: "rtl"
+
+    - code: "mn"
+      name: "Монгол"
+      script: "Cyrillic"
+      direction: "ltr"
+
+  currencies:
+    - code: "CNY"
+      name: "人民币"
+      symbol: "¥"
+      format: "¥#,##0.00"
+
+    - code: "HKD"
+      name: "港币"
+      symbol: "HK$"
+      format: "HK$#,##0.00"
+
+    - code: "TWD"
+      name: "新台币"
+      symbol: "NT$"
+      format: "NT$#,##0.00"
+
+  timezones:
+    - name: "Asia/Shanghai"
+      description: "北京时间"
+      offset: "UTC+8"
+
+    - name: "Asia/Chongqing"
+      description: "重庆时间"
+      offset: "UTC+8"
+
+    - name: "Asia/Hong_Kong"
+      description: "香港时间"
+      offset: "UTC+8"
+
+    - name: "Asia/Taipei"
+      description: "台北时间"
+      offset: "UTC+8"
+
+    - name: "Asia/Urumqi"
+      description: "乌鲁木齐时间"
+      offset: "UTC+6"
+
+# Chinese payment systems
+payment_systems:
+  - name: "Alipay"
+    type: "digital_wallet"
+    description: "支付宝"
+    supported_currencies: ["CNY", "USD", "EUR", "JPY", "KRW"]
+    processing_time: "instant"
+    fees: "0.6%"
+
+  - name: "WeChat Pay"
+    type: "digital_wallet"
+    description: "微信支付"
+    supported_currencies: ["CNY", "USD", "EUR", "JPY", "KRW"]
+    processing_time: "instant"
+    fees: "0.6%"
+
+  - name: "UnionPay"
+    type: "credit_card"
+    description: "银联"
+    supported_currencies: ["CNY", "USD", "EUR", "JPY", "KRW"]
+    processing_time: "1-3 days"
+    fees: "0.5%"
+
+  - name: "China Merchants Bank"
+    type: "bank_transfer"
+    description: "招商银行"
+    supported_currencies: ["CNY"]
+    processing_time: "instant"
+    fees: "0.00"
+
+  - name: "Industrial and Commercial Bank of China"
+    type: "bank_transfer"
+    description: "中国工商银行"
+    supported_currencies: ["CNY"]
+    processing_time: "instant"
+    fees: "0.00"
+
+# Chinese social integrations
+social_integration:
+  - name: "WeChat"
+    type: "messaging"
+    region: "cn"
+    language: "zh-CN"
+    features: ["messaging", "social", "payments", "mini_programs"]
+
+  - name: "Weibo"
+    type: "social"
+    region: "cn"
+    language: "zh-CN"
+    features: ["microblogging", "social", "influencer_marketing"]
+
+  - name: "Douyin"
+    type: "video"
+    region: "cn"
+    language: "zh-CN"
+    features: ["short_video", "live_streaming", "social_commerce"]
+
+  - name: "Bilibili"
+    type: "video"
+    region: "cn"
+    language: "zh-CN"
+    features: ["video_sharing", "live_streaming", "danmaku"]
+
+  - name: "Zhihu"
+    type: "q&a"
+    region: "cn"
+    language: "zh-CN"
+    features: ["knowledge_sharing", "discussions", "expert_answers"]
+
+  - name: "QQ"
+    type: "messaging"
+    region: "cn"
+    language: "zh-CN"
+    features: ["instant_messaging", "social", "gaming"]
+
+# Chinese CI/CD pipelines
+ci_cd:
+  gitee_ci:
+    name: "Gitee CI"
+    platform: "gitee"
+    region: "cn-north-1"
+    features:
+      - "chinese_data_residency"
+      - "cybersecurity_law_compliance"
+      - "chinese_character_support"
+      - "great_firewall_compatibility"
+
+  gitcode_ci:
+    name: "GitCode CI"
+    platform: "gitcode"
+    region: "cn-north-1"
+    features:
+      - "chinese_developer_community"
+      - "local_storage"
+      - "chinese_language_support"
+      - "domestic_integration"
+
+  coding_ci:
+    name: "Coding CI"
+    platform: "coding"
+    region: "cn-north-1"
+    features:
+      - "chinese_enterprise_focus"
+      - "cybersecurity_standards"
+      - "chinese_ecosystem"
+      - "domestic_deployment"
+
+# Chinese deployment targets
+deployment:
+  huawei_appgallery_china:
+    platform: "harmonyos"
+    region: "cn"
+    language: "zh-CN"
+    currency: "CNY"
+    compliance: "Cybersecurity_Law"
+    requirements: ["chinese_citizenship", "local_storage", "censorship_compliance"]
+
+  xiaomi_app_store:
+    platform: "android"
+    region: "cn"
+    language: "zh-CN"
+    currency: "CNY"
+    compliance: "Cybersecurity_Law"
+    requirements: ["miui_integration", "xiaomi_services", "chinese_compliance"]
+
+  oppo_app_market:
+    platform: "android"
+    region: "cn"
+    language: "zh-CN"
+    currency: "CNY"
+    compliance: "Cybersecurity_Law"
+    requirements: ["coloros_integration", "oppo_services", "chinese_standards"]
+
+  vivo_app_store:
+    platform: "android"
+    region: "cn"
+    language: "zh-CN"
+    currency: "CNY"
+    compliance: "Cybersecurity_Law"
+    requirements: ["funtouch_integration", "vivo_services", "chinese_compliance"]
+
+# Chinese regional settings
+regional_settings:
+  provinces:
+    - name: "北京市"
+      code: "BJ"
+      timezone: "Asia/Shanghai"
+      language: "zh-CN"
+      features: ["capital_city", "government_center", "tech_hub"]
+
+    - name: "上海市"
+      code: "SH"
+      timezone: "Asia/Shanghai"
+      language: "zh-CN"
+      features: ["financial_center", "international_trade", "modern_city"]
+
+    - name: "广东省"
+      code: "GD"
+      timezone: "Asia/Shanghai"
+      language: "zh-CN"
+      features: ["manufacturing_hub", "export_center", "tech_innovation"]
+
+    - name: "深圳市"
+      code: "SZ"
+      timezone: "Asia/Shanghai"
+      language: "zh-CN"
+      features: ["tech_hub", "huawei_hq", "innovation_center"]
+
+    - name: "江苏省"
+      code: "JS"
+      timezone: "Asia/Shanghai"
+      language: "zh-CN"
+      features: ["education_hub", "research_center", "manufacturing"]
+
+    - name: "浙江省"
+      code: "ZJ"
+      timezone: "Asia/Shanghai"
+      language: "zh-CN"
+      features: ["e_commerce", "alibaba_hq", "digital_economy"]
+
+# Chinese government integration
+government_integration:
+  - name: "Cyberspace Administration of China"
+    type: "cyber_regulator"
+    features: ["content_monitoring", "internet_governance", "cybersecurity_standards"]
+
+  - name: "Ministry of Industry and Information Technology"
+    type: "telecom_regulator"
+    features: ["telecom_licensing", "spectrum_management", "equipment_approval"]
+
+  - name: "Public Security Bureau"
+    type: "security_agency"
+    features: ["cybersecurity", "data_protection", "network_monitoring"]
+
+  - name: "National Internet Emergency Center"
+    type: "cybersecurity_center"
+    features: ["incident_response", "threat_intelligence", "security_monitoring"]
+
+# Chinese mesh network configuration
+mesh_network:
+  china_mesh:
+    name: "China Mesh Network"
+    coverage: "national"
+    nodes: ["beijing", "shanghai", "shenzhen", "guangzhou", "hangzhou", "nanjing", "wuhan", "chengdu", "xian", "tianjin", "chongqing", "dongguan", "qingdao", "dalian", "jinan", "kunming", "harbin", "changchun", "shenyang", "hefei"]
+    backbone_providers: ["china_telecom", "china_mobile", "china_unicom", "china_broadcasting"]
+    emergency_services: ["119_integration", "110_integration", "emergency_broadcasting"]
+    government_integration: ["great_firewall", "golden_shield", "cybersecurity_monitoring"]
+
+# Chinese blockchain integration
+blockchain:
+  china_blockchain:
+    networks: ["conflux", "neo", "ontology", "vechain", "qtum"]
+    compliance: ["pboc_standards", "csrc_regulation", "aml_requirements"]
+    features: ["digital_currency", "supply_chain", "government_blockchain", "financial_services"]
+    exchanges: ["huobi_china", "okex_china", "binance_china", "gate_io_china"]
+
+# Chinese IoT integration
+iot_integration:
+  china_iot:
+    standards: ["gb_t", "guobiao", "china_iot_standards"]
+    devices: ["smart_home", "industrial_iot", "agricultural_iot", "healthcare_iot", "transport_iot"]
+    providers: ["huawei_iot", "alibaba_iot", "tencent_iot", "baidu_iot", "xiaomi_iot"]
+    compliance: ["chinese_standards", "cybersecurity_law", "data_residency"]
+
+# Chinese enterprise features
+enterprise:
+  china_enterprise:
+    features: ["state_owned_enterprises", "private_companies", "tech_giants", "manufacturing", "financial_services"]
+    security: ["mlps_level_3", "cybersecurity_standards", "data_classification"]
+    compliance: ["cybersecurity_law", "data_security_law", "personal_information_law", "multi_level_protection"]
+    support: ["chinese_support", "mandarin_language", "beijing_time", "local_data_centers"]
+
+# Chinese developer ecosystem
+developer_ecosystem:
+  china_developers:
+    communities: ["beijing_tech", "shanghai_tech", "shenzhen_tech", "hangzhou_tech", "guangzhou_tech"]
+    universities: ["tsinghua", "peking", "shanghai_jiao_tong", "fudan", "zhejiang", "nju", "ustc", "hust", "sjtu", "bit"]
+    accelerators: ["zhongguancun", "zhangjiang", "shenzhen_bay", "hangzhou_future", "guangzhou_science_city"]
+    government_programs: ["thousand_talents", "innovation_driven_development", "made_in_china_2025", "internet_plus", "digital_china"]
+    events: ["china_internet_conference", "world_internet_conference", "china_tech_summit", "beijing_tech_week", "shanghai_tech_forum"]
+
+# Chinese security standards
+security_standards:
+  - name: "MLPS 3.0"
+    level: "critical"
+    requirements: ["network_security", "data_protection", "access_control", "audit_trails", "backup_recovery"]
+
+  - name: "GB/T 18336"
+    level: "cryptographic"
+    requirements: ["sm2_algorithm", "sm3_hash", "sm4_encryption", "chinese_standards"]
+
+  - name: "GB/T 20271"
+    level: "information_security"
+    requirements: ["security_baseline", "risk_assessment", "security_management", "technical_measures"]
+
+  - name: "GB/T 25070"
+    level: "network_security"
+    requirements: ["intrusion_detection", "security_audit", "access_control", "data_protection"]

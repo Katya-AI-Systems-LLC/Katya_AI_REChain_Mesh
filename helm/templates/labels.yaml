@@ -1,0 +1,15 @@
+{{- include "katya-rechain-mesh.labels" . | nindent 4 }}
+{{- if .Values.commonLabels }}
+{{ toYaml .Values.commonLabels | nindent 4 }}
+{{- end }}
+{{- if .Values.commonAnnotations }}
+annotations:
+{{ toYaml .Values.commonAnnotations | nindent 4 }}
+{{- end }}
+{{- if .Values.deploymentLabels }}
+{{ toYaml .Values.deploymentLabels | nindent 4 }}
+{{- end }}
+{{- if .Values.deploymentAnnotations }}
+annotations:
+{{ toYaml .Values.deploymentAnnotations | nindent 4 }}
+{{- end }}

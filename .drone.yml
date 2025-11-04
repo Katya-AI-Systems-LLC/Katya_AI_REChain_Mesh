@@ -1,0 +1,97 @@
+kind: pipeline
+type: docker
+name: flutter-ci
+
+steps:
+- name: build
+  image: cirrusci/flutter:stable
+  commands:
+  - flutter pub get
+  - flutter build apk --release
+# Gitea Actions Configuration
+# Drone CI pipeline for Gitea
+
+kind: pipeline
+type: docker
+name: default
+
+steps:
+  - name: analyze
+    image: cirrusci/flutter:latest
+    commands:
+      - flutter doctor
+      - flutter pub get
+      - flutter analyze --fatal-infos --fatal-warnings
+
+  - name: test
+    image: cirrusci/flutter:latest
+    commands:
+      - flutter test --coverage
+      - flutter test integration_test
+    depends_on:
+      - analyze
+
+  - name: build-web
+    image: cirrusci/flutter:latest
+    commands:
+      - flutter build web --release --web-renderer canvaskit --pwa-strategy=offline-first
+    depends_on:
+      - test
+
+  - name: build-android
+    image: cirrusci/flutter:latest
+    commands:
+      - flutter build apk --release --split-per-abi
+      - flutter build appbundle --release
+    depends_on:
+      - test
+
+  - name: build-ios
+    image: cirrusci/flutter:latest
+    commands:
+      - flutter build ios --release --no-codesign
+    depends_on:
+      - test
+
+  - name: build-desktop
+    image: cirrusci/flutter:latest
+    commands:
+      - flutter build linux --release
+      - flutter build windows --release
+      - flutter build macos --release
+    depends_on:
+      - test
+
+  - name: deploy-web
+    image: plugins/s3
+    settings:
+      bucket: katya-ai-rechain-mesh
+      access_key:
+        from_secret: aws_access_key_id
+      secret_key:
+        from_secret: aws_secret_access_key
+      region: us-east-1
+      path_style: true
+    depends_on:
+      - build-web
+    when:
+      branch: main
+
+  - name: notify
+    image: plugins/discord
+    settings:
+      webhook_id:
+        from_secret: discord_webhook_id
+      webhook_token:
+        from_secret: discord_webhook_token
+    depends_on:
+      - build-web
+      - build-android
+      - build-ios
+      - build-desktop
+    when:
+      status: [ success, failure ]
+
+trigger:
+  branch: main
+  event: [ push, pull_request, tag ]

@@ -1,0 +1,76 @@
+# Default values for katya-mesh
+replicaCount: 3
+
+image:
+  repository: katyaai/mesh-node
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+  grpcPort: 9090
+  metricsPort: 9091
+
+config:
+  protocol: gossip
+  maxPeers: 100
+  heartbeatInterval: 30
+  enableEncryption: true
+  enableCompression: false
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Service mesh configuration
+istio:
+  enabled: false
+  gateway:
+    enabled: false
+
+# Monitoring configuration
+monitoring:
+  prometheus:
+    enabled: true
+    scrapeInterval: 30s
+  grafana:
+    enabled: false
+    dashboards: true
+
+# Load balancer configuration
+loadBalancer:
+  enabled: true
+  strategy: round_robin
+  healthCheck:
+    enabled: true
+    interval: 30s
+    timeout: 5s
+
+# Storage configuration
+storage:
+  enabled: false
+  size: 10Gi
+  className: standard
+
+# Ingress configuration
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: mesh.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []

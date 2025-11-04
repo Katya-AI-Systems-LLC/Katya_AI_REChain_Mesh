@@ -1,0 +1,166 @@
+# Katya AI REChain Mesh - Italy Git System Configuration
+# Configurazione Git italiana per Italia e paesi italofoni
+
+version: 1.0
+name: "Katya AI REChain Mesh - Italy Systems"
+
+# Piattaforme Git italiane
+platforms:
+  - name: "GitHub Italy"
+    region: "it"
+    domain: "github.it"
+    ci_cd: "github-actions"
+    compliance: "GDPR"
+    language: "it"
+
+  - name: "GitLab Italy"
+    region: "it"
+    domain: "gitlab.it"
+    ci_cd: "gitlab-ci"
+    compliance: "GDPR"
+    language: "it"
+
+  - name: "Codeberg Italy"
+    region: "it"
+    domain: "codeberg.it"
+    ci_cd: "woodpecker"
+    compliance: "GDPR"
+    language: "it"
+
+# Provider cloud italiani
+cloud_providers:
+  - name: "AWS Italy (eu-south-1)"
+    region: "milan"
+    compliance: "GDPR"
+    data_residency: "italy"
+
+  - name: "Azure Italy"
+    region: "italynorth"
+    compliance: "GDPR"
+    data_residency: "italy"
+
+  - name: "Google Cloud Italy"
+    region: "europe-west8"
+    compliance: "GDPR"
+    data_residency: "italy"
+
+  - name: "TIM Cloud"
+    region: "italy"
+    compliance: "GDPR"
+    data_residency: "italy"
+
+  - name: "Vodafone Italia Cloud"
+    region: "italy"
+    compliance: "GDPR"
+    data_residency: "italy"
+
+# Conformità e standard
+compliance:
+  gdpr: true
+  iso27001: true
+  agid: true
+  psd2: true
+
+# Localizzazione italiana
+localization:
+  primary: "it-IT"
+  secondary: ["it-CH", "en-IT", "fr-IT", "de-IT", "sl-IT"]
+  currency: "EUR"
+  timezone: "Europe/Rome"
+
+# Pipeline CI/CD per piattaforme italiane
+github_actions_italy: |
+  name: CI/CD Italia
+  on: [push, pull_request]
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - name: Configurazione Flutter
+          uses: subosito/flutter-action@v2
+          with:
+            flutter-version: '3.16.0'
+        - run: flutter pub get
+        - run: flutter analyze
+        - run: flutter test
+        - run: flutter build apk --release
+        - run: flutter build ios --release --no-codesign
+        - run: flutter build web --release
+
+# Store italiani
+deployment:
+  google_play_italy:
+    track: "alpha"
+    language: "it"
+    countries: ["IT"]
+
+  app_store_italy:
+    region: "it"
+    language: "it"
+    countries: ["IT"]
+
+# Sistemi di pagamento italiani
+payment_systems:
+  - name: "PagoPA"
+    type: "government_payment"
+    region: "it"
+
+  - name: "Satispay"
+    type: "mobile_payment"
+    region: "it"
+
+  - name: "Nexi"
+    type: "payment_processor"
+    region: "it"
+
+  - name: "Intesa Sanpaolo"
+    type: "banking_payment"
+    region: "it"
+
+  - name: "UniCredit"
+    type: "banking_payment"
+    region: "it"
+
+  - name: "Poste Italiane"
+    type: "postal_payment"
+    region: "it"
+
+# Integrazione social italiana
+social_integration:
+  - name: "WhatsApp Italia"
+    type: "messaging"
+    region: "it"
+
+  - name: "Facebook Italia"
+    type: "social"
+    region: "it"
+
+  - name: "Instagram Italia"
+    type: "social"
+    region: "it"
+
+  - name: "Twitter Italia"
+    type: "social"
+    region: "it"
+
+  - name: "YouTube Italia"
+    type: "video"
+    region: "it"
+
+  - name: "TikTok Italia"
+    type: "video"
+    region: "it"
+
+  - name: "LinkedIn Italia"
+    type: "professional"
+    region: "it"
+
+# Paesi italofoni e mediterranei
+supported_countries:
+  - "IT"  # Italia
+  - "SM"  # San Marino
+  - "VA"  # Città del Vaticano
+  - "MT"  # Malta
+  - "SI"  # Slovenia (parte italofona)
+  - "HR"  # Croazia (parte italofona)

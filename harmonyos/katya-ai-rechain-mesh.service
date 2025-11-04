@@ -1,0 +1,54 @@
+[Unit]
+Description=Katya AI REChain Mesh for HarmonyOS
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=harmonyuser
+Group=harmonygroup
+ExecStart=/usr/bin/katya-ai-rechain-mesh
+Restart=always
+RestartSec=5
+TimeoutStartSec=30
+TimeoutStopSec=10
+
+# Environment variables
+Environment="QT_QPA_PLATFORM=harmonyos"
+Environment="XDG_RUNTIME_DIR=/run/user/%U"
+Environment="WAYLAND_DISPLAY=wayland-0"
+Environment="DISPLAY=:0"
+
+# Security settings
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=strict
+ReadWritePaths=/home/harmonyuser/.config/katya-ai-rechain-mesh
+ReadWritePaths=/home/harmonyuser/.local/share/katya-ai-rechain-mesh
+ReadWritePaths=/home/harmonyuser/.cache/katya-ai-rechain-mesh
+ReadWritePaths=/tmp
+ReadWritePaths=/var/tmp
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=65536
+MemoryMax=2G
+CPUQuota=200%
+
+# Supplementary groups for mobile features
+SupplementaryGroups=audio video input camera location network bluetooth
+
+# Security hardening
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+RemoveIPC=yes
+PrivateMounts=yes
+
+[Install]
+WantedBy=multi-user.target

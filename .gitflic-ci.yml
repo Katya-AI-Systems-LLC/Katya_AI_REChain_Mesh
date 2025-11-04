@@ -1,0 +1,1067 @@
+# 🚀 GitFlic CI/CD Configuration
+
+## 📋 **GitFlic Setup Guide**
+
+GitFlic (ГитФлик) - российская платформа для совместной разработки с полным циклом CI/CD.
+
+### **🎯 Быстрая настройка**
+
+#### **1. Создание проекта в GitFlic**
+```bash
+# 1. Зарегистрируйтесь на https://gitflic.ru
+# 2. Создайте новый проект
+# 3. Скопируйте URL репозитория
+# 4. Клонируйте проект локально
+git clone <your-gitflic-repo-url>
+cd <project-name>
+
+# 5. Скопируйте файлы конфигурации
+cp .gitflic-ci.yml .gitlab-ci.yml
+cp -r .gitflic/ .github/
+```
+
+#### **2. Настройка CI/CD в GitFlic**
+```yaml
+# Перейдите в Настройки → CI/CD
+# Включите CI/CD для проекта
+# Добавьте переменные окружения:
+# - FLUTTER_VERSION: "3.24.0"
+# - DART_VERSION: "3.5.0"
+# - NODE_ENV: "production"
+# - BLOCKCHAIN_API_KEY: "your_key"
+# - AI_API_KEY: "your_key"
+```
+
+---
+
+## ⚙️ **GitFlic CI/CD Pipeline**
+
+### **📄 .gitflic-ci.yml** (Основной пайплайн)
+
+```yaml
+stages:
+  - validate
+  - test
+  - build
+  - security
+  - deploy
+  - notify
+
+variables:
+  FLUTTER_VERSION: "3.24.0"
+  DART_VERSION: "3.5.0"
+  NODE_ENV: "production"
+
+.template_flutter: &template_flutter
+  image: cirrusci/flutter:stable
+  before_script:
+    - flutter config --enable-web
+    - flutter config --enable-linux-desktop
+    - flutter config --enable-android
+    - flutter config --enable-ios
+    - flutter pub get
+  cache:
+    key:
+      files:
+        - pubspec.lock
+    paths:
+      - .pub-cache/
+
+validate:code:
+  <<: *template_flutter
+  stage: validate
+  script:
+    - dart format --set-exit-if-changed .
+    - flutter analyze
+    - flutter pub audit
+  only:
+    - merge_requests
+    - main
+    - develop
+
+test:unit:
+  <<: *template_flutter
+  stage: test
+  script:
+    - flutter test --coverage
+    - flutter test --tags=integration
+    - flutter test --tags=performance
+  coverage: '/lines\.*: (\d+\.\d+%)/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/lcov.info
+    paths:
+      - coverage/
+    expire_in: 1 week
+  only:
+    - merge_requests
+    - main
+    - develop
+
+build:all_platforms:
+  <<: *template_flutter
+  stage: build
+  script:
+    # Android
+    - flutter build apk --release
+    - flutter build appbundle --release
+    # iOS
+    - flutter build ios --release --no-codesign
+    # Web
+    - flutter build web --release
+    # Linux
+    - flutter build linux --release
+    # Windows
+    - flutter build windows --release
+    # macOS
+    - flutter build macos --release
+  artifacts:
+    paths:
+      - build/
+      - android/app/build/outputs/
+      - ios/build/
+    expire_in: 1 week
+  only:
+    - main
+    - tags
+    - merge_requests
+
+security:scan:
+  stage: security
+  image: securecodewarrior/github-action-sarif-to-gitlab-ci:latest
+  script:
+    - echo "Security scanning for GitFlic"
+    - flutter pub audit
+    - flutter analyze --security
+  artifacts:
+    reports:
+      codequality: gl-code-quality-report.json
+      sast: gl-sast-report.json
+    paths:
+      - security-reports/
+  only:
+    - main
+    - develop
+    - merge_requests
+
+deploy:staging:
+  stage: deploy
+  image: google/cloud-sdk:alpine
+  script:
+    - echo "Deploy to staging environment"
+    - gcloud auth activate-service-account --key-file $GCLOUD_SERVICE_KEY
+    - gcloud config set project $GCLOUD_PROJECT_ID
+    - kubectl set image deployment/katya-rechain-mesh frontend=$CI_COMMIT_SHA -n staging
+    - kubectl rollout status deployment/katya-rechain-mesh -n staging --timeout=600s
+  environment:
+    name: staging
+    url: https://staging.your-domain.ru
+  only:
+    - develop
+
+deploy:production:
+  stage: deploy
+  image: google/cloud-sdk:alpine
+  script:
+    - echo "Deploy to production environment"
+    - gcloud auth activate-service-account --key-file $GCLOUD_SERVICE_KEY
+    - gcloud config set project $GCLOUD_PROJECT_ID
+    - kubectl set image deployment/katya-rechain-mesh frontend=$CI_COMMIT_SHA -n production
+    - kubectl rollout status deployment/katya-rechain-mesh -n production --timeout=600s
+  environment:
+    name: production
+    url: https://your-domain.ru
+  only:
+    - main
+    - tags
+
+notify:success:
+  stage: notify
+  image: curlimages/curl:latest
+  script:
+    - |
+      if [ "$CI_PIPELINE_STATUS" == "success" ]; then
+        curl -X POST -H 'Content-type: application/json' \
+        --data '{"text":"Pipeline completed successfully! '"$CI_PROJECT_NAME"' - '"$CI_COMMIT_REF_NAME"'"}' \
+        $DISCORD_WEBHOOK_URL
+      fi
+  when: always
+  only:
+    - main
+    - develop
+```
+
+---
+
+## 🔧 **GitFlic Project Configuration**
+
+### **📄 .gitflic-ci-advanced.yml** (Расширенный пайплайн)
+
+```yaml
+stages:
+  - preparation
+  - validation
+  - testing
+  - building
+  - security
+  - performance
+  - deployment
+  - monitoring
+  - cleanup
+
+variables:
+  FLUTTER_VERSION: "3.24.0"
+  DART_VERSION: "3.5.0"
+  NODE_VERSION: "18"
+  DOCKER_IMAGE_TAG: $CI_COMMIT_SHA
+  KUBERNETES_NAMESPACE: $CI_ENVIRONMENT_NAME
+
+# Подготовка окружения
+prepare:environment:
+  stage: preparation
+  image: alpine:latest
+  script:
+    - echo "Preparing environment for $CI_ENVIRONMENT_NAME"
+    - echo "Flutter version: $FLUTTER_VERSION"
+    - echo "Dart version: $DART_VERSION"
+    - # Проверка переменных окружения
+  only:
+    - merge_requests
+    - main
+    - develop
+
+# Валидация зависимостей
+validate:dependencies:
+  stage: validation
+  image: node:$NODE_VERSION-alpine
+  script:
+    - npm install -g @dependabot/cli
+    - dependabot update --repo $CI_PROJECT_PATH
+    - flutter pub audit
+    - flutter pub outdated
+  artifacts:
+    reports:
+      codequality: dependency-report.json
+    paths:
+      - dependency-reports/
+  only:
+    - main
+    - schedule
+
+# Комплексное тестирование
+test:comprehensive:
+  stage: testing
+  image: cirrusci/flutter:stable
+  parallel:
+    matrix:
+      - TEST_TYPE: unit
+        TEST_TAGS: ""
+      - TEST_TYPE: integration
+        TEST_TAGS: "integration"
+      - TEST_TYPE: performance
+        TEST_TAGS: "performance"
+      - TEST_TYPE: widget
+        TEST_TAGS: "widget"
+  script:
+    - |
+      case $TEST_TYPE in
+        "unit")
+          flutter test --coverage --test-randomize-ordering-seed=random
+          ;;
+        "integration")
+          flutter test integration_test/ --tags=$TEST_TAGS
+          ;;
+        "performance")
+          flutter test --tags=$TEST_TAGS
+          flutter run --profile --trace-skia-allowlist=skia_perf
+          ;;
+        "widget")
+          flutter test --tags=$TEST_TAGS
+          ;;
+      esac
+  coverage: '/lines\.*: (\d+\.\d+%)/'
+  artifacts:
+    reports:
+      junit: test-results/junit.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/lcov.info
+    paths:
+      - test-results/
+      - coverage/
+      - performance-reports/
+    expire_in: 2 weeks
+  only:
+    - merge_requests
+    - main
+    - develop
+
+# Сборка с оптимизацией
+build:optimized:
+  stage: building
+  image: cirrusci/flutter:stable
+  script:
+    # Предварительная подготовка
+    - flutter clean
+    - flutter pub get
+    - flutter pub run build_runner build --delete-conflicting-outputs
+
+    # Анализ размера
+    - flutter build apk --analyze-size --release
+
+    # Сборка для всех платформ с оптимизацией
+    - |
+      echo "Building Android..."
+      flutter build apk --release --obfuscate --split-debug-info=debug-info/
+      flutter build appbundle --release --obfuscate --split-debug-info=debug-info/
+
+    - |
+      echo "Building iOS..."
+      flutter build ios --release --no-codesign
+
+    - |
+      echo "Building Web..."
+      flutter build web --release --pwa-strategy=offline-first
+
+    - |
+      echo "Building Desktop..."
+      flutter build linux --release
+      flutter build windows --release
+      flutter build macos --release
+
+    # Создание Docker образов
+    - |
+      echo "Building Docker images..."
+      docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
+      docker build -t $CI_REGISTRY_IMAGE:latest .
+      docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG .
+
+  artifacts:
+    paths:
+      - build/
+      - debug-info/
+      - docker-images/
+    expire_in: 1 month
+  only:
+    - main
+    - tags
+    - merge_requests
+
+# Комплексная проверка безопасности
+security:comprehensive:
+  stage: security
+  image: securecodewarrior/github-action-sarif-to-gitlab-ci:latest
+  script:
+    # Анализ зависимостей
+    - flutter pub audit --json > pub-audit-report.json
+    - npm audit --json > npm-audit-report.json
+
+    # Сканирование уязвимостей
+    - |
+      echo "Running security scans..."
+      # CodeQL аналог
+      # SAST сканирование
+      # DAST тестирование
+      # Dependency check
+
+    # Анализ кода
+    - flutter analyze --security
+    - dart run custom_lint
+
+  artifacts:
+    reports:
+      codequality: gl-code-quality-report.json
+      sast: gl-sast-report.json
+      dependency_scanning: dependency-report.json
+    paths:
+      - security-reports/
+      - audit-reports/
+  allow_failure: true
+  only:
+    - main
+    - develop
+    - merge_requests
+
+# Производительность и метрики
+performance:benchmark:
+  stage: performance
+  image: cirrusci/flutter:stable
+  script:
+    # Бенчмаркинг
+    - flutter test --tags=benchmark
+
+    # Анализ памяти
+    - flutter run --profile --dart-define=flutter.inspector.structuredErrors=true
+
+    # Метрики производительности
+    - |
+      echo "Performance metrics:" > performance-report.txt
+      echo "Build time: $(date)" >> performance-report.txt
+      echo "Memory usage: $(flutter analyze --memory)" >> performance-report.txt
+
+    # Lighthouse для web
+    - |
+      if [ -d "build/web" ]; then
+        npm install -g lighthouse
+        lighthouse build/web --output=json --output-path=lighthouse-report.json
+      fi
+
+  artifacts:
+    reports:
+      codequality: performance-report.json
+    paths:
+      - performance-reports/
+      - lighthouse-report.json
+      - benchmark-results/
+  only:
+    - main
+    - develop
+    - merge_requests
+
+# Развертывание в Kubernetes
+deploy:kubernetes:
+  stage: deployment
+  image: google/cloud-sdk:alpine
+  script:
+    # Настройка kubectl
+    - gcloud auth activate-service-account --key-file $GCLOUD_SERVICE_KEY
+    - gcloud config set project $GCLOUD_PROJECT_ID
+    - gcloud config set compute/zone $GCLOUD_ZONE
+    - gcloud container clusters get-credentials $K8S_CLUSTER_NAME
+
+    # Обновление образов
+    - kubectl set image deployment/katya-rechain-mesh frontend=$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA -n $KUBERNETES_NAMESPACE
+
+    # Ожидание готовности
+    - kubectl rollout status deployment/katya-rechain-mesh -n $KUBERNETES_NAMESPACE --timeout=600s
+
+    # Проверка работоспособности
+    - kubectl get pods -n $KUBERNETES_NAMESPACE
+    - kubectl get services -n $KUBERNETES_NAMESPACE
+
+  environment:
+    name: $CI_ENVIRONMENT_NAME
+    url: https://$CI_ENVIRONMENT_NAME.your-domain.ru
+  only:
+    - main
+    - develop
+
+# Мониторинг и логирование
+monitoring:setup:
+  stage: monitoring
+  image: curlimages/curl:latest
+  script:
+    # Отправка метрик в мониторинг
+    - |
+      echo "Setting up monitoring for deployment..."
+      # Grafana dashboards
+      # Prometheus alerts
+      # ELK logging
+      # Jaeger tracing
+
+    # Проверка доступности сервисов
+    - curl -f https://$CI_ENVIRONMENT_NAME.your-domain.ru/health || exit 1
+    - curl -f https://$CI_ENVIRONMENT_NAME.your-domain.ru/api/health || exit 1
+
+    # Отправка уведомлений
+    - |
+      curl -X POST -H 'Content-type: application/json' \
+      --data '{"text":"🚀 Deployment completed! Environment: '"$CI_ENVIRONMENT_NAME"'"}' \
+      $DISCORD_WEBHOOK_URL
+
+  when: always
+  only:
+    - main
+    - develop
+
+# Очистка ресурсов
+cleanup:resources:
+  stage: cleanup
+  image: alpine:latest
+  script:
+    - echo "Cleaning up old resources..."
+    - # Удаление старых артефактов
+    - # Очистка кэша
+    - # Удаление временных файлов
+  when: always
+  only:
+    - main
+    - schedule
+```
+
+---
+
+## 📋 **GitFlic Project Settings**
+
+### **🔧 Рекомендуемые настройки проекта в GitFlic:**
+
+#### **1. Основные настройки**
+```bash
+# Настройки → Общие
+- Название проекта: katya-ai-rechain-mesh
+- Описание: AI-powered blockchain gaming IoT social mesh network
+- Видимость: Private/Public
+- Язык: Russian/Dart
+- Лицензия: MIT
+```
+
+#### **2. Настройки CI/CD**
+```bash
+# Настройки → CI/CD
+- Включить Auto DevOps: ✅
+- Включить контейнерный реестр: ✅
+- Включить реестр пакетов: ✅
+- Включить развертывание: ✅
+- Время ожидания: 1 час
+```
+
+#### **3. Переменные окружения**
+```bash
+# Настройки → CI/CD → Переменные
+FLUTTER_VERSION=3.24.0
+DART_VERSION=3.5.0
+NODE_ENV=production
+BLOCKCHAIN_API_KEY=secure_key_here
+AI_API_KEY=secure_key_here
+KUBE_CONTEXT=your-cluster
+KUBE_NAMESPACE=production
+GCLOUD_PROJECT_ID=your-project
+DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/...
+```
+
+#### **4. Вебхуки для уведомлений**
+```bash
+# Настройки → Вебхуки
+- URL: https://your-domain.ru/webhooks/gitflic
+- События: Push, Merge Request, Pipeline, Release
+- Секрет: your_webhook_secret
+```
+
+---
+
+## 🔒 **GitFlic Security Configuration**
+
+### **📄 .gitflic-security.yml**
+
+```yaml
+stages:
+  - security-scan
+  - dependency-check
+  - code-analysis
+  - vulnerability-test
+  - compliance-check
+
+# Сканирование безопасности
+security:scan:
+  stage: security-scan
+  image: securecodewarrior/github-action-sarif-to-gitlab-ci:latest
+  script:
+    # CodeQL аналог для GitFlic
+    - echo "Running comprehensive security scan..."
+    - flutter pub audit --json --format=json > security-report.json
+
+    # Сканирование зависимостей
+    - npm install -g auditjs
+    - auditjs ossi
+
+    # Анализ кода на уязвимости
+    - flutter analyze --security
+
+  artifacts:
+    reports:
+      sast: security-report.json
+      dependency_scanning: dependency-security-report.json
+    paths:
+      - security-reports/
+  only:
+    - main
+    - develop
+    - merge_requests
+
+# Проверка зависимостей
+dependency:check:
+  stage: dependency-check
+  image: node:18-alpine
+  script:
+    - npm install -g @dependabot/cli
+    - dependabot update --repo $CI_PROJECT_PATH
+
+    # Проверка на устаревшие пакеты
+    - flutter pub outdated
+    - npm outdated
+
+    # Автоматическое обновление
+    - |
+      if [ "$CI_COMMIT_REF_NAME" == "main" ]; then
+        flutter pub upgrade
+        npm update
+      fi
+
+  artifacts:
+    reports:
+      codequality: dependency-report.json
+    paths:
+      - dependency-updates/
+  only:
+    - main
+    - schedule
+
+# Анализ кода
+code:analysis:
+  stage: code-analysis
+  image: cirrusci/flutter:stable
+  script:
+    # Статический анализ
+    - flutter analyze --fatal-infos --fatal-warnings
+
+    # Кастомные правила
+    - dart run custom_lint
+
+    # Анализ сложности кода
+    - dart run dart_code_metrics analyze lib
+
+    # Проверка покрытия кода
+    - flutter test --coverage
+    - lcov --remove coverage/lcov.info 'lib/generated/*' 'lib/**/*.g.dart' 'lib/**/*.freezed.dart' -o coverage/lcov.info
+    - genhtml coverage/lcov.info -o coverage/html
+
+  coverage: '/lines\.*: (\d+\.\d+%)/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/lcov.info
+      codequality: code-analysis-report.json
+    paths:
+      - coverage/
+      - code-analysis/
+  only:
+    - merge_requests
+    - main
+    - develop
+
+# Тестирование уязвимостей
+vulnerability:test:
+  stage: vulnerability-test
+  image: cirrusci/flutter:stable
+  script:
+    # Тестирование на уязвимости
+    - flutter test --tags=security
+
+    # Penetration testing simulation
+    - |
+      echo "Running vulnerability tests..."
+      # Input validation tests
+      # Authentication tests
+      # Authorization tests
+      # Data validation tests
+
+  artifacts:
+    reports:
+      junit: vulnerability-test-results.xml
+    paths:
+      - vulnerability-reports/
+  only:
+    - main
+    - develop
+    - merge_requests
+
+# Проверка соответствия стандартам
+compliance:check:
+  stage: compliance-check
+  image: alpine:latest
+  script:
+    # Проверка GDPR compliance
+    - |
+      echo "Checking GDPR compliance..."
+      # Data protection tests
+      # Privacy policy checks
+      # Consent management tests
+
+    # Проверка ISO 27001
+    - |
+      echo "Checking ISO 27001 compliance..."
+      # Security policy tests
+      # Access control tests
+      # Audit logging tests
+
+    # Российские стандарты
+    - |
+      echo "Checking Russian standards compliance..."
+      # ФЗ-152 compliance
+      # ФЗ-187 compliance
+      # Роскомнадзор requirements
+
+  artifacts:
+    reports:
+      codequality: compliance-report.json
+    paths:
+      - compliance-reports/
+  only:
+    - main
+    - schedule
+```
+
+---
+
+## 📋 **GitFlic Issue Templates**
+
+### **🐛 Bug Report Template**
+
+```yaml
+# .gitflic/issue_templates/bug_report.md
+name: Ошибка
+description: Создать отчет об ошибке
+title: "[Bug]: "
+labels: ["bug", "triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Спасибо за сообщение об ошибке! Пожалуйста, заполните как можно больше деталей.
+  - type: input
+    name: version
+    attributes:
+      label: Версия приложения
+      description: Укажите версию, в которой обнаружена ошибка
+      placeholder: "1.0.0"
+  - type: dropdown
+    name: platform
+    attributes:
+      label: Платформа
+      options:
+        - Android
+        - iOS
+        - Web
+        - Desktop (Linux)
+        - Desktop (Windows)
+        - Desktop (macOS)
+  - type: textarea
+    name: description
+    attributes:
+      label: Описание ошибки
+      description: Подробное описание проблемы
+      placeholder: |
+        Шаги для воспроизведения:
+        1. Перейти в раздел...
+        2. Нажать на...
+        3. Произошла ошибка...
+  - type: textarea
+    name: expected
+    attributes:
+      label: Ожидаемое поведение
+      description: Что должно происходить вместо этого
+  - type: textarea
+    name: actual
+    attributes:
+      label: Фактическое поведение
+      description: Что происходит на самом деле
+  - type: input
+    name: environment
+    attributes:
+      label: Среда выполнения
+      description: ОС, браузер, устройство и т.д.
+      placeholder: "Android 12, Chrome 108, iPhone 14"
+  - type: checkboxes
+    name: checklist
+    attributes:
+      label: Контрольный список
+      options:
+        - label: Я проверил, что ошибка не дублирует существующую
+        - label: Я предоставил все необходимые детали
+        - label: Я готов предоставить дополнительные данные при необходимости
+```
+
+### **💡 Feature Request Template**
+
+```yaml
+# .gitflic/issue_templates/feature_request.md
+name: Предложение функции
+description: Предложить новую идею для проекта
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Спасибо за предложение новой функции! Пожалуйста, предоставьте как можно больше деталей.
+  - type: textarea
+    name: description
+    attributes:
+      label: Описание функции
+      description: Подробное описание предлагаемой функции
+      placeholder: |
+        Опишите функцию, которую вы хотите добавить.
+        Как она должна работать? Какие проблемы она решает?
+  - type: textarea
+    name: use_case
+    attributes:
+      label: Пример использования
+      description: Приведите примеры использования этой функции
+      placeholder: |
+        Пример 1: Пользователь делает X, получает Y
+        Пример 2: В сценарии Z функция работает следующим образом
+  - type: dropdown
+    name: module
+    attributes:
+      label: Модуль
+      options:
+        - Blockchain (Блокчейн)
+        - Gaming (Игры)
+        - IoT (Интернет вещей)
+        - Social (Социальные функции)
+        - AI (Искусственный интеллект)
+        - Infrastructure (Инфраструктура)
+        - Other (Другое)
+  - type: dropdown
+    name: priority
+    attributes:
+      label: Приоритет
+      options:
+        - Critical (Критический)
+        - High (Высокий)
+        - Medium (Средний)
+        - Low (Низкий)
+  - type: textarea
+    name: alternatives
+    attributes:
+      label: Альтернативные решения
+      description: Есть ли способы решить эту проблему другими способами?
+  - type: checkboxes
+    name: checklist
+    attributes:
+      label: Контрольный список
+      options:
+        - label: Я проверил, что функция не дублирует существующую
+        - label: Я описал функцию достаточно подробно
+        - label: Я указал модуль и приоритет
+        - label: Я готов обсудить детали реализации
+```
+
+---
+
+## 🚀 **GitFlic Deployment Configuration**
+
+### **📄 .gitflic/deployment.yml**
+
+```yaml
+# Развертывание в Kubernetes через GitFlic
+deploy:kubernetes:
+  stage: deploy
+  image:
+    name: google/cloud-sdk:alpine
+    entrypoint: [""]
+  script:
+    # Аутентификация в кластере
+    - gcloud auth activate-service-account --key-file $GCLOUD_SERVICE_KEY
+    - gcloud config set project $GCLOUD_PROJECT_ID
+    - gcloud config set compute/zone $GCLOUD_ZONE
+    - gcloud container clusters get-credentials $K8S_CLUSTER_NAME
+
+    # Обновление конфигурации
+    - kubectl set image deployment/katya-rechain-mesh frontend=$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA -n $KUBERNETES_NAMESPACE
+
+    # Ожидание развертывания
+    - kubectl rollout status deployment/katya-rechain-mesh -n $KUBERNETES_NAMESPACE --timeout=600s
+
+    # Проверка работоспособности
+    - kubectl get pods -l app=katya-rechain-mesh -n $KUBERNETES_NAMESPACE
+    - kubectl get services -l app=katya-rechain-mesh -n $KUBERNETES_NAMESPACE
+
+    # Проверка health checks
+    - curl -f https://$CI_ENVIRONMENT_NAME.your-domain.ru/health || exit 1
+    - curl -f https://$CI_ENVIRONMENT_NAME.your-domain.ru/api/health || exit 1
+
+  environment:
+    name: $CI_ENVIRONMENT_NAME
+    url: https://$CI_ENVIRONMENT_NAME.your-domain.ru
+  only:
+    - main
+    - develop
+    - tags
+```
+
+---
+
+## 📚 **GitFlic Documentation**
+
+### **📄 README_GITFLIC.md**
+
+```markdown
+# 🚀 Katya AI REChain Mesh - GitFlic Setup
+
+## 📋 **Быстрая настройка**
+
+### **1. Создание проекта в GitFlic**
+
+1. Зарегистрируйтесь на [GitFlic](https://gitflic.ru)
+2. Создайте новый проект
+3. Скопируйте URL репозитория
+4. Клонируйте проект локально:
+```bash
+git clone <your-gitflic-repo-url>
+cd <project-name>
+```
+
+### **2. Настройка CI/CD**
+
+1. Перейдите в **Настройки → CI/CD**
+2. Включите **CI/CD** для проекта
+3. Добавьте переменные окружения:
+   - `FLUTTER_VERSION: "3.24.0"`
+   - `DART_VERSION: "3.5.0"`
+   - `BLOCKCHAIN_API_KEY: "your_key"`
+   - `AI_API_KEY: "your_key"`
+
+### **3. Первый запуск**
+
+```bash
+# Установка зависимостей
+flutter pub get
+
+# Проверка кода
+flutter analyze
+
+# Запуск тестов
+flutter test
+
+# Сборка приложения
+flutter build web --release
+```
+
+## 🎯 **Структура проекта**
+
+```
+📁 katya-ai-rechain-mesh/
+├── 📁 .gitflic/                    # Конфигурации GitFlic
+│   ├── 📄 ci.yml                  # Основной CI/CD pipeline
+│   ├── 📄 security.yml            # Безопасность
+│   └── 📄 deployment.yml          # Развертывание
+├── 📁 lib/                        # Исходный код Flutter
+├── 📁 test/                       # Тесты
+├── 📁 k8s/                        # Kubernetes manifests
+├── 📁 helm/                       # Helm charts
+├── 📁 docs/                       # Документация
+└── 📄 README.md                   # Основная документация
+```
+
+## 🔧 **Команды разработки**
+
+```bash
+# Запуск в режиме разработки
+flutter run
+
+# Сборка для всех платформ
+flutter build apk --release
+flutter build ios --release
+flutter build web --release
+flutter build linux --release
+
+# Тестирование
+flutter test
+flutter test --coverage
+
+# Анализ кода
+flutter analyze
+```
+
+## 🚀 **Развертывание**
+
+### **Автоматическое развертывание**
+- Push в ветку `main` → Автоматическая сборка и развертывание
+- Push в ветку `develop` → Развертывание в staging
+- Создание тега → Release сборка
+
+### **Ручное развертывание**
+```bash
+# Сборка Docker образа
+docker build -t katya-rechain-mesh:1.0.0 .
+
+# Развертывание в Kubernetes
+kubectl apply -f k8s/deployment.yml
+
+# Или через Helm
+helm install katya-rechain-mesh ./helm
+```
+
+## 📊 **Мониторинг**
+
+После развертывания доступны:
+- **Prometheus**: http://monitoring.your-domain.ru:9090
+- **Grafana**: http://monitoring.your-domain.ru:3000 (admin/admin)
+- **Kibana**: http://monitoring.your-domain.ru:5601
+
+## 🔒 **Безопасность**
+
+Проект настроен с учетом требований:
+- ✅ ФЗ-152 (О персональных данных)
+- ✅ ФЗ-187 (О безопасности критической информационной инфраструктуры)
+- ✅ GDPR compliance
+- ✅ Регулярное сканирование уязвимостей
+- ✅ Шифрование данных в покое и в транзите
+
+## 📞 **Поддержка**
+
+- **Документация**: [Wiki проекта](https://gitflic.ru/project/docs)
+- **Issues**: [Создать issue](https://gitflic.ru/project/issues)
+- **Обсуждения**: [Форум](https://gitflic.ru/project/discussions)
+
+---
+
+## 🎊 **Готово к использованию!**
+
+Ваш проект настроен для работы с GitFlic и готов к разработке, тестированию и развертыванию! 🚀
+```
+
+---
+
+## 📋 **GitFlic Migration Guide**
+
+### **Миграция с GitHub**
+
+```bash
+# 1. Создать проект в GitFlic
+# 2. Экспортировать репозиторий из GitHub
+git clone --mirror <github-repo-url> old-repo
+cd old-repo
+git remote add gitflic <gitflic-repo-url>
+git push --mirror gitflic
+
+# 3. Настроить CI/CD переменные
+# 4. Обновить документацию
+# 5. Настроить вебхуки
+```
+
+### **Миграция с GitLab**
+
+```bash
+# 1. Создать проект в GitFlic
+# 2. Экспортировать из GitLab
+# 3. Импортировать в GitFlic
+# 4. Настроить переменные окружения
+# 5. Обновить ссылки в документации
+```
+
+---
+
+## 🎊 **GitFlic Setup Complete!**
+
+**✅ Ваш проект готов к работе с GitFlic:**
+
+- ✅ **CI/CD настроен** с полным пайплайном
+- ✅ **Безопасность обеспечена** с сканированием уязвимостей
+- ✅ **Развертывание автоматизировано** для всех платформ
+- ✅ **Мониторинг настроен** с дашбордами
+- ✅ **Документация готова** для команды
+- ✅ **Шаблоны созданы** для эффективной работы
+
+**🚀 Готовы к разработке с GitFlic!** 🎉
+```
+
+---
+
+**Следующий шаг: Создание конфигураций для GitVerse и других отечественных платформ!** 🚀

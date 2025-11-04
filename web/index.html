@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="Katya AI REChain Mesh - Advanced Blockchain AI Application">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="KatyaMesh">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>Katya AI REChain Mesh - Advanced Blockchain AI Application</title>
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <script src="flutter_bootstrap.js" async></script>
+
+  <!-- Web Platform Channel Implementation -->
+  <script>
+    // Register platform channel handlers for web
+    window.addEventListener('load', function() {
+      // Wait for Flutter to be ready
+      setTimeout(function() {
+        if (window.flutterChannel) {
+          console.log('Registering web platform channel handlers...');
+
+          // Register method call handlers
+          window.flutterChannel.registerMethodCallHandler('getDeviceInfo', function() {
+            console.log('Web: getDeviceInfo called');
+            return Promise.resolve(getWebDeviceInfo());
+          });
+
+          window.flutterChannel.registerMethodCallHandler('getUserAgent', function() {
+            console.log('Web: getUserAgent called');
+            return Promise.resolve(navigator.userAgent);
+          });
+
+          window.flutterChannel.registerMethodCallHandler('hasCamera', function() {
+            return Promise.resolve(hasCamera());
+          });
+
+          window.flutterChannel.registerMethodCallHandler('hasMicrophone', function() {
+            return Promise.resolve(hasMicrophone());
+          });
+
+          window.flutterChannel.registerMethodCallHandler('getScreenWidth', function() {
+            return Promise.resolve(screen.width);
+          });
+
+          window.flutterChannel.registerMethodCallHandler('getScreenHeight', function() {
+            return Promise.resolve(screen.height);
+          });
+
+          window.flutterChannel.registerMethodCallHandler('getPixelRatio', function() {
+            return Promise.resolve(window.devicePixelRatio || 1);
+          });
+
+          window.flutterChannel.registerMethodCallHandler('checkWebBluetoothPermission', function() {
+            return Promise.resolve(checkBluetoothPermission());
+          });
+
+          window.flutterChannel.registerMethodCallHandler('requestWebBluetoothPermission', function() {
+            return Promise.resolve(requestBluetoothPermission());
+          });
+
+          console.log('Web platform channel handlers registered successfully');
+        } else {
+          console.log('Flutter channel not available');
+        }
+      }, 1000); // Wait 1 second for Flutter to initialize
+    });
+
+    function getWebDeviceInfo() {
+      console.log('Web: Getting device info');
+      const deviceInfo = {
+        platform: 'web',
+        deviceName: 'Web Browser',
+        userAgent: navigator.userAgent,
+        isMobile: isMobileDevice(),
+        isTablet: isTabletDevice(),
+        isDesktop: isDesktopDevice(),
+        isBluetoothSupported: 'bluetooth' in navigator,
+        isBluetoothLESupported: 'bluetooth' in navigator,
+        isCameraSupported: hasCamera(),
+        isMicrophoneSupported: hasMicrophone(),
+        screenWidth: screen.width,
+        screenHeight: screen.height,
+        pixelRatio: window.devicePixelRatio || 1
+      };
+      console.log('Web device info:', deviceInfo);
+      return deviceInfo;
+    }
+
+    function isMobileDevice() {
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+
+    function isTabletDevice() {
+      return /iPad|Android(?!.*Mobile)/i.test(navigator.userAgent);
+    }
+
+    function isDesktopDevice() {
+      return !isMobileDevice() && !isTabletDevice();
+    }
+
+    function hasCamera() {
+      return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+    }
+
+    function hasMicrophone() {
+      return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+    }
+
+    function checkBluetoothPermission() {
+      if ('bluetooth' in navigator) {
+        return navigator.bluetooth.getAvailability();
+      }
+      return false;
+    }
+
+    async function requestBluetoothPermission() {
+      if ('bluetooth' in navigator) {
+        try {
+          return await navigator.bluetooth.requestDevice({ acceptAllDevices: true });
+        } catch (error) {
+          console.log('Bluetooth permission denied:', error);
+          return false;
+        }
+      }
+      return false;
+    }
+
+    // Service Worker registration for PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/flutter_service_worker.js')
+          .then(function(registration) {
+            console.log('Service Worker registered successfully:', registration);
+          })
+          .catch(function(error) {
+            console.log('Service Worker registration failed:', error);
+          });
+      });
+    }
+
+    // Performance monitoring
+    if (typeof webVitals !== 'undefined') {
+      webVitals.getCLS(console.log);
+      webVitals.getFID(console.log);
+      webVitals.getLCP(console.log);
+      webVitals.getTTFB(console.log);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
+if (flutterVersionCode == null) {
+    flutterVersionCode = '1'
+}
+
+def flutterVersionName = localProperties.getProperty('flutter.versionName')
+if (flutterVersionName == null) {
+    flutterVersionName = '1.0'
+}
+
+android {
+    namespace "com.katya.rechain.mesh"
+    compileSdk flutter.compileSdkVersion
+    ndkVersion flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = '11'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    defaultConfig {
+        applicationId "com.katya.rechain.mesh"
+        minSdk flutter.minSdkVersion  // Android 5.0 Lollipop
+        targetSdk 34  // Android 14
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+        multiDexEnabled true
+
+        // Android 12+ specific configurations
+        buildConfigField "boolean", "IS_ANDROID_12_OR_HIGHER", "${targetSdk.toInteger() >= 31}"
+
+        // Настройки для mesh-сети
+        manifestPlaceholders = [
+            appName: "Katya AI REChain Mesh",
+            appDescription: "Offline Mesh Messenger & Voting App",
+            applicationName: "io.flutter.app.FlutterApplication"
+        ]
+
+        // Поддержка старых архитектур
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+        }
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            shrinkResources false
+        }
+        release {
+            signingConfig signingConfigs.debug
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    // Включаем поддержку векторных ресурсов
+    buildFeatures {
+        buildConfig true
+        compose = false
+    }
+
+    // Настройки для упаковки
+    packagingOptions {
+        pickFirst '**/libc++_shared.so'
+        pickFirst '**/libjsc.so'
+    }
+}
+
+flutter {
+    source '../..'
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'androidx.multidex:multidex:2.0.1'
+    
+    // Совместимость со старыми версиями Android
+    implementation 'androidx.core:core-ktx:1.10.1'  // Совместимо с API 21+
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
+    implementation 'androidx.activity:activity-ktx:1.7.2'
+    
+    // Для работы с криптографией (совместимо с API 21+)
+    implementation 'androidx.security:security-crypto:1.0.0'
+    
+    // Для работы с сетью
+    implementation 'androidx.work:work-runtime-ktx:2.8.1'
+    
+    // Для работы с уведомлениями
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.9.0'
+    
+    // Для работы с Bluetooth на старых версиях
+    // implementation 'androidx.bluetooth:bluetooth:1.0.0-alpha02' // Удалено для совместимости
+}

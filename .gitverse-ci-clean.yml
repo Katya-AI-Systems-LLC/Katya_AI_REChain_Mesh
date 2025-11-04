@@ -1,0 +1,151 @@
+version: 1.0
+name: "Katya AI REChain Mesh CI/CD"
+
+stages:
+  - name: validate
+    jobs:
+      - name: "Code Quality"
+        image: "cirrusci/flutter:stable"
+        commands:
+          - flutter config --enable-web
+          - flutter config --enable-linux-desktop
+          - flutter config --enable-android
+          - flutter config --enable-ios
+          - flutter pub get
+          - dart format --set-exit-if-changed .
+          - flutter analyze
+          - flutter pub audit
+
+  - name: test
+    jobs:
+      - name: "Unit Tests"
+        image: "cirrusci/flutter:stable"
+        commands:
+          - flutter config --enable-web
+          - flutter config --enable-linux-desktop
+          - flutter pub get
+          - flutter test --coverage
+          - flutter test --tags=integration
+          - flutter test --tags=performance
+        artifacts:
+          - coverage/
+          - test-results/
+        coverage:
+          format: cobertura
+          path: coverage/lcov.info
+
+      - name: "Widget Tests"
+        image: "cirrusci/flutter:stable"
+        commands:
+          - flutter config --enable-web
+          - flutter pub get
+          - flutter test --tags=widget
+
+  - name: build
+    jobs:
+      - name: "Multi-Platform Build"
+        image: "cirrusci/flutter:stable"
+        commands:
+          - flutter build apk --release
+          - flutter build appbundle --release
+          - flutter build ios --release --no-codesign
+          - flutter build web --release
+          - flutter build linux --release
+          - flutter build windows --release
+          - flutter build macos --release
+        artifacts:
+          - build/
+          - android/app/build/outputs/
+          - ios/build/
+        only:
+          branches:
+            - main
+            - develop
+          tags:
+            - v*
+
+  - name: security
+    jobs:
+      - name: "Security Scan"
+        image: "securecodewarrior/github-action-sarif-to-gitlab-ci:latest"
+        commands:
+          - flutter pub audit --json
+          - flutter analyze --security
+        artifacts:
+          - security-reports/
+        only:
+          branches:
+            - main
+            - develop
+
+  - name: deploy
+    jobs:
+      - name: "Deploy to Staging"
+        image: "google/cloud-sdk:alpine"
+        commands:
+          - gcloud auth activate-service-account --key-file $GCLOUD_SERVICE_KEY
+          - gcloud config set project $GCLOUD_PROJECT_ID
+          - gcloud config set compute/zone $GCLOUD_ZONE
+          - gcloud container clusters get-credentials $K8S_CLUSTER_NAME
+          - kubectl set image deployment/katya-rechain-mesh frontend=$GIT_COMMIT -n staging
+          - kubectl rollout status deployment/katya-rechain-mesh -n staging --timeout=600s
+        environment:
+          name: staging
+          url: https://staging.your-domain.ru
+        only:
+          branches:
+            - develop
+
+      - name: "Deploy to Production"
+        image: "google/cloud-sdk:alpine"
+        commands:
+          - gcloud auth activate-service-account --key-file $GCLOUD_SERVICE_KEY
+          - gcloud config set project $GCLOUD_PROJECT_ID
+          - gcloud config set compute/zone $GCLOUD_ZONE
+          - gcloud container clusters get-credentials $K8S_CLUSTER_NAME
+          - kubectl set image deployment/katya-rechain-mesh frontend=$GIT_COMMIT -n production
+          - kubectl rollout status deployment/katya-rechain-mesh -n production --timeout=600s
+        environment:
+          name: production
+          url: https://your-domain.ru
+        only:
+          branches:
+            - main
+          tags:
+            - v*
+
+  - name: notify
+    jobs:
+      - name: "Discord Notification"
+        image: "curlimages/curl:latest"
+        commands:
+          - |
+            if [ "$BUILD_STATUS" == "success" ]; then
+              curl -X POST -H 'Content-type: application/json' \
+              --data '{"text":"Build completed successfully! '"$PROJECT_NAME"' - '"$BRANCH_NAME"'"}' \
+              $DISCORD_WEBHOOK_URL
+            fi
+        when: always
+        only:
+          branches:
+            - main
+            - develop
+
+environment:
+  variables:
+    FLUTTER_VERSION: "3.24.0"
+    DART_VERSION: "3.5.0"
+    NODE_ENV: "production"
+    BLOCKCHAIN_API_KEY: "your_blockchain_key"
+    AI_API_KEY: "your_ai_key"
+
+cache:
+  - key: flutter-packages
+    paths:
+      - .pub-cache/
+    files:
+      - pubspec.lock
+  - key: build-artifacts
+    paths:
+      - build/
+      - android/app/build/outputs/

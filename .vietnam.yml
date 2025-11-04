@@ -1,0 +1,275 @@
+# Katya AI REChain Mesh - Vietnam Git System Configuration
+# Cấu hình Git và CI/CD cho Việt Nam
+
+version: 1.0
+name: "Katya AI REChain Mesh - Vietnam Systems"
+
+# Nền tảng Git Việt Nam
+platforms:
+  - name: "GitHub Vietnam"
+    region: "vn"
+    domain: "github.vn"
+    ci_cd: "github-actions"
+    compliance: "PDP"
+    language: "vi"
+
+  - name: "GitLab Vietnam"
+    region: "vn"
+    domain: "gitlab.vn"
+    ci_cd: "gitlab-ci"
+    compliance: "PDP"
+    language: "vi"
+
+  - name: "Codeberg Vietnam"
+    region: "vn"
+    domain: "codeberg.vn"
+    ci_cd: "woodpecker"
+    compliance: "PDP"
+    language: "vi"
+
+  - name: "Gitea Vietnam"
+    region: "vn"
+    domain: "gitea.vn"
+    ci_cd: "gitea-actions"
+    compliance: "PDP"
+    language: "vi"
+
+# Nhà cung cấp đám mây Việt Nam
+cloud_providers:
+  - name: "AWS Vietnam (ap-southeast-1)"
+    region: "hanoi"
+    compliance: "PDP"
+    data_residency: "vietnam"
+
+  - name: "Azure Vietnam"
+    region: "vietnamcentral"
+    compliance: "PDP"
+    data_residency: "vietnam"
+
+  - name: "Google Cloud Vietnam"
+    region: "asia-southeast1"
+    compliance: "PDP"
+    data_residency: "vietnam"
+
+  - name: "Viettel Cloud"
+    region: "vietnam"
+    compliance: "PDP"
+    data_residency: "vietnam"
+
+  - name: "VNPT Cloud"
+    region: "vietnam"
+    compliance: "PDP"
+    data_residency: "vietnam"
+
+  - name: "FPT Cloud"
+    region: "vietnam"
+    compliance: "PDP"
+    data_residency: "vietnam"
+
+  - name: "CMC Cloud"
+    region: "vietnam"
+    compliance: "PDP"
+    data_residency: "vietnam"
+
+# Tuân thủ và tiêu chuẩn
+compliance:
+  pdp: true
+  iso27001: true
+  state_bank_vietnam: true
+  mic: true
+
+# Bản địa hóa tiếng Việt
+localization:
+  primary: "vi-VN"
+  secondary: ["en-VN", "zh-VN", "km-VN", "lo-VN", "fr-VN"]
+  currency: "VND"
+  timezone: "Asia/Ho_Chi_Minh"
+
+# Đường ống CI/CD cho nền tảng Việt Nam
+github_actions_vietnam: |
+  name: Việt Nam CI/CD
+  on: [push, pull_request]
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - name: Thiết lập Flutter
+          uses: subosito/flutter-action@v2
+          with:
+            flutter-version: '3.16.0'
+        - run: flutter pub get
+        - run: flutter analyze
+        - run: flutter test
+        - run: flutter build apk --release
+        - run: flutter build ios --release --no-codesign
+        - run: flutter build web --release
+
+# Cửa hàng Việt Nam
+deployment:
+  google_play_vietnam:
+    track: "alpha"
+    language: "vi"
+    countries: ["VN"]
+
+  app_store_vietnam:
+    region: "vn"
+    language: "vi"
+    countries: ["VN"]
+
+  huawei_appgallery_vietnam:
+    region: "vn"
+    language: "vi"
+
+  galaxy_store_vietnam:
+    region: "vn"
+    language: "vi"
+
+# Hệ thống thanh toán Việt Nam
+payment_systems:
+  - name: "MoMo"
+    type: "digital_wallet"
+    region: "vn"
+
+  - name: "ZaloPay"
+    type: "digital_wallet"
+    region: "vn"
+
+  - name: "ViettelPay"
+    type: "mobile_wallet"
+    region: "vn"
+
+  - name: "VNPT Pay"
+    type: "mobile_wallet"
+    region: "vn"
+
+  - name: "FPT Pay"
+    type: "digital_wallet"
+    region: "vn"
+
+  - name: "Vietcombank"
+    type: "mobile_banking"
+    region: "vn"
+
+  - name: "Techcombank"
+    type: "mobile_banking"
+    region: "vn"
+
+  - name: "BIDV"
+    type: "mobile_banking"
+    region: "vn"
+
+  - name: "VietinBank"
+    type: "mobile_banking"
+    region: "vn"
+
+  - name: "Agribank"
+    type: "mobile_banking"
+    region: "vn"
+
+# Tích hợp mạng xã hội Việt Nam
+social_integration:
+  - name: "Zalo Vietnam"
+    type: "messaging"
+    region: "vn"
+
+  - name: "Facebook Vietnam"
+    type: "social"
+    region: "vn"
+
+  - name: "Instagram Vietnam"
+    type: "social"
+    region: "vn"
+
+  - name: "Twitter Vietnam"
+    type: "social"
+    region: "vn"
+
+  - name: "YouTube Vietnam"
+    type: "video"
+    region: "vn"
+
+  - name: "TikTok Vietnam"
+    type: "video"
+    region: "vn"
+
+  - name: "LinkedIn Vietnam"
+    type: "professional"
+    region: "vn"
+
+# Ngôn ngữ Việt Nam
+languages:
+  vietnamese: "Tiếng Việt"
+  english: "English"
+  chinese: "中文"
+  khmer: "Tiếng Khmer"
+  lao: "Tiếng Lào"
+  french: "Tiếng Pháp"
+
+# Tỉnh thành Việt Nam
+provinces:
+  - "Hà Nội"
+  - "Hồ Chí Minh"
+  - "Hải Phòng"
+  - "Đà Nẵng"
+  - "Cần Thơ"
+  - "Hải Dương"
+  - "Bắc Ninh"
+  - "Thái Nguyên"
+  - "Nam Định"
+  - "Hưng Yên"
+  - "Quảng Ninh"
+  - "Vĩnh Phúc"
+  - "Bắc Giang"
+  - "Hòa Bình"
+  - "Hà Nam"
+  - "Ninh Bình"
+  - "Thanh Hóa"
+  - "Nghệ An"
+  - "Hà Tĩnh"
+  - "Quảng Bình"
+  - "Quảng Trị"
+  - "Thừa Thiên Huế"
+  - "Quảng Nam"
+  - "Quảng Ngãi"
+  - "Bình Định"
+  - "Phú Yên"
+  - "Khánh Hòa"
+  - "Ninh Thuận"
+  - "Bình Thuận"
+  - "Kon Tum"
+  - "Gia Lai"
+  - "Đăk Lăk"
+  - "Đăk Nông"
+  - "Lâm Đồng"
+  - "Bình Phước"
+  - "Tây Ninh"
+  - "Bình Dương"
+  - "Đồng Nai"
+  - "Bà Rịa - Vũng Tàu"
+  - "Long An"
+  - "Tiền Giang"
+  - "Bến Tre"
+  - "Trà Vinh"
+  - "Vĩnh Long"
+  - "Đồng Tháp"
+  - "An Giang"
+  - "Kiên Giang"
+  - "Hậu Giang"
+  - "Sóc Trăng"
+  - "Bạc Liêu"
+  - "Cà Mau"
+
+# Các nước ASEAN
+asean_countries:
+  - "VN"  # Việt Nam
+  - "TH"  # Thái Lan
+  - "SG"  # Singapore
+  - "MY"  # Malaysia
+  - "ID"  # Indonesia
+  - "PH"  # Philippines
+  - "MM"  # Myanmar
+  - "KH"  # Campuchia
+  - "LA"  # Lào
+  - "BN"  # Brunei
+  - "TL"  # Timor-Leste

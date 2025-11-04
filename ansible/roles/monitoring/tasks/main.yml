@@ -1,0 +1,62 @@
+---
+# Monitoring setup tasks
+
+- name: Install monitoring tools
+  package:
+    name:
+      - prometheus
+      - grafana
+      - node-exporter
+      - prometheus-node-exporter
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Create Prometheus configuration
+  template:
+    src: prometheus.yml.j2
+    dest: /etc/prometheus/prometheus.yml
+    mode: '0644'
+  notify: restart prometheus
+
+- name: Create Grafana configuration
+  template:
+    src: grafana.ini.j2
+    dest: /etc/grafana/grafana.ini
+    mode: '0644'
+  notify: restart grafana
+
+- name: Setup Grafana dashboards
+  uri:
+    url: "http://localhost:3000/api/dashboards/db"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+    body_format: json
+    body: "{{ lookup('file', 'dashboards/katya-rechain-mesh.json') }}"
+  when: grafana_api_key is defined
+
+- name: Configure alerting
+  template:
+    src: alertmanager.yml.j2
+    dest: /etc/prometheus/alertmanager.yml
+    mode: '0644'
+  notify: restart alertmanager
+
+- name: Enable monitoring services
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  loop:
+    - prometheus
+    - grafana
+    - prometheus-node-exporter
+
+- name: Configure firewall for monitoring
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+  loop:
+    - "9090"  # Prometheus
+    - "3000"  # Grafana
+    - "9100"  # Node Exporter

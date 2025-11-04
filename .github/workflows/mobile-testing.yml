@@ -1,0 +1,252 @@
+name: "Mobile Testing"
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: 'Test type'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - unit
+          - integration
+          - performance
+          - compatibility
+
+jobs:
+  # Android Testing
+  android_test:
+    name: Android Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        api-level: [26, 29, 33]
+        target: [default, google_apis]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Create Android emulator
+        uses: ReactiveCircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          target: ${{ matrix.target }}
+          arch: x86_64
+          profile: Nexus 6
+          script: |
+            # Run tests on emulator
+            flutter test --tags=mobile
+
+      - name: Run instrumented tests
+        run: |
+          flutter test integration_test/ --tags=instrumented
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-test-results-api-${{ matrix.api-level }}
+          path: test-results/
+
+  # iOS Testing
+  ios_test:
+    name: iOS Tests
+    runs-on: macos-latest
+    if: ${{ github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'unit' || github.event.inputs.test_type == 'integration' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Create iOS simulator
+        run: |
+          # List available simulators
+          xcrun simctl list
+
+          # Create and boot simulator
+          xcrun simctl create "iPhone 14" com.apple.CoreSimulator.SimDeviceType.iPhone-14 com.apple.CoreSimulator.SimRuntime.iOS-16-4
+          xcrun simctl boot "iPhone 14"
+
+      - name: Run iOS tests
+        run: |
+          flutter test --tags=ios
+
+      - name: Run integration tests on iOS
+        run: |
+          flutter test integration_test/ --tags=ios
+
+      - name: Upload iOS test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-test-results
+          path: test-results/
+
+  # Firebase Test Lab
+  firebase_test_lab:
+    name: Firebase Test Lab
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' && (contains(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main') }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build APK for testing
+        run: flutter build apk --release
+
+      - name: Build iOS for testing
+        run: |
+          # Build iOS app for testing
+          flutter build ios --release --no-codesign
+
+      - name: Run Firebase Test Lab
+        uses: FirebaseExtended/github-actions@test-lab@v1
+        with:
+          credentials: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          test-type: "robo"
+          app-apk: build/app/outputs/flutter-apk/app-release.apk
+          model: Nexus6,Pixel2,Pixel5
+          version: "28,29,30,31,32,33"
+
+      - name: Run game loop tests
+        uses: FirebaseExtended/github-actions@test-lab@v1
+        with:
+          credentials: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          test-type: "game-loop"
+          app-apk: build/app/outputs/flutter-apk/app-release.apk
+          model: Pixel2,Pixel5
+          version: "30,31"
+
+      - name: Upload Firebase test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: firebase-test-lab-results
+          path: firebase-test-results/
+
+  # Mobile performance testing
+  mobile_performance:
+    name: Mobile Performance Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Install performance tools
+        run: |
+          flutter pub global activate devtools
+          flutter pub global activate flutter_performance
+
+      - name: Run performance analysis
+        run: |
+          # Analyze app performance
+          flutter run --profile --trace-startup
+
+      - name: Memory leak detection
+        run: |
+          # Check for memory leaks
+          flutter test --tags=memory-leak
+
+      - name: Battery usage analysis
+        run: |
+          # Analyze battery impact
+          echo "Battery analysis would run here with real devices"
+
+      - name: Upload performance data
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-performance-data
+          path: performance-data/
+
+  # Compatibility testing
+  compatibility_test:
+    name: Compatibility Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ['3.16.0', '3.19.0', '3.24.0']
+        dart-version: ['3.2.0', '3.3.0', '3.5.0']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: 'stable'
+
+      - name: Verify compatibility
+        run: |
+          flutter --version
+          dart --version
+          flutter pub get
+
+      - name: Run compatibility tests
+        run: |
+          flutter test --tags=compatibility
+
+      - name: Check deprecated APIs
+        run: |
+          flutter analyze --show-deprecation-warnings
+
+      - name: Upload compatibility report
+        uses: actions/upload-artifact@v4
+        with:
+          name: compatibility-report-flutter-${{ matrix.flutter-version }}
+          path: compatibility-report.json

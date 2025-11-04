@@ -1,0 +1,81 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="splashGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#6C63FF;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#9C27B0;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#00D1FF;stop-opacity:0.6" />
+    </radialGradient>
+    <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00D1FF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" fill="url(#splashGradient)"/>
+
+  <!-- Animated background elements -->
+  <circle cx="100" cy="100" r="20" fill="#ffffff" opacity="0.1">
+    <animate attributeName="r" values="20;30;20" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.1;0.2;0.1" dur="4s" repeatCount="indefinite"/>
+  </circle>
+
+  <circle cx="400" cy="150" r="15" fill="#00D1FF" opacity="0.1">
+    <animate attributeName="r" values="15;25;15" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.1;0.3;0.1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+
+  <circle cx="150" cy="400" r="25" fill="#9C27B0" opacity="0.1">
+    <animate attributeName="r" values="25;35;25" dur="5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.1;0.2;0.1" dur="5s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Main logo container -->
+  <circle cx="256" cy="200" r="80" fill="#ffffff" opacity="0.9" stroke="#6C63FF" stroke-width="4"/>
+
+  <!-- AI brain -->
+  <path d="M200 170 C200 150, 220 140, 240 150 C260 140, 280 150, 280 170 C280 190, 260 200, 240 190 C220 200, 200 190, 200 170 Z"
+        fill="url(#textGradient)" stroke="#00D1FF" stroke-width="2"/>
+
+  <!-- Network nodes -->
+  <circle cx="220" cy="180" r="4" fill="#6C63FF"/>
+  <circle cx="240" cy="175" r="4" fill="#9C27B0"/>
+  <circle cx="260" cy="180" r="4" fill="#00D1FF"/>
+
+  <!-- Connection lines -->
+  <line x1="220" y1="180" x2="240" y2="175" stroke="#6C63FF" stroke-width="2"/>
+  <line x1="240" y1="175" x2="260" y2="180" stroke="#9C27B0" stroke-width="2"/>
+
+  <!-- Main application title -->
+  <text x="256" y="320" font-family="Arial, sans-serif" font-size="48" font-weight="bold" text-anchor="middle" fill="url(#textGradient)">
+    KATYA AI
+  </text>
+
+  <!-- Subtitle -->
+  <text x="256" y="360" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="#00D1FF" opacity="0.8">
+    REChain Mesh
+  </text>
+
+  <!-- Tagline -->
+  <text x="256" y="390" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" fill="#ffffff" opacity="0.7">
+    Advanced Blockchain AI Platform
+  </text>
+
+  <!-- Loading animation -->
+  <circle cx="256" cy="450" r="20" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.6">
+    <animateTransform attributeName="transform" type="rotate" values="0 256 450;360 256 450" dur="2s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Progress dots -->
+  <circle cx="230" cy="450" r="3" fill="#6C63FF">
+    <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/>
+  </circle>
+
+  <circle cx="256" cy="450" r="3" fill="#9C27B0">
+    <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+  </circle>
+
+  <circle cx="282" cy="450" r="3" fill="#00D1FF">
+    <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" begin="1s" repeatCount="indefinite"/>
+  </circle>
+</svg>

@@ -1,0 +1,25 @@
+[Desktop Entry]
+Version=1.0
+Name=Katya AI REChain Mesh
+Comment=Advanced Blockchain AI Application for Linux
+GenericName=Blockchain AI Application
+Keywords=blockchain;AI;REChain;mesh;network;cryptocurrency;decentralized;
+Exec=katya-ai-rechain-mesh %U
+Icon=katya-ai-rechain-mesh
+Terminal=false
+Type=Application
+Categories=Network;Blockchain;AI;Finance;Utility;
+MimeType=application/json;application/wallet;application/key;
+StartupWMClass=katya-ai-rechain-mesh
+StartupNotify=true
+Actions=new-window;new-private-window;
+
+[Desktop Action new-window]
+Name=New Window
+Exec=katya-ai-rechain-mesh --new-window
+Icon=katya-ai-rechain-mesh
+
+[Desktop Action new-private-window]
+Name=New Private Window
+Exec=katya-ai-rechain-mesh --private
+Icon=katya-ai-rechain-mesh

@@ -1,0 +1,22 @@
+apiVersion: v2
+name: katya-mesh
+description: Katya AI REChain Mesh - Offline mesh network application
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+
+keywords:
+  - mesh
+  - offline
+  - ai
+  - voting
+  - messaging
+
+maintainers:
+  - name: Katya Mesh Team
+    email: team@katya-mesh.ru
+
+home: https://github.com/katya/quantum-mesh-app
+sources:
+  - https://github.com/katya/quantum-mesh-app
+

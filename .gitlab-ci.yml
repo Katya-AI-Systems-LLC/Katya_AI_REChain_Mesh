@@ -1,0 +1,334 @@
+stages:
+  - build
+
+image: cirrusci/flutter:stable
+
+variables:
+  LC_ALL: C.UTF-8
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .pub-cache/
+
+before_script:
+  - flutter pub get
+
+build_android:
+  stage: build
+  script:
+    - flutter build apk --release
+  artifacts:
+    paths:
+      - build/app/outputs/flutter-apk/app-release.apk
+
+build_web:
+  stage: build
+  script:
+    - flutter build web --release
+  artifacts:
+    paths:
+      - build/web
+
+stages:
+  - test
+  - analyze
+  - build
+  - deploy
+  - release
+
+variables:
+  FLUTTER_VERSION: "3.24.0"
+  DART_VERSION: "3.5.0"
+  FLUTTER_CHANNEL: "stable"
+
+# Cache Flutter dependencies
+cache:
+  key:
+    files:
+      - pubspec.yaml
+      - pubspec.lock
+  paths:
+    - .pub-cache/
+    - ~/.pub-cache/
+
+# Code Quality & Testing
+test:
+  stage: test
+  image: cirrusci/flutter:$FLUTTER_VERSION
+  script:
+    - flutter pub get
+    - flutter test --coverage
+    - flutter test --coverage --machine > coverage.json
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+    paths:
+      - coverage/
+      - coverage.json
+    expire_in: 1 week
+  only:
+    - merge_requests
+    - main
+    - develop
+
+# Code Analysis
+analyze:
+  stage: analyze
+  image: cirrusci/flutter:$FLUTTER_VERSION
+  script:
+    - flutter pub get
+    - dart format --output=none --set-exit-if-changed .
+    - flutter analyze
+  only:
+    - merge_requests
+    - main
+    - develop
+
+# Android Build
+build_android:
+  stage: build
+  image: cirrusci/flutter:$FLUTTER_VERSION
+  script:
+    - flutter pub get
+    - flutter build apk --release
+    - flutter build appbundle --release
+  artifacts:
+    paths:
+      - build/app/outputs/flutter-apk/
+      - build/app/outputs/bundle/
+    expire_in: 1 week
+  only:
+    - merge_requests
+    - main
+    - develop
+    - tags
+
+# iOS Build
+build_ios:
+  stage: build
+  image: cirrusci/flutter:$FLUTTER_VERSION
+  script:
+    - flutter pub get
+    - flutter build ios --release --no-codesign
+  artifacts:
+    paths:
+      - build/ios/
+    expire_in: 1 week
+  only:
+    - merge_requests
+    - main
+    - develop
+    - tags
+  tags:
+    - macos
+
+# Web Build
+build_web:
+  stage: build
+  image: cirrusci/flutter:$FLUTTER_VERSION
+  script:
+    - flutter pub get
+    - flutter build web --release
+  artifacts:
+    paths:
+      - build/web/
+    expire_in: 1 week
+  only:
+    - merge_requests
+    - main
+    - develop
+    - tags
+
+# Linux Build
+build_linux:
+  stage: build
+  image: cirrusci/flutter:$FLUTTER_VERSION
+  script:
+    - flutter pub get
+    - flutter config --enable-linux-desktop
+    - sudo apt-get update
+    - sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
+    - flutter build linux --release
+  artifacts:
+    paths:
+      - build/linux/
+    expire_in: 1 week
+  only:
+    - merge_requests
+    - main
+    - develop
+    - tags
+
+# Windows Build
+build_windows:
+  stage: build
+  image: cirrusci/flutter:$FLUTTER_VERSION
+  script:
+    - flutter pub get
+    - flutter config --enable-windows-desktop
+    - flutter build windows --release
+  artifacts:
+    paths:
+      - build/windows/
+    expire_in: 1 week
+  only:
+    - merge_requests
+    - main
+    - develop
+    - tags
+  tags:
+    - windows
+
+# macOS Build
+build_macos:
+  stage: build
+  image: cirrusci/flutter:$FLUTTER_VERSION
+  script:
+    - flutter pub get
+    - flutter config --enable-macos-desktop
+    - flutter build macos --release
+  artifacts:
+    paths:
+      - build/macos/
+    expire_in: 1 week
+  only:
+    - merge_requests
+    - main
+    - develop
+    - tags
+  tags:
+    - macos
+
+# Deploy to GitLab Pages (Web)
+pages:
+  stage: deploy
+  image: cirrusci/flutter:$FLUTTER_VERSION
+  script:
+    - flutter pub get
+    - flutter build web --release
+  artifacts:
+    paths:
+      - public/
+    only:
+      - main
+  environment:
+    name: production
+    url: https://$CI_PROJECT_NAMESPACE.gitlab.io/$CI_PROJECT_NAME
+
+# Create Release
+create_release:
+  stage: release
+  image: alpine:latest
+  script:
+    - apk add --no-cache curl
+    - |
+      if [ -n "$CI_COMMIT_TAG" ]; then
+        echo "Creating release for tag: $CI_COMMIT_TAG"
+        # Download all build artifacts
+        curl -o android.apk "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/jobs/artifacts/$CI_COMMIT_REF_NAME/download?job=build_android"
+        curl -o web.zip "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/jobs/artifacts/$CI_COMMIT_REF_NAME/download?job=build_web"
+        curl -o linux.tar.gz "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/jobs/artifacts/$CI_COMMIT_REF_NAME/download?job=build_linux"
+
+        # Create GitLab release
+        curl --header "PRIVATE-TOKEN: $GITLAB_API_TOKEN" \
+             --data "tag_name=$CI_COMMIT_TAG&name=Release $CI_COMMIT_TAG&description=Automated release" \
+             "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/releases"
+      fi
+  only:
+    - tags
+  when: manual
+
+# Security Scanning
+security_scan:
+  stage: analyze
+  image: cirrusci/flutter:$FLUTTER_VERSION
+  script:
+    - flutter pub get
+    - flutter analyze --preamble
+    - |
+      if command -v safety &> /dev/null; then
+        pip install safety
+        safety check
+      fi
+  allow_failure: true
+  only:
+    - merge_requests
+    - main
+    - develop
+
+# Performance Testing
+performance_test:
+  stage: test
+  image: cirrusci/flutter:$FLUTTER_VERSION
+  script:
+    - flutter pub get
+    - flutter test --tags performance
+  allow_failure: true
+  only:
+    - merge_requests
+    - main
+    - develop
+
+# Dependency Vulnerability Check
+dependency_check:
+  stage: analyze
+  image: python:3.9
+  script:
+    - pip install safety
+    - |
+      if [ -f pubspec.yaml ]; then
+        echo "Checking Flutter/Dart dependencies..."
+        # Basic dependency analysis
+        grep -E "path:|git:|ref:" pubspec.yaml || echo "No local dependencies found"
+      fi
+  allow_failure: true
+  only:
+    - merge_requests
+    - main
+    - develop
+
+# Docker Build (Multi-stage)
+docker_build:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $CI_REGISTRY/$CI_PROJECT_PATH:flutter-app .
+    - docker push $CI_REGISTRY/$CI_PROJECT_PATH:flutter-app
+  only:
+    - main
+    - tags
+  when: manual
+
+# Notification (Slack/Discord)
+notify:
+  stage: .post
+  image: curlimages/curl:latest
+  script:
+    - |
+      if [ "$CI_JOB_STATUS" == "success" ]; then
+        MESSAGE="✅ Build successful for $CI_PROJECT_NAME - $CI_COMMIT_REF_NAME"
+      else
+        MESSAGE="❌ Build failed for $CI_PROJECT_NAME - $CI_COMMIT_REF_NAME"
+      fi
+
+      # Send notification to Slack (if webhook configured)
+      if [ -n "$SLACK_WEBHOOK" ]; then
+        curl -X POST -H 'Content-type: application/json' \
+             --data "{\"text\":\"$MESSAGE\"}" \
+             $SLACK_WEBHOOK
+      fi
+
+      # Send notification to Discord (if webhook configured)
+      if [ -n "$DISCORD_WEBHOOK" ]; then
+        curl -X POST -H 'Content-type: application/json' \
+             --data "{\"content\":\"$MESSAGE\"}" \
+             $DISCORD_WEBHOOK
+      fi
+  when: always
+  allow_failure: true

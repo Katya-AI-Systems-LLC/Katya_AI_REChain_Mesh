@@ -1,0 +1,125 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# All files
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Dart files
+[*.dart]
+indent_size = 2
+
+# YAML files
+[*.yml]
+indent_size = 2
+
+# JSON files
+[*.json]
+indent_size = 2
+
+# Markdown files
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = 100
+
+# Shell scripts
+[*.sh]
+end_of_line = lf
+indent_size = 2
+
+# PowerShell scripts
+[*.ps1]
+end_of_line = crlf
+indent_size = 4
+
+# XML files
+[*.xml]
+indent_size = 4
+
+# Package files
+[pubspec.yaml]
+indent_size = 2
+
+[pubspec.lock]
+indent_size = 2
+
+# Analysis options
+[analysis_options.yaml]
+indent_size = 2
+
+# Configuration files
+[*.config]
+indent_size = 2
+
+# Docker files
+[Dockerfile*]
+indent_size = 2
+
+# Makefile
+[Makefile]
+indent_style = tab
+indent_size = 4
+
+# Web files
+[*.html]
+indent_size = 2
+
+[*.css]
+indent_size = 2
+
+[*.js]
+indent_size = 2
+
+[*.ts]
+indent_size = 2
+
+# Platform-specific files
+[*.kt]
+indent_size = 4
+
+[*.swift]
+indent_size = 4
+
+[*.java]
+indent_size = 4
+
+[*.xml]
+indent_size = 4
+
+# Test files
+[test/**/*.dart]
+indent_size = 2
+
+[integration_test/**/*.dart]
+indent_size = 2
+
+[test_driver/**/*.dart]
+indent_size = 2
+
+# Generated files (don't format)
+[lib/**/*.g.dart]
+insert_final_newline = false
+trim_trailing_whitespace = false
+
+[lib/**/*.pb.dart]
+insert_final_newline = false
+trim_trailing_whitespace = false
+
+# Documentation files
+[docs/**/*.md]
+trim_trailing_whitespace = false
+max_line_length = 100
+
+# Scripts and tools
+[scripts/**/*]
+indent_size = 2
+
+[tools/**/*]
+indent_size = 2

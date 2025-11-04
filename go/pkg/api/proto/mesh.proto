@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package mesh;
+option go_package = "github.com/rechain-network/katya-mesh-go/pkg/api/proto";
+
+service MeshService {
+  rpc GetPeers(GetPeersRequest) returns (GetPeersResponse);
+  rpc SendMessage(SendMessageRequest) returns (SendMessageResponse);
+  rpc CreatePoll(CreatePollRequest) returns (CreatePollResponse);
+  rpc VotePoll(VotePollRequest) returns (VotePollResponse);
+  rpc GetStats(GetStatsRequest) returns (GetStatsResponse);
+
+  rpc StreamMessages(StreamMessagesRequest) returns (stream Message);
+  rpc StreamPolls(StreamPollsRequest) returns (stream Poll);
+}
+
+message GetPeersRequest {}
+
+message GetPeersResponse {
+  repeated Peer peers = 1;
+}
+
+message SendMessageRequest {
+  Message message = 1;
+}
+
+message SendMessageResponse {
+  bool success = 1;
+}
+
+message CreatePollRequest {
+  Poll poll = 1;
+}
+
+message CreatePollResponse {
+  string poll_id = 1;
+}
+
+message VotePollRequest {
+  Vote vote = 1;
+}
+
+message VotePollResponse {
+  bool success = 1;
+}
+
+message GetStatsRequest {}
+
+message GetStatsResponse {
+  map<string, string> stats = 1;
+}
+
+message StreamMessagesRequest {}
+
+message StreamPollsRequest {}
+
+message Peer {
+  string id = 1;
+  string address = 2;
+  int64 last_seen = 3;
+}
+
+message Message {
+  string id = 1;
+  string type = 2;
+  string from = 3;
+  string to = 4;
+  string payload = 5;
+  int64 timestamp = 6;
+}
+
+message Poll {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  repeated string options = 4;
+  string created_by = 5;
+  int64 created_at = 6;
+}
+
+message Vote {
+  string poll_id = 1;
+  string user_id = 2;
+  string option = 3;
+  int64 voted_at = 4;
+}

@@ -1,0 +1,57 @@
+[Desktop Entry]
+Version=1.0
+Name=Katya AI REChain Mesh
+Name[ko_KR]=카티아 AI REChain 메시
+Name[en_US]=Katya AI REChain Mesh
+Comment=Advanced Blockchain AI Application for Tizen
+Comment[ko_KR]=Tizen용 고급 블록체인 AI 애플리케이션
+Comment[en_US]=Advanced Blockchain AI Application for Tizen
+GenericName=Blockchain AI Platform
+GenericName[ko_KR]=블록체인 AI 플랫폼
+GenericName[en_US]=Blockchain AI Platform
+Keywords=blockchain;AI;crypto;tizen;samsung;korean;bitcoin;ethereum;
+Keywords[ko_KR]=블록체인;AI;암호화폐;타이젠;삼성;한국어;비트코인;이더리움;
+Keywords[en_US]=blockchain;AI;crypto;tizen;samsung;korean;bitcoin;ethereum;
+Exec=katya-ai-rechain-mesh %U
+Icon=katya-ai-rechain-mesh
+Terminal=false
+Type=Application
+Categories=Network;Blockchain;Finance;Utility;Office;
+MimeType=application/json;application/xml;text/plain;x-scheme-handler/katya-rechain-mesh;x-scheme-handler/bitcoin;x-scheme-handler/ethereum;x-scheme-handler/tizen;
+Actions=new-window;sync;settings;about;bixby;samsung-pay;
+
+[Desktop Action new-window]
+Name=New Window
+Name[ko_KR]=새 창
+Name[en_US]=New Window
+Exec=katya-ai-rechain-mesh --new-window
+
+[Desktop Action sync]
+Name=Synchronize
+Name[ko_KR]=동기화
+Name[en_US]=Synchronize
+Exec=katya-ai-rechain-mesh --sync
+
+[Desktop Action settings]
+Name=Settings
+Name[ko_KR]=설정
+Name[en_US]=Settings
+Exec=katya-ai-rechain-mesh --settings
+
+[Desktop Action about]
+Name=About
+Name[ko_KR]=정보
+Name[en_US]=About
+Exec=katya-ai-rechain-mesh --about
+
+[Desktop Action bixby]
+Name=Bixby Command
+Name[ko_KR]=빅스비 명령
+Name[en_US]=Bixby Command
+Exec=katya-ai-rechain-mesh --bixby
+
+[Desktop Action samsung-pay]
+Name=Samsung Pay
+Name[ko_KR]=삼성 페이
+Name[en_US]=Samsung Pay
+Exec=katya-ai-rechain-mesh --samsung-pay

@@ -1,0 +1,93 @@
+name: Deploy to SberCloud
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  SBERCLOUD_REGION: ${{ secrets.SBERCLOUD_REGION }}
+  SBERCLOUD_PROJECT_ID: ${{ secrets.SBERCLOUD_PROJECT_ID }}
+
+jobs:
+  release-deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'production' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run comprehensive tests
+        run: |
+          flutter test --coverage
+          flutter test --tags=integration
+          flutter analyze
+
+      - name: Build all platforms
+        run: |
+          flutter build apk --release
+          flutter build appbundle --release
+          flutter build ios --release --no-codesign
+          flutter build web --release
+          flutter build linux --release
+          flutter build windows --release
+
+      - name: Setup SberCloud CLI
+        run: |
+          curl -L https://sbercloud.ru/api/cli/latest/sbercloud-cli-linux-amd64.tar.gz | tar xz
+          sudo mv sbercloud /usr/local/bin/
+          sudo chmod +x /usr/local/bin/sbercloud
+
+      - name: Configure SberCloud
+        run: |
+          sbercloud config set --region $SBERCLOUD_REGION
+          sbercloud config set --project-id $SBERCLOUD_PROJECT_ID
+          echo "${{ secrets.SBERCLOUD_AK }}" | sbercloud config set --access-key-id -
+          echo "${{ secrets.SBERCLOUD_SK }}" | sbercloud config set --secret-access-key -
+
+      - name: Deploy to SberCloud Container
+        run: |
+          docker build -t katya-rechain-mesh:${{ github.event.inputs.version || github.ref_name }} .
+          docker tag katya-rechain-mesh:${{ github.event.inputs.version || github.ref_name }} \
+            swr.${SBERCLOUD_REGION}.sbercloud.ru/${SBERCLOUD_PROJECT_ID}/katya-rechain-mesh:${{ github.event.inputs.version || github.ref_name }}
+          docker push swr.${SBERCLOUD_REGION}.sbercloud.ru/${SBERCLOUD_PROJECT_ID}/katya-rechain-mesh:${{ github.event.inputs.version || github.ref_name }}
+
+      - name: Deploy to SberCloud CCE (Kubernetes)
+        run: |
+          sbercloud cce cluster-config --cluster-id ${{ secrets.CCE_CLUSTER_ID }}
+          kubectl set image deployment/katya-rechain-mesh \
+            frontend=swr.${SBERCLOUD_REGION}.sbercloud.ru/${SBERCLOUD_PROJECT_ID}/katya-rechain-mesh:${{ github.event.inputs.version || github.ref_name }}
+          kubectl rollout status deployment/katya-rechain-mesh --timeout=600s
+
+      - name: Upload artifacts to OBS
+        run: |
+          sbercloud obs cp build/app/outputs/flutter-apk/app-release.apk \
+            obs://katya-rechain-mesh-releases/android/katya-rechain-mesh-${{ github.event.inputs.version || github.ref_name }}.apk
+          sbercloud obs cp --recursive build/web/ \
+            obs://katya-rechain-mesh-releases/web/${{ github.event.inputs.version || github.ref_name }}/
+
+      - name: Create release
+        run: |
+          echo "Release ${{ github.event.inputs.version || github.ref_name }} deployed to SberCloud"
+          echo "APK: https://katya-rechain-mesh-releases.obs.${SBERCLOUD_REGION}.sbercloud.ru/android/katya-rechain-mesh-${{ github.event.inputs.version || github.ref_name }}.apk"
+          echo "Web: https://katya-rechain-mesh-releases.obs.${SBERCLOUD_REGION}.sbercloud.ru/web/${{ github.event.inputs.version || github.ref_name }}/index.html"

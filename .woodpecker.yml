@@ -1,0 +1,79 @@
+pipeline:
+  build:
+    image: cirrusci/flutter:stable
+    commands:
+      - flutter pub get
+      - flutter build apk --release
+# Codeberg CI Configuration
+# Woodpecker CI pipeline for Codeberg
+
+steps:
+  analyze:
+    image: cirrusci/flutter:latest
+    commands:
+      - flutter doctor
+      - flutter pub get
+      - flutter analyze --fatal-infos --fatal-warnings
+      - flutter test --coverage
+
+  test:
+    image: cirrusci/flutter:latest
+    commands:
+      - flutter test integration_test
+    depends_on:
+      - analyze
+
+  build_web:
+    image: cirrusci/flutter:latest
+    commands:
+      - flutter build web --release --web-renderer canvaskit
+    depends_on:
+      - test
+
+  build_android:
+    image: cirrusci/flutter:latest
+    commands:
+      - flutter build apk --release
+      - flutter build appbundle --release
+    depends_on:
+      - test
+
+  build_ios:
+    image: cirrusci/flutter:latest
+    commands:
+      - flutter build ios --release --no-codesign
+    depends_on:
+      - test
+
+  build_desktop:
+    image: cirrusci/flutter:latest
+    commands:
+      - flutter build linux --release
+      - flutter build windows --release
+      - flutter build macos --release
+    depends_on:
+      - test
+
+  deploy_web:
+    image: alpine:latest
+    commands:
+      - apk add --no-cache curl
+      - echo "Deploy to Codeberg Pages"
+    depends_on:
+      - build_web
+    when:
+      - event: push
+        branch: main
+
+  notify:
+    image: alpine:latest
+    commands:
+      - echo "Build completed successfully"
+    depends_on:
+      - build_web
+      - build_android
+      - build_ios
+      - build_desktop
+    when:
+      - event: push
+        branch: main

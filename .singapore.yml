@@ -1,0 +1,214 @@
+# Katya AI REChain Mesh - Singapore Git System Configuration
+# Singapore Git platforms and CI/CD configuration
+
+version: 1.0
+name: "Katya AI REChain Mesh - Singapore Systems"
+
+# Singapore Git platforms
+platforms:
+  - name: "GitHub Singapore"
+    region: "sg"
+    domain: "github.sg"
+    ci_cd: "github-actions"
+    compliance: "PDPA"
+    language: "en-SG"
+
+  - name: "GitLab Singapore"
+    region: "sg"
+    domain: "gitlab.sg"
+    ci_cd: "gitlab-ci"
+    compliance: "PDPA"
+    language: "en-SG"
+
+  - name: "Codeberg Singapore"
+    region: "sg"
+    domain: "codeberg.sg"
+    ci_cd: "woodpecker"
+    compliance: "PDPA"
+    language: "en-SG"
+
+  - name: "Gitea Singapore"
+    region: "sg"
+    domain: "gitea.sg"
+    ci_cd: "gitea-actions"
+    compliance: "PDPA"
+    language: "en-SG"
+
+# Singapore cloud providers
+cloud_providers:
+  - name: "AWS Singapore (ap-southeast-1)"
+    region: "singapore"
+    compliance: "PDPA"
+    data_residency: "singapore"
+
+  - name: "Azure Singapore"
+    region: "southeastasia"
+    compliance: "PDPA"
+    data_residency: "singapore"
+
+  - name: "Google Cloud Singapore"
+    region: "asia-southeast1"
+    compliance: "PDPA"
+    data_residency: "singapore"
+
+  - name: "Alibaba Cloud Singapore"
+    region: "singapore"
+    compliance: "PDPA"
+    data_residency: "singapore"
+
+  - name: "Tencent Cloud Singapore"
+    region: "singapore"
+    compliance: "PDPA"
+    data_residency: "singapore"
+
+  - name: "DigitalOcean Singapore"
+    region: "singapore"
+    compliance: "PDPA"
+    data_residency: "singapore"
+
+# Compliance and standards
+compliance:
+  pdpa: true
+  iso27001: true
+  mtcs: true
+  csa: true
+
+# Singapore localization
+localization:
+  primary: "en-SG"
+  secondary: ["zh-SG", "ms-SG", "ta-SG"]
+  currency: "SGD"
+  timezone: "Asia/Singapore"
+
+# CI/CD pipelines for Singapore platforms
+github_actions_singapore: |
+  name: Singapore CI/CD
+  on: [push, pull_request]
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - name: Setup Flutter
+          uses: subosito/flutter-action@v2
+          with:
+            flutter-version: '3.16.0'
+        - run: flutter pub get
+        - run: flutter analyze
+        - run: flutter test
+        - run: flutter build apk --release
+        - run: flutter build ios --release --no-codesign
+        - run: flutter build web --release
+
+# Singapore stores
+deployment:
+  google_play_singapore:
+    track: "alpha"
+    language: "en-SG"
+    countries: ["SG"]
+
+  app_store_singapore:
+    region: "sg"
+    language: "en-SG"
+    countries: ["SG"]
+
+  huawei_appgallery_singapore:
+    region: "sg"
+    language: "en-SG"
+
+  galaxy_store_singapore:
+    region: "sg"
+    language: "en-SG"
+
+# Singapore payment systems
+payment_systems:
+  - name: "PayNow"
+    type: "instant_payment"
+    region: "sg"
+
+  - name: "GrabPay"
+    type: "mobile_wallet"
+    region: "sg"
+
+  - name: "DBS PayLah!"
+    type: "mobile_payment"
+    region: "sg"
+
+  - name: "OCBC Pay Anyone"
+    type: "mobile_payment"
+    region: "sg"
+
+  - name: "UOB Mighty"
+    type: "mobile_payment"
+    region: "sg"
+
+  - name: "Nets"
+    type: "payment_network"
+    region: "sg"
+
+  - name: "PayPal Singapore"
+    type: "digital_wallet"
+    region: "sg"
+
+  - name: "Apple Pay Singapore"
+    type: "mobile_payment"
+    region: "sg"
+
+  - name: "Google Pay Singapore"
+    type: "mobile_payment"
+    region: "sg"
+
+  - name: "Samsung Pay Singapore"
+    type: "mobile_payment"
+    region: "sg"
+
+# Singapore social integration
+social_integration:
+  - name: "WhatsApp Singapore"
+    type: "messaging"
+    region: "sg"
+
+  - name: "Facebook Singapore"
+    type: "social"
+    region: "sg"
+
+  - name: "Instagram Singapore"
+    type: "social"
+    region: "sg"
+
+  - name: "Twitter Singapore"
+    type: "social"
+    region: "sg"
+
+  - name: "LinkedIn Singapore"
+    type: "professional"
+    region: "sg"
+
+  - name: "YouTube Singapore"
+    type: "video"
+    region: "sg"
+
+  - name: "TikTok Singapore"
+    type: "video"
+    region: "sg"
+
+# Singapore languages
+languages:
+  english: "English"
+  chinese_mandarin: "中文 (普通话)"
+  malay: "Bahasa Melayu"
+  tamil: "தமிழ்"
+
+# ASEAN countries
+asean_countries:
+  - "SG"  # Singapore
+  - "MY"  # Malaysia
+  - "TH"  # Thailand
+  - "ID"  # Indonesia
+  - "PH"  # Philippines
+  - "VN"  # Vietnam
+  - "MM"  # Myanmar
+  - "KH"  # Cambodia
+  - "LA"  # Laos
+  - "BN"  # Brunei
+  - "TL"  # Timor-Leste

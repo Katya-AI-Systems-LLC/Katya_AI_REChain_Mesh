@@ -1,0 +1,41 @@
+[Unit]
+Description=Katya AI REChain Mesh
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=%i
+ExecStart=/usr/bin/katya-ai-rechain-mesh
+Restart=always
+RestartSec=5
+Environment=GDK_BACKEND=x11
+Environment=WAYLAND_DISPLAY=wayland-0
+Environment=DISPLAY=:0
+Environment=XDG_SESSION_TYPE=x11
+Environment=XDG_CURRENT_DESKTOP=GNOME
+Environment=XDG_SESSION_DESKTOP=GNOME
+
+# Security settings
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+PrivateNetwork=no
+PrivateUsers=no
+ProtectHome=yes
+ProtectSystem=strict
+ReadWritePaths=%h/.config/katya-ai-rechain-mesh %h/.cache/katya-ai-rechain-mesh %h/.local/share/katya-ai-rechain-mesh
+ReadOnlyPaths=/usr/share/fonts /usr/share/icons /usr/share/themes /etc/ssl/certs
+InaccessiblePaths=/boot /root /sys /proc
+CapabilityBoundingSet=CAP_NET_RAW CAP_NET_BIND_SERVICE
+AmbientCapabilities=CAP_NET_RAW CAP_NET_BIND_SERVICE
+
+# Resource limits
+LimitNOFILE=1024
+LimitNPROC=512
+MemoryLimit=1G
+TimeoutStartSec=30
+TimeoutStopSec=10
+
+[Install]
+WantedBy=default.target

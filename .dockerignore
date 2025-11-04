@@ -1,0 +1,69 @@
+# Flutter
+.flutter/
+.dart_tool/
+build/
+coverage/
+
+# Dependencies
+.pub-cache/
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# Documentation
+*.md
+docs/
+
+# Tests
+test/
+integration_test/
+
+# Environment
+.env*
+
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Cache
+.cache/
+
+# Node modules (if any)
+node_modules/
+
+# Platform specific
+android/
+ios/
+linux/
+windows/
+macos/
+web/
+
+# Secrets
+secrets/
+keys/
+*.key
+*.pem

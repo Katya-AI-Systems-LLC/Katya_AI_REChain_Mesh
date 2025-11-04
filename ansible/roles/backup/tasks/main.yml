@@ -1,0 +1,79 @@
+---
+# Backup configuration tasks
+
+- name: Install backup tools
+  package:
+    name:
+      - postgresql-client
+      - redis-tools
+      - awscli
+      - rclone
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Create backup directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0750'
+    owner: root
+    group: root
+  loop:
+    - /var/backups/katya-rechain-mesh
+    - /var/backups/katya-rechain-mesh/database
+    - /var/backups/katya-rechain-mesh/files
+    - /var/backups/katya-rechain-mesh/config
+
+- name: Create database backup script
+  template:
+    src: backup-db.sh.j2
+    dest: /usr/local/bin/backup-katya-db
+    mode: '0755'
+
+- name: Create file backup script
+  template:
+    src: backup-files.sh.j2
+    dest: /usr/local/bin/backup-katya-files
+    mode: '0755'
+
+- name: Setup cron jobs for backups
+  cron:
+    name: "Daily database backup"
+    minute: "0"
+    hour: "2"
+    job: "/usr/local/bin/backup-katya-db"
+    user: root
+
+- name: Setup cron job for file backups
+  cron:
+    name: "Daily file backup"
+    minute: "30"
+    hour: "2"
+    job: "/usr/local/bin/backup-katya-files"
+    user: root
+
+- name: Create backup rotation script
+  template:
+    src: rotate-backups.sh.j2
+    dest: /usr/local/bin/rotate-katya-backups
+    mode: '0755'
+
+- name: Setup weekly backup rotation
+  cron:
+    name: "Weekly backup rotation"
+    minute: "0"
+    hour: "3"
+    weekday: "0"
+    job: "/usr/local/bin/rotate-katya-backups"
+    user: root
+
+  - name: Configure rclone for cloud backup
+    template:
+      src: rclone.conf.j2
+      dest: /root/.config/rclone/rclone.conf
+      mode: '0600'
+    when: cloud_backup_enabled | default(false)
+
+  - name: Test backup functionality
+    command: /usr/local/bin/backup-katya-db --dry-run
+    failed_when: false

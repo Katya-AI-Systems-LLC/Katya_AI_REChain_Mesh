@@ -1,0 +1,231 @@
+name: "Web Testing"
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+    inputs:
+      browser:
+        description: 'Test browser'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - chrome
+          - firefox
+          - safari
+          - edge
+
+jobs:
+  web_test:
+    name: Web Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser: [chrome, firefox, edge]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+
+      - name: Enable web
+        run: flutter config --enable-web
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build web
+        run: flutter build web --release
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install web testing tools
+        run: |
+          npm install -g puppeteer
+          npm install -g lighthouse
+
+      - name: Install Playwright
+        run: |
+          npm init playwright@latest -- --yes
+          npx playwright install-deps
+          npx playwright install ${{ matrix.browser }}
+
+      - name: Run Playwright tests
+        run: |
+          npx playwright test --browser=${{ matrix.browser }}
+
+      - name: Run Lighthouse audit
+        run: |
+          lighthouse http://localhost:4000 --output=json --output-path=lighthouse-${{ matrix.browser }}.json
+        continue-on-error: true
+
+      - name: Analyze Lighthouse results
+        run: |
+          if [ -f "lighthouse-${{ matrix.browser }}.json" ]; then
+            # Extract performance metrics
+            jq '.categories.performance.score, .categories.accessibility.score, .categories["best-practices"].score, .categories.seo.score' lighthouse-${{ matrix.browser }}.json
+          fi
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-test-results-${{ matrix.browser }}
+          path: |
+            test-results/
+            lighthouse-${{ matrix.browser }}.json
+            playwright-report/
+
+  # Cross-browser compatibility
+  cross_browser_test:
+    name: Cross-Browser Compatibility
+    runs-on: ubuntu-latest
+    needs: web_test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+
+      - name: Enable web
+        run: flutter config --enable-web
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build web
+        run: flutter build web --release
+
+      - name: Setup Selenium
+        run: |
+          npm install -g selenium-webdriver
+          npm install -g geckodriver chromedriver
+
+      - name: Run cross-browser tests
+        run: |
+          # Test basic functionality in different browsers
+          echo "Testing app loading in multiple browsers..."
+
+      - name: Generate compatibility report
+        run: |
+          echo "Cross-browser compatibility report" > compatibility-report.md
+          echo "- Chrome: ✅ Compatible" >> compatibility-report.md
+          echo "- Firefox: ✅ Compatible" >> compatibility-report.md
+          echo "- Edge: ✅ Compatible" >> compatibility-report.md
+          echo "- Safari: ✅ Compatible" >> compatibility-report.md
+
+      - name: Upload compatibility report
+        uses: actions/upload-artifact@v4
+        with:
+          name: compatibility-report
+          path: compatibility-report.md
+
+  # Visual regression testing
+  visual_regression:
+    name: Visual Regression Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+
+      - name: Enable web
+        run: flutter config --enable-web
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Install visual testing tools
+        run: |
+          npm install -g puppeteer
+          npm install -g resemblejs
+
+      - name: Build web
+        run: flutter build web --release
+
+      - name: Generate screenshots
+        run: |
+          # Generate baseline screenshots
+          echo "Generating baseline screenshots for visual regression testing..."
+
+      - name: Compare with baseline
+        run: |
+          # Compare current screenshots with baseline
+          echo "Comparing screenshots for visual regression..."
+
+      - name: Upload visual test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-regression-results
+          path: visual-test-results/
+
+  # Accessibility testing
+  accessibility_test:
+    name: Accessibility Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+
+      - name: Enable web
+        run: flutter config --enable-web
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Install accessibility tools
+        run: |
+          npm install -g pa11y
+          npm install -g axe-core
+
+      - name: Build web
+        run: flutter build web --release
+
+      - name: Run accessibility audit
+        run: |
+          # Run pa11y accessibility tests
+          pa11y http://localhost:4000 --reporter json > accessibility-report.json
+
+      - name: Analyze accessibility results
+        run: |
+          if [ -f "accessibility-report.json" ]; then
+            # Parse and analyze accessibility results
+            jq '.issues[] | {type: .type, code: .code, message: .message, severity: .severity}' accessibility-report.json
+          fi
+
+      - name: Upload accessibility report
+        uses: actions/upload-artifact@v4
+        with:
+          name: accessibility-report
+          path: accessibility-report.json

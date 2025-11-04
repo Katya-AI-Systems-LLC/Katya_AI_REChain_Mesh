@@ -1,0 +1,66 @@
+name: Deploy to VK Cloud
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+env:
+  VKCLOUD_PROJECT_ID: ${{ secrets.VKCLOUD_PROJECT_ID }}
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    environment: staging
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run tests
+        run: flutter test
+
+      - name: Build application
+        run: |
+          flutter build apk --release
+          flutter build web --release
+
+      - name: Setup VK Cloud CLI
+        run: |
+          curl -sSL https://storage.mcs.ru/mcs-cli/vkcs-cli-linux-amd64.tar.gz | tar xz
+          sudo mv vkcs /usr/local/bin/
+          sudo chmod +x /usr/local/bin/vkcs
+
+      - name: Configure VK Cloud
+        run: |
+          vkcs config set --project-id $VKCLOUD_PROJECT_ID
+          echo "${{ secrets.VK_CLOUD_TOKEN }}" | vkcs config set --token -
+
+      - name: Deploy to VK Cloud
+        run: |
+          # Upload APK to storage
+          vkcs object-store object create \
+            --name staging/katya-rechain-mesh-${{ github.sha }}.apk \
+            --data-binary build/app/outputs/flutter-apk/app-release.apk \
+            katya-rechain-mesh-artifacts
+
+          # Deploy web version
+          vkcs object-store object create \
+            --name staging/index.html \
+            --data-binary build/web/index.html \
+            katya-rechain-mesh-web
+
+      - name: Verify deployment
+        run: |
+          echo "Staging deployment completed"
+          echo "APK: https://storage.mcs.ru/katya-rechain-mesh-artifacts/staging/katya-rechain-mesh-${{ github.sha }}.apk"
+          echo "Web: https://storage.mcs.ru/katya-rechain-mesh-web/staging/index.html"

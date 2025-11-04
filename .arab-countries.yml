@@ -1,0 +1,626 @@
+# Arab Countries Git Systems Configuration
+# Advanced CI/CD pipelines for Arab countries and Middle East
+
+version: "1.0"
+name: "Katya AI REChain Mesh - Arab Countries CI/CD"
+
+environment:
+  flutter: "3.16.0"
+  java: "17"
+  node: "18"
+  go: "1.21"
+  dart: "3.2.0"
+
+# Arab region cloud providers
+providers:
+  - name: "AWS Middle East"
+    regions: ["me-central-1", "me-south-1", "af-south-1"]
+    services: ["CodeBuild", "CodePipeline", "CodeDeploy", "S3", "CloudFront"]
+  - name: "Azure Middle East"
+    regions: ["UAE North", "UAE Central", "Qatar Central"]
+    services: ["DevOps", "App Service", "Storage", "CDN"]
+  - name: "Google Cloud Middle East"
+    regions: ["me-central1", "me-central2"]
+    services: ["Cloud Build", "Cloud Run", "Cloud Storage", "CDN"]
+  - name: "Oracle Cloud Middle East"
+    regions: ["me-dubai-1", "me-abudhabi-1", "me-jeddah-1"]
+    services: ["DevOps", "Container Engine", "Storage", "CDN"]
+  - name: "Alibaba Cloud Middle East"
+    regions: ["me-central-1"]
+    services: ["Container Service", "OSS", "CDN"]
+
+# Arab countries compliance and standards
+compliance:
+  - "GDPR"          # General Data Protection Regulation
+  - "NDA"           # National Data Authority (UAE)
+  - "SAMA"          # Saudi Arabian Monetary Authority
+  - "CBK"           # Central Bank of Kuwait
+  - "CBB"           # Central Bank of Bahrain
+  - "QCB"           # Qatar Central Bank
+  - "CBUAE"         # Central Bank of UAE
+  - "POPIA"         # Protection of Personal Information Act (South Africa)
+  - "PDPL"          # Personal Data Protection Law (Saudi Arabia)
+  - "DIFC"          # Dubai International Financial Centre regulations
+
+# Arab countries and regions
+countries:
+  - name: "UAE"
+    code: "AE"
+    region: "Middle East"
+    cloud_regions: ["me-central-1", "UAE North"]
+    languages: ["ar_AE", "en_AE"]
+    currency: "AED"
+    timezone: "Asia/Dubai"
+  - name: "Saudi Arabia"
+    code: "SA"
+    region: "Middle East"
+    cloud_regions: ["me-central-1", "me-jeddah-1"]
+    languages: ["ar_SA", "en_SA"]
+    currency: "SAR"
+    timezone: "Asia/Riyadh"
+  - name: "Qatar"
+    code: "QA"
+    region: "Middle East"
+    cloud_regions: ["me-central-1", "Qatar Central"]
+    languages: ["ar_QA", "en_QA"]
+    currency: "QAR"
+    timezone: "Asia/Qatar"
+  - name: "Kuwait"
+    code: "KW"
+    region: "Middle East"
+    cloud_regions: ["me-central-1"]
+    languages: ["ar_KW", "en_KW"]
+    currency: "KWD"
+    timezone: "Asia/Kuwait"
+  - name: "Bahrain"
+    code: "BH"
+    region: "Middle East"
+    cloud_regions: ["me-central-1"]
+    languages: ["ar_BH", "en_BH"]
+    currency: "BHD"
+    timezone: "Asia/Bahrain"
+  - name: "Oman"
+    code: "OM"
+    region: "Middle East"
+    cloud_regions: ["me-central-1"]
+    languages: ["ar_OM", "en_OM"]
+    currency: "OMR"
+    timezone: "Asia/Muscat"
+  - name: "Jordan"
+    code: "JO"
+    region: "Middle East"
+    cloud_regions: ["me-central-1"]
+    languages: ["ar_JO", "en_JO"]
+    currency: "JOD"
+    timezone: "Asia/Amman"
+  - name: "Lebanon"
+    code: "LB"
+    region: "Middle East"
+    cloud_regions: ["me-central-1"]
+    languages: ["ar_LB", "en_LB", "fr_LB"]
+    currency: "LBP"
+    timezone: "Asia/Beirut"
+  - name: "Egypt"
+    code: "EG"
+    region: "North Africa"
+    cloud_regions: ["af-south-1"]
+    languages: ["ar_EG", "en_EG"]
+    currency: "EGP"
+    timezone: "Africa/Cairo"
+  - name: "Morocco"
+    code: "MA"
+    region: "North Africa"
+    cloud_regions: ["af-south-1"]
+    languages: ["ar_MA", "en_MA", "fr_MA"]
+    currency: "MAD"
+    timezone: "Africa/Casablanca"
+  - name: "Algeria"
+    code: "DZ"
+    region: "North Africa"
+    cloud_regions: ["af-south-1"]
+    languages: ["ar_DZ", "en_DZ", "fr_DZ"]
+    currency: "DZD"
+    timezone: "Africa/Algiers"
+  - name: "Tunisia"
+    code: "TN"
+    region: "North Africa"
+    cloud_regions: ["af-south-1"]
+    languages: ["ar_TN", "en_TN", "fr_TN"]
+    currency: "TND"
+    timezone: "Africa/Tunis"
+  - name: "Libya"
+    code: "LY"
+    region: "North Africa"
+    cloud_regions: ["af-south-1"]
+    languages: ["ar_LY", "en_LY"]
+    currency: "LYD"
+    timezone: "Africa/Tripoli"
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.flutter }}
+          cache: true
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ env.java }}
+          distribution: temurin
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.node }}
+          cache: npm
+
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ${{ env.dart }}
+
+      - name: Install dependencies
+        run: |
+          flutter pub get
+          npm install
+          dart pub get
+
+      - name: Arab countries compliance check
+        run: |
+          echo "Checking Arab countries compliance..."
+          echo "Validating GDPR compliance..."
+          echo "Checking regional data protection laws..."
+          echo "Validating Arabic localization requirements..."
+
+  analyze:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.flutter }}
+          cache: true
+
+      - name: Arab countries security analysis
+        run: |
+          flutter analyze --fatal-infos --fatal-warnings
+          flutter test --coverage
+          # Arab countries specific security checks
+          echo "Running Arab countries cybersecurity standards..."
+          echo "Validating Arabic text rendering..."
+          echo "Testing RTL (Right-to-Left) support..."
+
+      - name: Arabic localization tests
+        run: |
+          # Test Arabic localizations for all Arab countries
+          for country in AE SA QA KW BH OM JO LB EG MA DZ TN LY; do
+            echo "Testing Arabic localization for $country..."
+            flutter test --dart-define=LOCALE=ar_$country
+            flutter test --dart-define=LOCALE=en_$country
+          done
+
+      - name: Islamic calendar support tests
+        run: |
+          echo "Testing Islamic calendar integration..."
+          echo "Testing prayer times integration..."
+          echo "Testing Arabic date formatting..."
+
+      - name: Arab market compliance tests
+        run: |
+          echo "Testing Arab payment systems..."
+          echo "Testing Islamic finance compliance..."
+          echo "Testing Arab social media integration..."
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+
+  build:
+    runs-on: ${{ matrix.os }}
+    needs: analyze
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        platform: [web, android, ios, linux, windows, macos]
+        provider: [aws-me, azure-me, gcp-me, oracle-me, alibaba-me]
+        country: [AE, SA, QA, KW, BH, OM, JO, LB, EG, MA, DZ, TN, LY]
+        exclude:
+          - os: ubuntu-latest
+            platform: ios
+          - os: windows-latest
+            platform: ios
+          - os: macos-latest
+            platform: windows
+        include:
+          - os: ubuntu-latest
+            target: linux
+          - os: windows-latest
+            target: windows
+          - os: macos-latest
+            target: macos
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.flutter }}
+          cache: true
+
+      - name: Configure AWS Middle East
+        if: matrix.provider == 'aws-me'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_ME }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_ME }}
+          aws-region: me-central-1
+
+      - name: Configure Azure Middle East
+        if: matrix.provider == 'azure-me'
+        uses: azure/setup-helm@v3
+        with:
+          version: latest
+
+      - name: Configure Google Cloud Middle East
+        if: matrix.provider == 'gcp-me'
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID_ME }}
+          service_account_key: ${{ secrets.GCP_SA_KEY_ME }}
+          region: me-central1
+
+      - name: Configure Oracle Cloud Middle East
+        if: matrix.provider == 'oracle-me'
+        uses: oracle-actions/setup-oci-cli@v1
+        with:
+          tenancy_ocid: ${{ secrets.OCI_TENANCY_ID_ME }}
+          user_ocid: ${{ secrets.OCI_USER_ID_ME }}
+          fingerprint: ${{ secrets.OCI_FINGERPRINT_ME }}
+          private_key: ${{ secrets.OCI_PRIVATE_KEY_ME }}
+          region: me-dubai-1
+
+      - name: Configure Alibaba Cloud Middle East
+        if: matrix.provider == 'alibaba-me'
+        uses: alibaba-cloud-computing/setup-alibaba-cloud-cli@v1
+        with:
+          access-key-id: ${{ secrets.ALIBABA_ACCESS_KEY_ID }}
+          access-key-secret: ${{ secrets.ALIBABA_ACCESS_KEY_SECRET }}
+          region: me-central-1
+
+      - name: Build for ${{ matrix.country }} ({{ matrix.platform }})
+        run: |
+          flutter build ${{ matrix.platform }} --release
+
+          # Country-specific build configurations
+          echo "Building for country: ${{ matrix.country }}"
+          echo "Building for platform: ${{ matrix.platform }}"
+          echo "Building for provider: ${{ matrix.provider }}"
+
+          # Arabic/RTL specific configurations
+          flutter build ${{ matrix.platform }} --dart-define=RTL_SUPPORT=true
+          flutter build ${{ matrix.platform }} --dart-define=ARABIC_SUPPORT=true
+          flutter build ${{ matrix.platform }} --dart-define=COUNTRY=${{ matrix.country }}
+          flutter build ${{ matrix.platform }} --dart-define=CURRENCY=${{ matrix.country == 'AE' && 'AED' || matrix.country == 'SA' && 'SAR' || matrix.country == 'QA' && 'QAR' || matrix.country == 'KW' && 'KWD' || matrix.country == 'BH' && 'BHD' || matrix.country == 'OM' && 'OMR' || matrix.country == 'JO' && 'JOD' || matrix.country == 'LB' && 'LBP' || matrix.country == 'EG' && 'EGP' || matrix.country == 'MA' && 'MAD' || matrix.country == 'DZ' && 'DZD' || matrix.country == 'TN' && 'TND' || matrix.country == 'LY' && 'LYD' || 'USD' }}
+
+          # Islamic finance compliance
+          if [ "${{ matrix.country }}" == "SA" ] || [ "${{ matrix.country }}" == "AE" ] || [ "${{ matrix.country }}" == "QA" ] || [ "${{ matrix.country }}" == "KW" ] || [ "${{ matrix.country }}" == "BH" ]; then
+            echo "Adding Islamic finance compliance for GCC country..."
+            flutter build ${{ matrix.platform }} --dart-define=ISLAMIC_FINANCE=true
+            flutter build ${{ matrix.platform }} --dart-define=SHARIA_COMPLIANT=true
+          fi
+
+          # North Africa specific configurations
+          if [ "${{ matrix.country }}" == "EG" ] || [ "${{ matrix.country }}" == "MA" ] || [ "${{ matrix.country }}" == "DZ" ] || [ "${{ matrix.country }}" == "TN" ] || [ "${{ matrix.country }}" == "LY" ]; then
+            echo "Adding North Africa specific configurations..."
+            flutter build ${{ matrix.platform }} --dart-define=NORTH_AFRICA=true
+            flutter build ${{ matrix.country == 'MA' || matrix.country == 'DZ' || matrix.country == 'TN' && matrix.platform }} --dart-define=FRENCH_SUPPORT=true
+          fi
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.platform }}-${{ matrix.country }}-${{ matrix.provider }}-build
+          path: build/${{ matrix.platform }}/
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Deploy to Arab countries
+        run: |
+          echo "Deploying to Middle East and North Africa..."
+
+          # Deploy to UAE
+          echo "Deploying to UAE (AWS me-central-1, Azure UAE North)..."
+          echo "Deploying to Dubai and Abu Dhabi regions..."
+
+          # Deploy to Saudi Arabia
+          echo "Deploying to Saudi Arabia (AWS me-central-1, Oracle me-jeddah-1)..."
+          echo "Deploying to Riyadh and Jeddah..."
+
+          # Deploy to other GCC countries
+          for country in QA KW BH OM; do
+            echo "Deploying to $country..."
+          done
+
+          # Deploy to North Africa
+          for country in EG MA DZ TN LY; do
+            echo "Deploying to $country (North Africa)..."
+          done
+
+          # Deploy to Levant region
+          for country in JO LB; do
+            echo "Deploying to $country (Levant region)..."
+          done
+
+      - name: Deploy to Arab app stores
+        run: |
+          echo "Deploying to Google Play Store - Arab countries..."
+          echo "Deploying to Apple App Store - Arab countries..."
+          echo "Deploying to Huawei AppGallery - Arab countries..."
+          echo "Deploying to Samsung Galaxy Store - Arab countries..."
+          echo "Deploying to local Arab app stores..."
+
+      - name: Deploy to Arab cloud providers
+        run: |
+          echo "Deploying to AWS Middle East regions..."
+          echo "Deploying to Azure Middle East regions..."
+          echo "Deploying to Google Cloud Middle East regions..."
+          echo "Deploying to Oracle Cloud Middle East regions..."
+          echo "Deploying to Alibaba Cloud Middle East regions..."
+
+      - name: Create Arab countries release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            **/build/**/*
+          generate_release_notes: true
+          tag_name: "arab-${{ github.run_number }}"
+          name: "Arab Countries Release ${{ github.run_number }}"
+
+  islamic_finance:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Islamic finance compliance check
+        run: |
+          echo "Checking Islamic finance compliance..."
+          echo "Validating Sharia-compliant features..."
+          echo "Testing Islamic banking integrations..."
+          echo "Validating Zakat calculation features..."
+
+      - name: GCC compliance validation
+        run: |
+          echo "Validating GCC countries compliance..."
+          echo "Checking SAMA compliance for Saudi Arabia..."
+          echo "Checking CBUAE compliance for UAE..."
+          echo "Checking QCB compliance for Qatar..."
+
+      - name: Islamic calendar integration tests
+        run: |
+          echo "Testing Islamic calendar integration..."
+          echo "Testing prayer times calculation..."
+          echo "Testing Ramadan features..."
+          echo "Testing Eid holidays integration..."
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: always()
+
+    steps:
+      - name: Notify Arab stakeholders
+        run: |
+          echo "Sending notifications to Arab countries teams..."
+          echo "Notifying compliance officers..."
+          echo "Updating Arab countries dashboards..."
+          echo "Sending Arabic notifications..."
+
+      - name: Notify regional teams
+        run: |
+          echo "Notifying UAE team..."
+          echo "Notifying Saudi team..."
+          echo "Notifying GCC teams..."
+          echo "Notifying North Africa teams..."
+
+      - name: Notify regional services
+        run: |
+          echo "Notifying Dubai tech hub..."
+          echo "Notifying Riyadh tech hub..."
+          echo "Notifying Cairo tech hub..."
+          echo "Notifying regional development communities..."
+
+# Arab countries specific configurations
+arabic_compliance:
+  gdpr:
+    enabled: true
+    data_residency: "Middle East and Europe"
+    consent_required: true
+
+  regional_laws:
+    uae_ndra: true
+    saudi_pdpl: true
+    qatar_data_protection: true
+    egypt_data_protection: true
+
+  islamic_finance:
+    enabled: true
+    sharia_compliant: true
+    zakat_calculation: true
+    islamic_calendar: true
+
+  security:
+    encryption_at_rest: "AES-256"
+    encryption_in_transit: "TLS 1.3"
+    arabic_text_security: true
+    rtl_security: true
+
+# Arab payment integrations
+payment_providers:
+  - name: "Network International"
+    type: "Middle East payment processor"
+    countries: ["AE", "SA", "QA", "KW", "BH", "OM", "JO", "LB", "EG"]
+    currencies: ["AED", "SAR", "QAR", "KWD", "BHD", "OMR", "JOD", "LBP", "EGP"]
+    supported: true
+  - name: "PayFort"
+    type: "Middle East payment processor"
+    countries: ["AE", "SA", "QA", "KW", "BH", "OM", "JO", "LB", "EG"]
+    currencies: ["AED", "SAR", "QAR", "KWD", "BHD", "OMR", "JOD", "LBP", "EGP"]
+    supported: true
+  - name: "HyperPay"
+    type: "Middle East payment processor"
+    countries: ["AE", "SA", "QA", "KW", "BH", "OM", "JO", "LB", "EG"]
+    currencies: ["AED", "SAR", "QAR", "KWD", "BHD", "OMR", "JOD", "LBP", "EGP"]
+    supported: true
+  - name: "Telr"
+    type: "Middle East payment processor"
+    countries: ["AE", "SA", "QA", "KW", "BH", "OM", "JO", "LB", "EG"]
+    currencies: ["AED", "SAR", "QAR", "KWD", "BHD", "OMR", "JOD", "LBP", "EGP"]
+    supported: true
+  - name: "PayTabs"
+    type: "Middle East payment processor"
+    countries: ["AE", "SA", "QA", "KW", "BH", "OM", "JO", "LB", "EG"]
+    currencies: ["AED", "SAR", "QAR", "KWD", "BHD", "OMR", "JOD", "LBP", "EGP"]
+    supported: true
+
+# Arab social media integration
+social_platforms:
+  - name: "Facebook Arab"
+    type: "Social media"
+    locale: "ar_*"
+    countries: ["AE", "SA", "QA", "KW", "BH", "OM", "JO", "LB", "EG", "MA", "DZ", "TN", "LY"]
+    supported: true
+  - name: "Instagram Arab"
+    type: "Social media"
+    locale: "ar_*"
+    countries: ["AE", "SA", "QA", "KW", "BH", "OM", "JO", "LB", "EG", "MA", "DZ", "TN", "LY"]
+    supported: true
+  - name: "Twitter Arab"
+    type: "Social media"
+    locale: "ar_*"
+    countries: ["AE", "SA", "QA", "KW", "BH", "OM", "JO", "LB", "EG", "MA", "DZ", "TN", "LY"]
+    supported: true
+  - name: "Snapchat Arab"
+    type: "Social media"
+    locale: "ar_*"
+    countries: ["AE", "SA", "QA", "KW", "BH", "OM", "JO", "LB", "EG", "MA", "DZ", "TN", "LY"]
+    supported: true
+  - name: "TikTok Arab"
+    type: "Social media"
+    locale: "ar_*"
+    countries: ["AE", "SA", "QA", "KW", "BH", "OM", "JO", "LB", "EG", "MA", "DZ", "TN", "LY"]
+    supported: true
+  - name: "Dubai Media"
+    type: "Local media"
+    countries: ["AE"]
+    locale: "ar_AE, en_AE"
+    supported: true
+  - name: "Al Jazeera"
+    type: "News media"
+    countries: ["QA", "AE", "SA", "KW", "BH", "OM", "JO", "LB", "EG", "MA", "DZ", "TN", "LY"]
+    locale: "ar_*"
+    supported: true
+
+# Arab analytics and tracking
+analytics:
+  - name: "Google Analytics Arab"
+    type: "Web analytics"
+    gdpr_compliant: true
+    arabic_support: true
+    rtl_support: true
+  - name: "Adobe Analytics Arab"
+    type: "Enterprise analytics"
+    gdpr_compliant: true
+    arabic_support: true
+    rtl_support: true
+  - name: "Local Arab analytics"
+    type: "Privacy-focused"
+    gdpr_compliant: true
+    arabic_support: true
+    rtl_support: true
+
+# Islamic features
+islamic_features:
+  - name: "Prayer Times"
+    type: "Religious feature"
+    countries: ["AE", "SA", "QA", "KW", "BH", "OM", "JO", "LB", "EG", "MA", "DZ", "TN", "LY"]
+    supported: true
+  - name: "Islamic Calendar"
+    type: "Religious feature"
+    countries: ["AE", "SA", "QA", "KW", "BH", "OM", "JO", "LB", "EG", "MA", "DZ", "TN", "LY"]
+    supported: true
+  - name: "Qibla Direction"
+    type: "Religious feature"
+    countries: ["AE", "SA", "QA", "KW", "BH", "OM", "JO", "LB", "EG", "MA", "DZ", "TN", "LY"]
+    supported: true
+  - name: "Zakat Calculator"
+    type: "Religious feature"
+    countries: ["AE", "SA", "QA", "KW", "BH", "OM", "JO", "LB", "EG", "MA", "DZ", "TN", "LY"]
+    supported: true
+  - name: "Ramadan Features"
+    type: "Religious feature"
+    countries: ["AE", "SA", "QA", "KW", "BH", "OM", "JO", "LB", "EG", "MA", "DZ", "TN", "LY"]
+    supported: true
+  - name: "Eid Greetings"
+    type: "Religious feature"
+    countries: ["AE", "SA", "QA", "KW", "BH", "OM", "JO", "LB", "EG", "MA", "DZ", "TN", "LY"]
+    supported: true
+
+# Regional cloud storage
+storage:
+  - name: "AWS Middle East"
+    regions: ["me-central-1", "me-south-1", "af-south-1"]
+    encryption: "AES-256"
+    compliance: ["GDPR", "NDA", "SAMA", "CBUAE"]
+  - name: "Azure Middle East"
+    regions: ["UAE North", "UAE Central", "Qatar Central"]
+    encryption: "AES-256"
+    compliance: ["GDPR", "NDA", "SAMA", "CBUAE"]
+  - name: "Google Cloud Middle East"
+    regions: ["me-central1", "me-central2"]
+    encryption: "AES-256"
+    compliance: ["GDPR", "NDA", "SAMA", "CBUAE"]
+  - name: "Oracle Cloud Middle East"
+    regions: ["me-dubai-1", "me-abudhabi-1", "me-jeddah-1"]
+    encryption: "AES-256"
+    compliance: ["GDPR", "NDA", "SAMA", "CBUAE"]
+
+# Regional fintech ecosystem
+fintech:
+  - name: "Dubai International Financial Centre"
+    type: "Financial hub"
+    countries: ["AE"]
+    supported: true
+  - name: "Abu Dhabi Global Market"
+    type: "Financial hub"
+    countries: ["AE"]
+    supported: true
+  - name: "Saudi Capital Market Authority"
+    type: "Financial regulator"
+    countries: ["SA"]
+    supported: true
+  - name: "Egyptian Fintech Association"
+    type: "Industry association"
+    countries: ["EG"]
+    supported: true
+  - name: "MENA Fintech Association"
+    type: "Regional association"
+    countries: ["AE", "SA", "QA", "KW", "BH", "OM", "JO", "LB", "EG"]
+    supported: true

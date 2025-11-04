@@ -1,0 +1,282 @@
+# Katya AI REChain Mesh - Mexico Git System Configuration
+# Configuración Git mexicana para México y países hispanohablantes
+
+version: 1.0
+name: "Katya AI REChain Mesh - Mexico Systems"
+
+# Plataformas Git mexicanas
+platforms:
+  - name: "GitHub Mexico"
+    region: "mx"
+    domain: "github.com.mx"
+    ci_cd: "github-actions"
+    compliance: "LFPDPPP"
+    language: "es-MX"
+
+  - name: "GitLab Mexico"
+    region: "mx"
+    domain: "gitlab.com.mx"
+    ci_cd: "gitlab-ci"
+    compliance: "LFPDPPP"
+    language: "es-MX"
+
+  - name: "Codeberg Mexico"
+    region: "mx"
+    domain: "codeberg.mx"
+    ci_cd: "woodpecker"
+    compliance: "LFPDPPP"
+    language: "es-MX"
+
+  - name: "Gitea Mexico"
+    region: "mx"
+    domain: "gitea.mx"
+    ci_cd: "gitea-actions"
+    compliance: "LFPDPPP"
+    language: "es-MX"
+
+# Proveedores de nube mexicanos
+cloud_providers:
+  - name: "AWS Mexico (us-west-2)"
+    region: "oregon"  # Closest AWS region
+    compliance: "LFPDPPP"
+    data_residency: "north_america"
+
+  - name: "Azure Mexico"
+    region: "westus2"  # Closest Azure region
+    compliance: "LFPDPPP"
+    data_residency: "north_america"
+
+  - name: "Google Cloud Mexico"
+    region: "us-central1"  # Closest GCP region
+    compliance: "LFPDPPP"
+    data_residency: "north_america"
+
+  - name: "KIO Networks"
+    region: "mexico"
+    compliance: "LFPDPPP"
+    data_residency: "mexico"
+
+  - name: "Telmex Cloud"
+    region: "mexico"
+    compliance: "LFPDPPP"
+    data_residency: "mexico"
+
+  - name: "Alestra Cloud"
+    region: "mexico"
+    compliance: "LFPDPPP"
+    data_residency: "mexico"
+
+  - name: "Softtek Cloud"
+    region: "mexico"
+    compliance: "LFPDPPP"
+    data_residency: "mexico"
+
+# Cumplimiento y estándares
+compliance:
+  lfpdppp: true
+  iso27001: true
+  pci_dss: true
+  sox: true
+
+# Localización mexicana
+localization:
+  primary: "es-MX"
+  secondary: ["es-ES", "es-AR", "es-CO", "es-CL", "es-PE", "es-VE", "es-EC", "es-UY", "es-PY", "es-BO", "es-CR", "es-PA", "es-DO", "es-PR", "es-CU", "es-GT", "es-HN", "es-NI", "es-SV", "pt-BR"]
+  currency: "MXN"
+  timezone: "America/Mexico_City"
+
+# Pipelines CI/CD para plataformas mexicanas
+github_actions_mexico: |
+  name: México CI/CD
+  on: [push, pull_request]
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - name: Configuración de Flutter
+          uses: subosito/flutter-action@v2
+          with:
+            flutter-version: '3.16.0'
+        - run: flutter pub get
+        - run: flutter analyze
+        - run: flutter test
+        - run: flutter build apk --release
+        - run: flutter build ios --release --no-codesign
+        - run: flutter build web --release
+
+gitlab_ci_mexico: |
+  stages:
+    - construir
+    - probar
+    - desplegar
+
+  variables:
+    FLUTTER_VERSION: "3.16.0"
+
+  build:android:
+    stage: construir
+    script:
+      - flutter pub get
+      - flutter analyze --fatal-infos --fatal-warnings
+      - flutter test --coverage
+      - flutter build apk --release
+    artifacts:
+      paths:
+        - build/app/outputs/
+    coverage: '/Coverage: \d+\.\d+%/'
+
+  build:ios:
+    stage: construir
+    script:
+      - flutter build ios --release --no-codesign
+    artifacts:
+      paths:
+        - build/ios/
+
+  build:web:
+    stage: construir
+    script:
+      - flutter build web --release
+    artifacts:
+      paths:
+        - build/web/
+
+# Despliegue para tiendas mexicanas
+deployment:
+  google_play_mexico:
+    track: "alpha"
+    language: "es-MX"
+    countries: ["MX"]
+
+  app_store_mexico:
+    region: "mx"
+    language: "es-MX"
+    countries: ["MX"]
+
+  huawei_appgallery_mexico:
+    region: "mx"
+    language: "es-MX"
+
+  galaxy_store_mexico:
+    region: "mx"
+    language: "es-MX"
+
+# Sistemas de pago mexicanos
+payment_systems:
+  - name: "SPEI"
+    type: "interbank_payment"
+    region: "mx"
+
+  - name: "CoDi"
+    type: "qr_payment"
+    region: "mx"
+
+  - name: "BBVA Bancomer"
+    type: "banking_payment"
+    region: "mx"
+
+  - name: "Santander México"
+    type: "banking_payment"
+    region: "mx"
+
+  - name: "Banamex"
+    type: "banking_payment"
+    region: "mx"
+
+  - name: "Banorte"
+    type: "banking_payment"
+    region: "mx"
+
+  - name: "HSBC México"
+    type: "banking_payment"
+    region: "mx"
+
+  - name: "Scotiabank México"
+    type: "banking_payment"
+    region: "mx"
+
+  - name: "Inbursa"
+    type: "banking_payment"
+    region: "mx"
+
+  - name: "Mercado Pago México"
+    type: "digital_wallet"
+    region: "mx"
+
+# Integración social mexicana
+social_integration:
+  - name: "WhatsApp México"
+    type: "messaging"
+    region: "mx"
+
+  - name: "Facebook México"
+    type: "social"
+    region: "mx"
+
+  - name: "Instagram México"
+    type: "social"
+    region: "mx"
+
+  - name: "Twitter México"
+    type: "social"
+    region: "mx"
+
+  - name: "YouTube México"
+    type: "video"
+    region: "mx"
+
+  - name: "TikTok México"
+    type: "video"
+    region: "mx"
+
+  - name: "LinkedIn México"
+    type: "professional"
+    region: "mx"
+
+# Países de habla hispana
+spanish_speaking_countries:
+  # Norteamérica
+  - "MX"  # México
+  - "US"  # Estados Unidos (regiones hispanohablantes)
+
+  # Centroamérica
+  - "GT"  # Guatemala
+  - "BZ"  # Belice
+  - "SV"  # El Salvador
+  - "HN"  # Honduras
+  - "NI"  # Nicaragua
+  - "CR"  # Costa Rica
+  - "PA"  # Panamá
+
+  # Caribe
+  - "CU"  # Cuba
+  - "DO"  # República Dominicana
+  - "PR"  # Puerto Rico
+  - "JM"  # Jamaica
+  - "HT"  # Haití
+  - "TT"  # Trinidad y Tobago
+
+  # Sudamérica
+  - "CO"  # Colombia
+  - "VE"  # Venezuela
+  - "EC"  # Ecuador
+  - "PE"  # Perú
+  - "BO"  # Bolivia
+  - "PY"  # Paraguay
+  - "UY"  # Uruguay
+  - "GY"  # Guyana
+  - "SR"  # Surinam
+
+  # Europa
+  - "ES"  # España
+
+# Idiomas soportados
+languages:
+  spanish_mexico: "Español (México)"
+  spanish_spain: "Español (España)"
+  english: "English"
+  portuguese: "Português"
+  french: "Français"
+  dutch: "Nederlands"
+  indigenous_languages: "Lenguas indígenas"
