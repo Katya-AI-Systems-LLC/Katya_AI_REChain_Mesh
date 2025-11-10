@@ -13,7 +13,7 @@ dependencies:
   cupertino_icons: ^1.0.5
 
   # Core Architecture
-  get_it: ^8.3.0
+  get_it: ^9.0.5
   injectable: ^2.4.4
   json_annotation: ^4.9.0
   path_provider: ^2.1.5
