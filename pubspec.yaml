@@ -95,7 +95,7 @@ dependencies:
 
   # Security
   local_auth: ^3.0.0
-  flutter_secure_storage: ^9.2.2
+  flutter_secure_storage: ^10.0.0
 
   # Missing Dependencies from Analysis
   flutter_bloc: ^9.1.1
