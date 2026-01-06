@@ -1,9 +1,8 @@
 # Katya Mesh Quantum App 🚀
 
-[[![Build Status](https://github.com/katya/quantum-mesh-app/actions/workflows/flutter_ci_full.yml/badge.svg)](https://github.com/katya/quantum-mesh-app/actions)
-](https://api.codemagic.io/apps/6909db8c6aa794c0d2d015ed/6909db8c6aa794c0d2d015ec/status_badge.svg)
+https://api.codemagic.io/apps/695d642ab9b487bb5ff93685/695d642ab9b487bb5ff93684/status_badge.svg
 
-[![Codemagic build status](https://api.codemagic.io/apps/6909db8c6aa794c0d2d015ed/6909db8c6aa794c0d2d015ec/status_badge.svg)](https://codemagic.io/app/6909db8c6aa794c0d2d015ed/6909db8c6aa794c0d2d015ec/latest_build)
+[![Codemagic build status](https://api.codemagic.io/apps/695d642ab9b487bb5ff93685/695d642ab9b487bb5ff93684/status_badge.svg)](https://codemagic.io/app/695d642ab9b487bb5ff93685/695d642ab9b487bb5ff93684/latest_build)
 
 [![License](https://img.shields.io/github/license/katya/quantum-mesh-app)](LICENSE)
 [![Hackathon](https://img.shields.io/badge/hackathon-Yandex-red)](https://yandex.ru/hackathon)
