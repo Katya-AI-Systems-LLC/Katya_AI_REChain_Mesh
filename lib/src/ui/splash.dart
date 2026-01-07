@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../theme.dart';
-import 'home_page.dart';
+import 'profile_page.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -57,12 +57,12 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     await _textController.forward();
     _particleController.repeat();
 
-    // Переход к главной странице через 3 секунды
+    // Переход к странице профиля через 3 секунды
     await Future.delayed(const Duration(seconds: 3));
     if (mounted) {
       // Используем правильную навигацию для Navigator.pages
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const HomePage()),
+        MaterialPageRoute(builder: (context) => const ProfilePage()),
       );
     }
   }

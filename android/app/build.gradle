@@ -82,12 +82,13 @@ android {
         buildConfig true
         compose = false
     }
-
-    // Настройки для упаковки
-    packagingOptions {
-        pickFirst '**/libc++_shared.so'
-        pickFirst '**/libjsc.so'
+  packagingOptions {
+    jniLibs {
+      pickFirsts += ['**/libc++_shared.so', '**/libjsc.so']
     }
+  }
+
+  // Настройки для упаковки
 }
 
 flutter {
@@ -97,24 +98,24 @@ flutter {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.multidex:multidex:2.0.1'
-    
+
     // Updated to match AGP 8.9.1 requirements
     implementation 'androidx.core:core:1.13.0'
     implementation 'androidx.core:core-ktx:1.13.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.8.0'
     implementation 'androidx.activity:activity-ktx:1.9.0'
-    
+
     // Для работы с криптографией
     implementation 'androidx.security:security-crypto:1.1.0-alpha06'
-    
+
     // Для работы с сетью
     implementation 'androidx.work:work-runtime-ktx:2.9.0'
-    
+
     // Для работы с уведомлениями
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.browser:browser:1.8.0'
-    
+
     // Для работы с Bluetooth на старых версиях
     // implementation 'androidx.bluetooth:bluetooth:1.0.0-alpha02' // Удалено для совместимости
 }
