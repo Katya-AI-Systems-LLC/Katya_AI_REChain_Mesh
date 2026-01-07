@@ -7,6 +7,7 @@
 
 import Cocoa
 import FlutterMacOS
+import BackgroundTasks
 
 @main
 class AppDelegate: FlutterAppDelegate {
@@ -20,6 +21,10 @@ class AppDelegate: FlutterAppDelegate {
         configureMacOSFeatures()
 
         super.applicationDidFinishLaunching(aNotification)
+    }
+
+    override func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
+        return true
     }
 
     private func configureMacOSFeatures() {

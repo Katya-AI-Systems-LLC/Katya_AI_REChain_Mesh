@@ -18,7 +18,7 @@ class MainFlutterWindow: NSWindow {
         // Configure macOS specific window properties
         configureWindowProperties()
 
-        RegisterGeneratedPlugins(registry: flutterViewController.pluginRegistry())
+        RegisterGeneratedPlugins(registry: flutterViewController)
 
         super.awakeFromNib()
     }
