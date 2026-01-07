@@ -34,9 +34,9 @@ dependencies:
   network_info_plus: ^7.0.0
 
   # Mesh Networking - Updated
-  multicast_dns: ^0.3.3
+  # multicast_dns: ^0.3.3  # Disabled for Windows
   permission_handler: ^12.0.1
-  location: ^8.0.1
+  # location: ^8.0.1  # Disabled for Windows
 
   # Storage - Enhanced
   shared_preferences: ^2.3.2
@@ -75,7 +75,7 @@ dependencies:
   lottie: ^3.3.2
 
   # Error Handling & Monitoring
-  sentry_flutter: ^9.8.0
+  # sentry_flutter: ^9.8.0  # Temporarily disabled for Windows builds
   logger: ^2.4.0
 
   # Platform Integration
@@ -94,8 +94,8 @@ dependencies:
   flutter_cache_manager: ^3.4.0
 
   # Security
-  local_auth: ^3.0.0
-  flutter_secure_storage: ^10.0.0
+  # local_auth: ^3.0.0  # Disabled for Windows
+  # flutter_secure_storage: ^10.0.0  # Temporarily disabled for Windows builds (requires ATL headers)
 
   # Missing Dependencies from Analysis
   flutter_bloc: ^9.1.1
