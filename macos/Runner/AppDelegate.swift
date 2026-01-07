@@ -7,7 +7,6 @@
 
 import Cocoa
 import FlutterMacOS
-import BackgroundTasks
 
 @main
 class AppDelegate: FlutterAppDelegate {
@@ -31,7 +30,6 @@ class AppDelegate: FlutterAppDelegate {
         setupMenuBar()
         setupDockIntegration()
         setupSecurityFeatures()
-        setupBackgroundTasks()
         setupAppleEvents()
     }
 
@@ -60,15 +58,6 @@ class AppDelegate: FlutterAppDelegate {
         configureKeychain()
         configureSandbox()
         configureHardenedRuntime()
-    }
-
-    private func setupBackgroundTasks() {
-        // Register background tasks for macOS
-        if #available(macOS 10.15, *) {
-            BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.katyaairechainmesh.refresh", using: nil) { task in
-                self.handleBackgroundRefresh(task: task as! BGAppRefreshTask)
-            }
-        }
     }
 
     private func setupAppleEvents() {
@@ -103,25 +92,6 @@ class AppDelegate: FlutterAppDelegate {
         // macOS Hardened Runtime configuration
         // Hardened Runtime is configured in build settings
         print("macOS Hardened Runtime configured")
-    }
-
-    private func handleBackgroundRefresh(task: BGAppRefreshTask) {
-        // Handle background refresh for macOS
-        scheduleNextBackgroundRefresh()
-        task.setTaskCompleted(success: true)
-    }
-
-    private func scheduleNextBackgroundRefresh() {
-        if #available(macOS 10.15, *) {
-            let request = BGAppRefreshTaskRequest(identifier: "com.katyaairechainmesh.refresh")
-            request.earliestBeginDate = Date(timeIntervalSinceNow: 30 * 60) // 30 minutes
-
-            do {
-                try BGTaskScheduler.shared.submit(request)
-            } catch {
-                print("Could not schedule app refresh: \(error)")
-            }
-        }
     }
 
     @objc private func handleAppleEvent(event: NSAppleEventDescriptor, reply: NSAppleEventDescriptor) {

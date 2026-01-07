@@ -9,7 +9,6 @@ import Foundation
 import Cocoa
 import Security
 import LocalAuthentication
-import BackgroundTasks
 import UserNotifications
 import WebKit
 import CoreLocation
@@ -29,7 +28,6 @@ import Contacts
 
     // MARK: - macOS Services Setup
     private func setupmacOSServices() {
-        configureBackgroundTasks()
         configureLocalNotifications()
         configureSecurity()
         configureLocationServices()
@@ -39,52 +37,6 @@ import Contacts
         configureAppleEvents()
         configureMenuBar()
         configureDockIntegration()
-    }
-
-    // MARK: - Background Tasks
-    private func configureBackgroundTasks() {
-        if #available(macOS 10.15, *) {
-            BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.katyaairechainmesh.refresh", using: nil) { task in
-                self.handleBackgroundRefresh(task: task as! BGAppRefreshTask)
-            }
-
-            BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.katyaairechainmesh.sync", using: nil) { task in
-                self.handleBackgroundSync(task: task as! BGProcessingTask)
-            }
-
-            BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.katyaairechainmesh.maintenance", using: nil) { task in
-                self.handleBackgroundMaintenance(task: task as! BGProcessingTask)
-            }
-        }
-    }
-
-    private func handleBackgroundRefresh(task: BGAppRefreshTask) {
-        scheduleNextBackgroundRefresh()
-        syncDataInBackground()
-        task.setTaskCompleted(success: true)
-    }
-
-    private func handleBackgroundSync(task: BGProcessingTask) {
-        performBackgroundSync()
-        task.setTaskCompleted(success: true)
-    }
-
-    private func handleBackgroundMaintenance(task: BGProcessingTask) {
-        performBackgroundMaintenance()
-        task.setTaskCompleted(success: true)
-    }
-
-    private func scheduleNextBackgroundRefresh() {
-        if #available(macOS 10.15, *) {
-            let request = BGAppRefreshTaskRequest(identifier: "com.katyaairechainmesh.refresh")
-            request.earliestBeginDate = Date(timeIntervalSinceNow: 30 * 60) // 30 minutes
-
-            do {
-                try BGTaskScheduler.shared.submit(request)
-            } catch {
-                print("Could not schedule app refresh: \(error)")
-            }
-        }
     }
 
     // MARK: - Local Notifications
@@ -259,19 +211,6 @@ import Contacts
         aboutWindow.center()
         aboutWindow.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
-    }
-
-    // MARK: - Data Sync Methods
-    private func syncDataInBackground() {
-        print("Performing background data sync")
-    }
-
-    private func performBackgroundSync() {
-        print("Performing background processing sync")
-    }
-
-    private func performBackgroundMaintenance() {
-        print("Performing background maintenance")
     }
 
     // MARK: - Public API Methods
